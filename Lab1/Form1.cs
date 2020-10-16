@@ -23,7 +23,9 @@ namespace Lab1
             }
             public int code;
         }
-            
+        
+        public ArrayList log = new ArrayList();
+
         public delegate void UpdateLogBoxDelegate();
         public void InvokeUpdateLogBox()
         {
@@ -33,8 +35,6 @@ namespace Lab1
                 logBox.Text += line + Environment.NewLine;
             }
         }
-
-        public ArrayList log = new ArrayList();
 
         public Form1()
         {
@@ -112,18 +112,21 @@ namespace Lab1
             {
                 result.Text = "Out of Range!";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
                 log.Add(logLine);
             }
             catch (ArgumentException ex)
             {
                 result.Text = "Incorrect inp";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
                 log.Add(logLine);
             }
             catch (IndexOutOfRangeException ex)
             {
                 result.Text = "Index OOR!";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
                 log.Add(logLine);
             }
             catch (SystemCharException ex)
@@ -131,11 +134,13 @@ namespace Lab1
                 result.Text = "System char!";
                 result_ascii.Text = ex.code.ToString();
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + ",char=" + ex.code;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
                 log.Add(logLine);
             }
             catch
             {
                 result.Text = "Exception occured";
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Unhandled Exception; INFO: name=" + name.Text + ",surname=" + surname.Text);
                 log.Add("Unhandled exception!");
             }
             finally
@@ -160,31 +165,6 @@ namespace Lab1
             
         }
 
-        private void toolStripButton1_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
-
-            saveFileDialog1.FileName = "lab1.log";
-            saveFileDialog1.Filter = "Log files (*.log)|*.log";
-            saveFileDialog1.FilterIndex = 2;
-            saveFileDialog1.RestoreDirectory = true;
-
-            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                StreamWriter logfile = new StreamWriter(saveFileDialog1.OpenFile());
-                if (logfile != null)
-                {
-                    UnicodeEncoding uniEncoding = new UnicodeEncoding();
-                    foreach (string line in log)
-                    {
-                        logfile.WriteLine(line);
-                    }
-                    logfile.Dispose();
-                    logfile.Close();
-                }
-            }
-        }
-
         private void справкаToolStripMenuItem_Click(object sender, EventArgs e)
         {
             var info = new Form_Info();
@@ -194,29 +174,6 @@ namespace Lab1
         private void timer1_Tick(object sender, EventArgs e)
         {
             toolStripStatusLabel1.Text = DateTime.Now.ToString();
-        }
-
-        private void toolStripButton2_Click(object sender, EventArgs e)
-        {
-            log.Clear();
-            OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Log files (*.log)|*.log";
-
-            if (openFileDialog1.ShowDialog() == DialogResult.OK)
-            {
-                StreamReader logfile = new StreamReader(openFileDialog1.OpenFile());
-                if (logfile != null)
-                {
-                    string line;
-                    while ((line = logfile.ReadLine()) != null)
-                    {
-                        log.Add(line);
-                    }
-                    logfile.Dispose();
-                    logfile.Close();
-                }
-            }
-            Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
         }
 
         private void лР2ToolStripMenuItem2_Click(object sender, EventArgs e)
@@ -241,6 +198,62 @@ namespace Lab1
             var lab2 = new Form2_tz();
             lab2.Closed += (s, args) => this.Close();
             lab2.Show();
+        }
+
+        private void сохранитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.FileName = "lab1.log";
+            saveFileDialog1.Filter = "Log files (*.log)|*.log";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StreamWriter logfile = new StreamWriter(saveFileDialog1.OpenFile());
+                if (logfile != null)
+                {
+                    UnicodeEncoding uniEncoding = new UnicodeEncoding();
+                    foreach (string line in log)
+                    {
+                        logfile.WriteLine(line);
+                    }
+                    logfile.Dispose();
+                    logfile.Close();
+                }
+            }
+        }
+
+        private void загрузитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            log.Clear();
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Log files (*.log)|*.log";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StreamReader logfile = new StreamReader(openFileDialog1.OpenFile());
+                if (logfile != null)
+                {
+                    string line;
+                    while ((line = logfile.ReadLine()) != null)
+                    {
+                        log.Add(line);
+                    }
+                    logfile.Dispose();
+                    logfile.Close();
+                }
+            }
+            Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
+        }
+
+        private void менюToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var form = new Form_start();
+            form.Closed += (s, args) => this.Close();
+            form.Show();
         }
     }
 }

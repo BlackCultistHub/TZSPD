@@ -30,11 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.рИСToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.тЗСПДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР1ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР2ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.HelpSelect = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label12 = new System.Windows.Forms.Label();
@@ -68,6 +63,12 @@
             this.timer2 = new System.Windows.Forms.Timer(this.components);
             this.errorProvider1 = new System.Windows.Forms.ErrorProvider(this.components);
             this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
+            this.label16 = new System.Windows.Forms.Label();
+            this.logBox = new System.Windows.Forms.TextBox();
+            this.менюToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сохранитьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.загрузитьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -79,53 +80,15 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.рИСToolStripMenuItem,
-            this.тЗСПДToolStripMenuItem,
+            this.менюToolStripMenuItem,
+            this.файлToolStripMenuItem,
             this.HelpSelect});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(5, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(723, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(1103, 28);
             this.menuStrip1.TabIndex = 11;
             this.menuStrip1.Text = "menuStrip1";
-            // 
-            // рИСToolStripMenuItem
-            // 
-            this.рИСToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.лР1ToolStripMenuItem});
-            this.рИСToolStripMenuItem.Name = "рИСToolStripMenuItem";
-            this.рИСToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
-            this.рИСToolStripMenuItem.Text = "РИС";
-            // 
-            // лР1ToolStripMenuItem
-            // 
-            this.лР1ToolStripMenuItem.Name = "лР1ToolStripMenuItem";
-            this.лР1ToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
-            this.лР1ToolStripMenuItem.Text = "ЛР1";
-            this.лР1ToolStripMenuItem.Click += new System.EventHandler(this.лР1ToolStripMenuItem_Click);
-            // 
-            // тЗСПДToolStripMenuItem
-            // 
-            this.тЗСПДToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.лР1ToolStripMenuItem1,
-            this.лР2ToolStripMenuItem});
-            this.тЗСПДToolStripMenuItem.Name = "тЗСПДToolStripMenuItem";
-            this.тЗСПДToolStripMenuItem.Size = new System.Drawing.Size(69, 24);
-            this.тЗСПДToolStripMenuItem.Text = "ТЗСПД";
-            // 
-            // лР1ToolStripMenuItem1
-            // 
-            this.лР1ToolStripMenuItem1.Name = "лР1ToolStripMenuItem1";
-            this.лР1ToolStripMenuItem1.Size = new System.Drawing.Size(118, 26);
-            this.лР1ToolStripMenuItem1.Text = "ЛР1";
-            this.лР1ToolStripMenuItem1.Click += new System.EventHandler(this.лР1ToolStripMenuItem1_Click);
-            // 
-            // лР2ToolStripMenuItem
-            // 
-            this.лР2ToolStripMenuItem.Name = "лР2ToolStripMenuItem";
-            this.лР2ToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
-            this.лР2ToolStripMenuItem.Text = "ЛР2";
-            this.лР2ToolStripMenuItem.Click += new System.EventHandler(this.лР2ToolStripMenuItem_Click);
             // 
             // HelpSelect
             // 
@@ -414,11 +377,60 @@
             // 
             this.errorProvider2.ContainerControl = this;
             // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(717, 42);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(80, 17);
+            this.label16.TabIndex = 22;
+            this.label16.Text = "Лог сессии";
+            // 
+            // logBox
+            // 
+            this.logBox.Location = new System.Drawing.Point(717, 62);
+            this.logBox.Multiline = true;
+            this.logBox.Name = "logBox";
+            this.logBox.ReadOnly = true;
+            this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
+            this.logBox.Size = new System.Drawing.Size(378, 388);
+            this.logBox.TabIndex = 21;
+            // 
+            // менюToolStripMenuItem
+            // 
+            this.менюToolStripMenuItem.Name = "менюToolStripMenuItem";
+            this.менюToolStripMenuItem.Size = new System.Drawing.Size(65, 24);
+            this.менюToolStripMenuItem.Text = "Меню";
+            this.менюToolStripMenuItem.Click += new System.EventHandler(this.менюToolStripMenuItem_Click);
+            // 
+            // файлToolStripMenuItem
+            // 
+            this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.сохранитьЛогToolStripMenuItem,
+            this.загрузитьЛогToolStripMenuItem});
+            this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Text = "Файл";
+            // 
+            // сохранитьЛогToolStripMenuItem
+            // 
+            this.сохранитьЛогToolStripMenuItem.Name = "сохранитьЛогToolStripMenuItem";
+            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.сохранитьЛогToolStripMenuItem.Text = "Сохранить лог";
+            // 
+            // загрузитьЛогToolStripMenuItem
+            // 
+            this.загрузитьЛогToolStripMenuItem.Name = "загрузитьЛогToolStripMenuItem";
+            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(224, 26);
+            this.загрузитьЛогToolStripMenuItem.Text = "Загрузить лог";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(8F, 16F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(723, 462);
+            this.ClientSize = new System.Drawing.Size(1103, 462);
+            this.Controls.Add(this.label16);
+            this.Controls.Add(this.logBox);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
@@ -442,11 +454,6 @@
 
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem HelpSelect;
-        private System.Windows.Forms.ToolStripMenuItem рИСToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem лР1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem тЗСПДToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem лР1ToolStripMenuItem1;
-        private System.Windows.Forms.ToolStripMenuItem лР2ToolStripMenuItem;
         private System.Windows.Forms.GroupBox groupBox1;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.Label label10;
@@ -479,5 +486,11 @@
         private System.Windows.Forms.Timer timer2;
         private System.Windows.Forms.ErrorProvider errorProvider1;
         private System.Windows.Forms.ErrorProvider errorProvider2;
+        private System.Windows.Forms.ToolStripMenuItem менюToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сохранитьЛогToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem загрузитьЛогToolStripMenuItem;
+        private System.Windows.Forms.Label label16;
+        private System.Windows.Forms.TextBox logBox;
     }
 }

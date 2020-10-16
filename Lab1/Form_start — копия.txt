@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -9,35 +8,13 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
-using System.IO;
-using System.Runtime;
-
 namespace Lab1
 {
     public partial class Form_start : Form
     {
-        public void ReadLogFile()
-        {
-            ArrayList log = new ArrayList();
-            if (!File.Exists("global_log.log"))
-                using (File.Create("global_log.log")) { }
-            StreamReader logfile = new StreamReader(Directory.GetCurrentDirectory() + "\\global_log.log");
-            textBox1.Clear();
-            if (logfile != null)
-            {
-                string line = "";
-                while ((line = logfile.ReadLine()) != null)
-                    log.Add(line);
-                logfile.Dispose();
-                logfile.Close();
-            }
-            foreach (string line in log)
-                textBox1.Text += line + Environment.NewLine;
-        }
         public Form_start()
         {
             InitializeComponent();
-            ReadLogFile();
         }
 
         private void button1_Click(object sender, EventArgs e)

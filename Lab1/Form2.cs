@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
@@ -8,10 +9,24 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+using System.IO;
+using System.Runtime;
+
 namespace Lab1
 {
     public partial class Form2 : Form
     {
+        public ArrayList log = new ArrayList();
+
+        public delegate void UpdateLogBoxDelegate();
+        public void InvokeUpdateLogBox()
+        {
+            logBox.Text = "";
+            foreach (string line in log)
+            {
+                logBox.Text += line + Environment.NewLine;
+            }
+        }
 
         private delegate void UpdateInfoDelegate();
         private delegate void UpdateInfo2Delegate();
@@ -75,16 +90,25 @@ namespace Lab1
             if (!IsDigitsOnly(numb_a.Text))
             {
                 errorProvider1.SetError(numb_a, "Field must be number!");
+                var logLine = DateTime.Now.ToString() + ": В поле A не число.";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле A не число.");
                 f_ok = false;
             }
             if (!IsDigitsOnly(numb_b.Text))
             {
                 errorProvider1.SetError(numb_b, "Field must be number!");
+                var logLine = DateTime.Now.ToString() + ": В поле B не число.";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле B не число.");
                 f_ok = false;
             }
             if (!IsDigitsOnly(numb_n.Text))
             {
                 errorProvider1.SetError(numb_n, "Field must be number!");
+                var logLine = DateTime.Now.ToString() + ": В поле N не число.";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле N не число.");
                 f_ok = false;
             }
             if (!f_ok)
@@ -97,6 +121,7 @@ namespace Lab1
                 textBox3.Text = "Error";
                 textBox4.Text = "Error";
                 textBox5.Text = "Error";
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             errorProvider1.Clear();
@@ -181,6 +206,14 @@ namespace Lab1
                 }
             }
             textBox_summ.Text = summ.ToString();
+        }
+
+        private void менюToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var form = new Form_start();
+            form.Closed += (s, args) => this.Close();
+            form.Show();
         }
     }
 }

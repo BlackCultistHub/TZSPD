@@ -29,7 +29,6 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.name = new System.Windows.Forms.TextBox();
             this.surname = new System.Windows.Forms.TextBox();
             this.addition = new System.Windows.Forms.Button();
@@ -41,9 +40,6 @@
             this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.logBox = new System.Windows.Forms.TextBox();
             this.label4 = new System.Windows.Forms.Label();
-            this.toolStrip1 = new System.Windows.Forms.ToolStrip();
-            this.toolStripButton1 = new System.Windows.Forms.ToolStripButton();
-            this.toolStripButton2 = new System.Windows.Forms.ToolStripButton();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.name_ascii = new System.Windows.Forms.TextBox();
             this.surname_ascii = new System.Windows.Forms.TextBox();
@@ -57,13 +53,11 @@
             this.label9 = new System.Windows.Forms.Label();
             this.справкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
-            this.рИСToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР2ToolStripMenuItem2 = new System.Windows.Forms.ToolStripMenuItem();
-            this.тЗСПДToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР1ToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.лР2ToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.менюToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.сохранитьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.загрузитьЛогToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.statusStrip1.SuspendLayout();
-            this.toolStrip1.SuspendLayout();
             this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -166,38 +160,6 @@
             this.label4.TabIndex = 12;
             this.label4.Text = "Лог сессии";
             // 
-            // toolStrip1
-            // 
-            this.toolStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
-            this.toolStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.toolStripButton1,
-            this.toolStripButton2});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
-            this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(909, 27);
-            this.toolStrip1.TabIndex = 13;
-            this.toolStrip1.Text = "toolStrip1";
-            // 
-            // toolStripButton1
-            // 
-            this.toolStripButton1.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
-            this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(114, 24);
-            this.toolStripButton1.Text = "Сохранить лог";
-            this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
-            // 
-            // toolStripButton2
-            // 
-            this.toolStripButton2.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Text;
-            this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
-            this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
-            this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(108, 24);
-            this.toolStripButton2.Text = "Загрузить лог";
-            this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
-            // 
             // timer1
             // 
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
@@ -298,8 +260,8 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.рИСToolStripMenuItem,
-            this.тЗСПДToolStripMenuItem,
+            this.менюToolStripMenuItem,
+            this.файлToolStripMenuItem,
             this.справкаToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
@@ -307,43 +269,35 @@
             this.menuStrip1.TabIndex = 10;
             this.menuStrip1.Text = "menuStrip1";
             // 
-            // рИСToolStripMenuItem
+            // менюToolStripMenuItem
             // 
-            this.рИСToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.лР2ToolStripMenuItem2});
-            this.рИСToolStripMenuItem.Name = "рИСToolStripMenuItem";
-            this.рИСToolStripMenuItem.Size = new System.Drawing.Size(51, 24);
-            this.рИСToolStripMenuItem.Text = "РИС";
+            this.менюToolStripMenuItem.Name = "менюToolStripMenuItem";
+            this.менюToolStripMenuItem.Size = new System.Drawing.Size(65, 24);
+            this.менюToolStripMenuItem.Text = "Меню";
+            this.менюToolStripMenuItem.Click += new System.EventHandler(this.менюToolStripMenuItem_Click);
             // 
-            // лР2ToolStripMenuItem2
+            // файлToolStripMenuItem
             // 
-            this.лР2ToolStripMenuItem2.Name = "лР2ToolStripMenuItem2";
-            this.лР2ToolStripMenuItem2.Size = new System.Drawing.Size(224, 26);
-            this.лР2ToolStripMenuItem2.Text = "ЛР2";
-            this.лР2ToolStripMenuItem2.Click += new System.EventHandler(this.лР2ToolStripMenuItem2_Click);
+            this.файлToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.сохранитьЛогToolStripMenuItem,
+            this.загрузитьЛогToolStripMenuItem});
+            this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Text = "Файл";
             // 
-            // тЗСПДToolStripMenuItem
+            // сохранитьЛогToolStripMenuItem
             // 
-            this.тЗСПДToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.лР1ToolStripMenuItem,
-            this.лР2ToolStripMenuItem1});
-            this.тЗСПДToolStripMenuItem.Name = "тЗСПДToolStripMenuItem";
-            this.тЗСПДToolStripMenuItem.Size = new System.Drawing.Size(69, 24);
-            this.тЗСПДToolStripMenuItem.Text = "ТЗСПД";
+            this.сохранитьЛогToolStripMenuItem.Name = "сохранитьЛогToolStripMenuItem";
+            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.сохранитьЛогToolStripMenuItem.Text = "Сохранить лог";
+            this.сохранитьЛогToolStripMenuItem.Click += new System.EventHandler(this.сохранитьЛогToolStripMenuItem_Click);
             // 
-            // лР1ToolStripMenuItem
+            // загрузитьЛогToolStripMenuItem
             // 
-            this.лР1ToolStripMenuItem.Name = "лР1ToolStripMenuItem";
-            this.лР1ToolStripMenuItem.Size = new System.Drawing.Size(118, 26);
-            this.лР1ToolStripMenuItem.Text = "ЛР1";
-            this.лР1ToolStripMenuItem.Click += new System.EventHandler(this.лР1ToolStripMenuItem_Click);
-            // 
-            // лР2ToolStripMenuItem1
-            // 
-            this.лР2ToolStripMenuItem1.Name = "лР2ToolStripMenuItem1";
-            this.лР2ToolStripMenuItem1.Size = new System.Drawing.Size(118, 26);
-            this.лР2ToolStripMenuItem1.Text = "ЛР2";
-            this.лР2ToolStripMenuItem1.Click += new System.EventHandler(this.лР2ToolStripMenuItem1_Click);
+            this.загрузитьЛогToolStripMenuItem.Name = "загрузитьЛогToolStripMenuItem";
+            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.загрузитьЛогToolStripMenuItem.Text = "Загрузить лог";
+            this.загрузитьЛогToolStripMenuItem.Click += new System.EventHandler(this.загрузитьЛогToolStripMenuItem_Click);
             // 
             // Form1
             // 
@@ -360,7 +314,6 @@
             this.Controls.Add(this.result_ascii);
             this.Controls.Add(this.surname_ascii);
             this.Controls.Add(this.name_ascii);
-            this.Controls.Add(this.toolStrip1);
             this.Controls.Add(this.label4);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.statusStrip1);
@@ -378,8 +331,6 @@
             this.Text = "Lab1";
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();
-            this.toolStrip1.ResumeLayout(false);
-            this.toolStrip1.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
@@ -399,8 +350,6 @@
         private System.Windows.Forms.StatusStrip statusStrip1;
         private System.Windows.Forms.TextBox logBox;
         private System.Windows.Forms.Label label4;
-        private System.Windows.Forms.ToolStrip toolStrip1;
-        private System.Windows.Forms.ToolStripButton toolStripButton1;
         private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox name_ascii;
@@ -411,16 +360,14 @@
         private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.Label label8;
-        private System.Windows.Forms.ToolStripButton toolStripButton2;
         private System.Windows.Forms.TextBox tail_ascii;
         private System.Windows.Forms.Label label9;
         private System.Windows.Forms.ToolStripMenuItem справкаToolStripMenuItem;
         private System.Windows.Forms.MenuStrip menuStrip1;
-        private System.Windows.Forms.ToolStripMenuItem рИСToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem лР2ToolStripMenuItem2;
-        private System.Windows.Forms.ToolStripMenuItem тЗСПДToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem лР1ToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem лР2ToolStripMenuItem1;
+        private System.Windows.Forms.ToolStripMenuItem файлToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem сохранитьЛогToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem загрузитьЛогToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem менюToolStripMenuItem;
     }
 }
 

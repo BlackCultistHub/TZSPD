@@ -11,6 +11,7 @@ using System.Windows.Forms;
 
 using System.IO;
 using System.Runtime;
+using System.Security.Cryptography;
 
 namespace Lab1
 {
@@ -19,6 +20,18 @@ namespace Lab1
         private int spaces = 0;
         private int msg_max_len = 0;
         private int byte_size = 1;
+
+        public ArrayList log = new ArrayList();
+
+        public delegate void UpdateLogBoxDelegate();
+        public void InvokeUpdateLogBox()
+        {
+            logBox.Text = "";
+            foreach (string line in log)
+            {
+                logBox.Text += line + Environment.NewLine;
+            }
+        }
 
         public delegate void UpdateInfoDelegate();
         public Form1_tz()
@@ -56,7 +69,10 @@ namespace Lab1
             spaces = textBoxContainer.Text.Count(symb => symb == ' ');
             textBox_spaces.Text = spaces.ToString();
             //max length count
-            msg_max_len = (int)Math.Floor((double)(spaces / 8));
+            if (byte_size == 1)
+                msg_max_len = (int)Math.Floor((double)(spaces / 16));
+            if (byte_size == 2)
+                msg_max_len = (int)Math.Floor((double)(spaces / 8));
             textBox_maxMsgLen.Text = msg_max_len.ToString();
         }
         private void drawBinaryMsg(string msg)
@@ -87,13 +103,59 @@ namespace Lab1
         {
             if (textBox_message.TextLength > msg_max_len)
             {
-                MessageBox.Show("Message is too long for this container!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var logLine = DateTime.Now.ToString() + ": Сообщение слишком длинное для данного контейнера!";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение слишком длинное для данного контейнера!" + Environment.NewLine);
+                MessageBox.Show("Сообщение слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
+                return;
+            }
+            if (textBox_message.TextLength + 256 > msg_max_len && checkBox_sha256.Checked)
+            {
+                var logLine = DateTime.Now.ToString() + ": Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!" + Environment.NewLine);
+                MessageBox.Show("Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             if (textBoxContainer.Text.Contains("  "))
             {
-                MessageBox.Show("You have double or more spaces in the container!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                var logLine = DateTime.Now.ToString() + ": В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!" + Environment.NewLine);
+                MessageBox.Show("В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
+            }
+            errorProvider1.Clear();
+            string hashBits = "";
+            if (checkBox_sha256.Checked)
+            {
+                SHA256 checksumm = SHA256.Create();
+                byte[] bytes = checksumm.ComputeHash(Encoding.UTF8.GetBytes(textBoxContainer.Text));
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                textBox_checkSumm.Text = builder.ToString();
+                //checksumm in binary
+                for (int i = 0; i < textBox_checkSumm.TextLength; i++)
+                {
+                    string tempBin = "";
+                    for (int j = 0; j < sizeof(byte) * 8; j++)
+                    {
+                        if (getBit(textBox_checkSumm.Text[i], j))
+                            tempBin += "1";
+                        else
+                            tempBin += "0";
+                    }
+                    for (int j = tempBin.Length - 1; j != -1; j--)
+                    {
+                        hashBits += tempBin[j];
+                    }
+                }
             }
             string msgBits = "";
             textBox_messageBin.Text = "";
@@ -116,34 +178,35 @@ namespace Lab1
             }
             drawBinaryMsg(msgBits); // draw
             //steganography
-            int containerCounter = 0;
-            int msgBitCounter = 0;
-            bool begin = true;
+            if (checkBox_sha256.Checked)
+            {
+                string temp = msgBits;
+                msgBits = hashBits + temp;
+            }
+            ArrayList spacesListTemp = new ArrayList();
             for (int i = 0; i < textBoxContainer.TextLength; i++)
             {
-                if ((textBoxContainer.Text[i] == ' ') && (msgBitCounter != msgBits.Length))
-                {
-                    if (begin)
-                    {
-                        for (int j = 0; j <= i; j++)
-                            textBox_result.Text += textBoxContainer.Text[j];
-                        begin = false;
-                    }
-                    else
-                    {
-                        for (int j = containerCounter; j <= i; j++)
-                            textBox_result.Text += textBoxContainer.Text[j];
-                    }
-                    containerCounter = i+1;
-                    if (msgBits[msgBitCounter] == '0')
-                        textBox_result.Text += ' ';
-                    msgBitCounter++;
-                }
-                else if (msgBitCounter == msgBits.Length)
-                {
-                    textBox_result.Text += textBoxContainer.Text[i];
-                }
+                if (textBoxContainer.Text[i] == ' ')
+                    spacesListTemp.Add(i);
             }
+            int msgPointer = 0;
+            ArrayList spacesList = new ArrayList();
+            foreach (int spacePos in spacesListTemp)
+            {
+                if (msgPointer == msgBits.Length)
+                    break;
+                if (msgBits[msgPointer] == '0')
+                    spacesList.Add(spacePos);
+                msgPointer++;
+            }
+            spacesListTemp.Clear();
+            int startPos = 0;
+            foreach (int space in spacesList)
+            {
+                textBox_result.Text += textBoxContainer.Text.Substring(startPos, space+1- startPos) + " ";
+                startPos = space + 1;
+            }
+            textBox_result.Text += textBoxContainer.Text.Substring(startPos);
         }
         private void button2_Click(object sender, EventArgs e)
         {
@@ -166,7 +229,22 @@ namespace Lab1
             }
             string msgDraw = "";
             string tempChar = "";
-            for (int i = 0; i < msgBits.Length; i++)
+            //sha-256
+            if (checkBox_sha256.Checked)
+            {
+                for (int i = 0; i < 64 * 8; i++)
+                {
+                    tempChar += msgBits[i];
+                    if ((i + 1) % (sizeof(char) * 8/2) == 0 && (i != 0))
+                    {
+                        char Symb = (char)binStringToInt(tempChar);
+                        textBox_checkSumm.Text += Symb;
+                        tempChar = "";
+                    }
+                }
+            }
+            //message
+            for (int i = checkBox_sha256.Checked?512:0; i < msgBits.Length; i++)
             {
                 tempChar += msgBits[i];
                 if ((i+1)%(sizeof(char)*8/byte_size) == 0 && (i != 0))
@@ -342,6 +420,134 @@ namespace Lab1
             var lab2 = new Form2_tz();
             lab2.Closed += (s, args) => this.Close();
             lab2.Show();
+        }
+
+        private void button3_Click(object sender, EventArgs e)
+        {
+            string[] words = textBoxContainer.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            textBoxContainer.Text = String.Join(" ", words);
+        }
+
+        private void сохранитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+            saveFileDialog1.FileName = "lab1_tzspd.log";
+            saveFileDialog1.Filter = "Log files (*.log)|*.log";
+            saveFileDialog1.FilterIndex = 2;
+            saveFileDialog1.RestoreDirectory = true;
+
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StreamWriter logfile = new StreamWriter(saveFileDialog1.OpenFile());
+                if (logfile != null)
+                {
+                    UnicodeEncoding uniEncoding = new UnicodeEncoding();
+                    foreach (string line in log)
+                    {
+                        logfile.WriteLine(line);
+                    }
+                    logfile.Dispose();
+                    logfile.Close();
+                }
+            }
+        }
+
+        private void загрузитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            log.Clear();
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Log files (*.log)|*.log";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                StreamReader logfile = new StreamReader(openFileDialog1.OpenFile());
+                if (logfile != null)
+                {
+                    string line;
+                    while ((line = logfile.ReadLine()) != null)
+                    {
+                        log.Add(line);
+                    }
+                    logfile.Dispose();
+                    logfile.Close();
+                }
+            }
+            Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
+        }
+
+        private void менюToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var form = new Form_start();
+            form.Closed += (s, args) => this.Close();
+            form.Show();
+        }
+
+        private void button4_Click(object sender, EventArgs e)
+        {
+            richTextBox1.Clear();
+            //read msg in binary
+            string msgBits = "";
+            for (int i = 0; i < textBox_result.TextLength; i++)
+            {
+                if (textBox_result.Text[i] == ' ' && i + 1 != textBox_result.TextLength)
+                {
+                    if (textBox_result.Text[i + 1] == ' ')
+                    {
+                        msgBits += "0";
+                        i++;
+                    }
+                    else
+                        msgBits += "1";
+                }
+            }
+            //cut-off message
+            string tempChar = "";
+            string cutString = "";
+            for (int i = 0; i < msgBits.Length; i++)
+            {
+                tempChar += msgBits[i];
+                if ((i + 1) % (sizeof(char) * 8 / byte_size) == 0 && (i != 0))
+                {
+                    if (tempChar == "1111111111111111" || tempChar == "11111111")
+                        break;
+                    cutString += tempChar;
+                    tempChar = "";
+                }
+            }
+            msgBits = cutString;
+            //normalize
+            string[] words = textBox_result.Text.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+            string normalized = String.Join(" ", words);
+            //insert symbols
+            int spacecounter = 0;
+            for (int i = 0; i < normalized.Length; i++)
+            {
+                if (normalized[i] == ' ' && spacecounter != msgBits.Length)
+                {
+                    if (msgBits[spacecounter] == '0')
+                        richTextBox1.AppendText("0", Color.Red);
+                    else
+                        richTextBox1.AppendText("1", Color.Red);
+                    spacecounter++;
+                }
+                else
+                    richTextBox1.AppendText(normalized[i].ToString(), Color.Green);
+            }
+        }
+    }
+
+    public static class RichTextBoxExtensions
+    {
+        public static void AppendText(this RichTextBox box, string text, Color color)
+        {
+            box.SelectionStart = box.TextLength;
+            box.SelectionLength = 0;
+
+            box.SelectionColor = color;
+            box.AppendText(text);
+            box.SelectionColor = box.ForeColor;
         }
     }
 }
