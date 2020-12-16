@@ -33,6 +33,11 @@ namespace Lab1
         public Form2()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.CenterToScreen();
+
             timer1.Start();
             timer2.Start();
         }
@@ -214,6 +219,11 @@ namespace Lab1
             var form = new Form_start();
             form.Closed += (s, args) => this.Close();
             form.Show();
+        }
+
+        private void сохранитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

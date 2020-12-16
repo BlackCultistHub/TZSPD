@@ -37,6 +37,11 @@ namespace Lab1
         public Form_start()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.CenterToScreen();
+
             ReadLogFile();
         }
 
@@ -107,6 +112,22 @@ namespace Lab1
         {
             var info = new Form_Info();
             info.Show();
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var lab2 = new Form3_tz();
+            lab2.Closed += (s, args) => this.Close();
+            lab2.Show();
+        }
+
+        private void button6_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var lab2 = new Form4_tz();
+            lab2.Closed += (s, args) => this.Close();
+            lab2.Show();
         }
     }
 }

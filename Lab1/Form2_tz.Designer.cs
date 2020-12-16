@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form2_tz));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.менюToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.файлToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -72,14 +73,14 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(950, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(950, 24);
             this.menuStrip1.TabIndex = 14;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // менюToolStripMenuItem
             // 
             this.менюToolStripMenuItem.Name = "менюToolStripMenuItem";
-            this.менюToolStripMenuItem.Size = new System.Drawing.Size(65, 26);
+            this.менюToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.менюToolStripMenuItem.Text = "Меню";
             this.менюToolStripMenuItem.Click += new System.EventHandler(this.менюToolStripMenuItem_Click);
             // 
@@ -89,25 +90,26 @@
             this.сохранитьЛогToolStripMenuItem,
             this.загрузитьЛогToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 26);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // сохранитьЛогToolStripMenuItem
             // 
             this.сохранитьЛогToolStripMenuItem.Name = "сохранитьЛогToolStripMenuItem";
-            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.сохранитьЛогToolStripMenuItem.Text = "Сохранить лог";
+            this.сохранитьЛогToolStripMenuItem.Click += new System.EventHandler(this.сохранитьЛогToolStripMenuItem_Click);
             // 
             // загрузитьЛогToolStripMenuItem
             // 
             this.загрузитьЛогToolStripMenuItem.Name = "загрузитьЛогToolStripMenuItem";
-            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.загрузитьЛогToolStripMenuItem.Text = "Загрузить лог";
             // 
             // справкаToolStripMenuItem
             // 
             this.справкаToolStripMenuItem.Name = "справкаToolStripMenuItem";
-            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(81, 26);
+            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.справкаToolStripMenuItem.Text = "Справка";
             this.справкаToolStripMenuItem.Click += new System.EventHandler(this.справкаToolStripMenuItem_Click_1);
             // 
@@ -117,7 +119,7 @@
             this.label14.Location = new System.Drawing.Point(11, 299);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(69, 15);
+            this.label14.Size = new System.Drawing.Size(65, 13);
             this.label14.TabIndex = 22;
             this.label14.Text = "Лог сессии";
             // 
@@ -156,7 +158,7 @@
             this.label1.AutoSize = true;
             this.label1.Location = new System.Drawing.Point(12, 30);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(71, 15);
+            this.label1.Size = new System.Drawing.Size(61, 13);
             this.label1.TabIndex = 25;
             this.label1.Text = "Контейнер";
             // 
@@ -227,7 +229,7 @@
             this.label2.Location = new System.Drawing.Point(700, 84);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 15);
+            this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 29;
             this.label2.Text = "Сообщение";
             // 
@@ -246,7 +248,7 @@
             this.label5.Location = new System.Drawing.Point(700, 45);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(140, 15);
+            this.label5.Size = new System.Drawing.Size(125, 13);
             this.label5.TabIndex = 31;
             this.label5.Text = "сообщения в символах";
             // 
@@ -256,7 +258,7 @@
             this.label4.Location = new System.Drawing.Point(699, 30);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(133, 15);
+            this.label4.Size = new System.Drawing.Size(117, 13);
             this.label4.TabIndex = 30;
             this.label4.Text = "Максимальная длина";
             // 
@@ -265,7 +267,7 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(747, 255);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(26, 15);
+            this.label3.Size = new System.Drawing.Size(22, 13);
             this.label3.TabIndex = 36;
             this.label3.Text = "<---";
             // 
@@ -274,7 +276,7 @@
             this.label6.AutoSize = true;
             this.label6.Location = new System.Drawing.Point(865, 255);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(26, 15);
+            this.label6.Size = new System.Drawing.Size(22, 13);
             this.label6.TabIndex = 37;
             this.label6.Text = "--->";
             // 
@@ -283,7 +285,7 @@
             this.label7.AutoSize = true;
             this.label7.Location = new System.Drawing.Point(353, 30);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(117, 15);
+            this.label7.Size = new System.Drawing.Size(101, 13);
             this.label7.TabIndex = 38;
             this.label7.Text = "Стеганоконтейнер";
             // 
@@ -292,7 +294,7 @@
             this.label_loading_container.AutoSize = true;
             this.label_loading_container.Location = new System.Drawing.Point(103, 122);
             this.label_loading_container.Name = "label_loading_container";
-            this.label_loading_container.Size = new System.Drawing.Size(158, 30);
+            this.label_loading_container.Size = new System.Drawing.Size(139, 26);
             this.label_loading_container.TabIndex = 39;
             this.label_loading_container.Text = "              Загрузка.\r\nПожалуйста, подождите...\r\n";
             this.label_loading_container.Visible = false;
@@ -302,7 +304,7 @@
             this.label_loading_stegano.AutoSize = true;
             this.label_loading_stegano.Location = new System.Drawing.Point(452, 122);
             this.label_loading_stegano.Name = "label_loading_stegano";
-            this.label_loading_stegano.Size = new System.Drawing.Size(158, 30);
+            this.label_loading_stegano.Size = new System.Drawing.Size(139, 26);
             this.label_loading_stegano.TabIndex = 40;
             this.label_loading_stegano.Text = "              Загрузка.\r\nПожалуйста, подождите...\r\n";
             this.label_loading_stegano.Visible = false;
@@ -322,7 +324,7 @@
             this.label_progress.AutoSize = true;
             this.label_progress.Location = new System.Drawing.Point(534, 182);
             this.label_progress.Name = "label_progress";
-            this.label_progress.Size = new System.Drawing.Size(18, 15);
+            this.label_progress.Size = new System.Drawing.Size(15, 13);
             this.label_progress.TabIndex = 42;
             this.label_progress.Text = "%";
             this.label_progress.Visible = false;
@@ -332,7 +334,7 @@
             this.label_task.AutoSize = true;
             this.label_task.Location = new System.Drawing.Point(368, 182);
             this.label_task.Name = "label_task";
-            this.label_task.Size = new System.Drawing.Size(49, 15);
+            this.label_task.Size = new System.Drawing.Size(43, 13);
             this.label_task.TabIndex = 43;
             this.label_task.Text = "Задача";
             this.label_task.Visible = false;
@@ -366,9 +368,10 @@
             this.Controls.Add(this.label14);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form2_tz";
-            this.Text = "Form2";
+            this.Text = "BMP";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Container)).EndInit();

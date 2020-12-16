@@ -88,7 +88,7 @@
             this.label1.Location = new System.Drawing.Point(7, 0);
             this.label1.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(83, 15);
+            this.label1.Size = new System.Drawing.Size(73, 13);
             this.label1.TabIndex = 0;
             this.label1.Text = "Контейнер    ";
             // 
@@ -98,7 +98,7 @@
             this.label2.Location = new System.Drawing.Point(443, 77);
             this.label2.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(73, 15);
+            this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 1;
             this.label2.Text = "Сообщение";
             // 
@@ -108,7 +108,7 @@
             this.label3.Location = new System.Drawing.Point(280, 73);
             this.label3.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(135, 15);
+            this.label3.Size = new System.Drawing.Size(117, 13);
             this.label3.TabIndex = 2;
             this.label3.Text = "Количество пробелов";
             // 
@@ -118,7 +118,7 @@
             this.label4.Location = new System.Drawing.Point(280, 110);
             this.label4.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(133, 15);
+            this.label4.Size = new System.Drawing.Size(117, 13);
             this.label4.TabIndex = 3;
             this.label4.Text = "Максимальная длина";
             // 
@@ -128,14 +128,14 @@
             this.label5.Location = new System.Drawing.Point(310, 124);
             this.label5.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(140, 15);
+            this.label5.Size = new System.Drawing.Size(125, 13);
             this.label5.TabIndex = 4;
             this.label5.Text = "сообщения в символах";
             // 
             // textBoxContainer
             // 
             this.textBoxContainer.Location = new System.Drawing.Point(9, 102);
-            this.textBoxContainer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBoxContainer.Margin = new System.Windows.Forms.Padding(2);
             this.textBoxContainer.Multiline = true;
             this.textBoxContainer.Name = "textBoxContainer";
             this.textBoxContainer.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -145,7 +145,7 @@
             // textBox_message
             // 
             this.textBox_message.Location = new System.Drawing.Point(446, 94);
-            this.textBox_message.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_message.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_message.Multiline = true;
             this.textBox_message.Name = "textBox_message";
             this.textBox_message.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -171,9 +171,9 @@
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Controls.Add(this.label4);
             this.groupBox1.Location = new System.Drawing.Point(2, 77);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(436, 476);
             this.groupBox1.TabIndex = 7;
             this.groupBox1.TabStop = false;
@@ -183,9 +183,9 @@
             // 
             this.checkBox_sha256.AutoSize = true;
             this.checkBox_sha256.Location = new System.Drawing.Point(286, 372);
-            this.checkBox_sha256.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_sha256.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_sha256.Name = "checkBox_sha256";
-            this.checkBox_sha256.Size = new System.Drawing.Size(165, 19);
+            this.checkBox_sha256.Size = new System.Drawing.Size(145, 17);
             this.checkBox_sha256.TabIndex = 15;
             this.checkBox_sha256.Text = "Использовать SHA-256";
             this.checkBox_sha256.UseVisualStyleBackColor = true;
@@ -193,7 +193,7 @@
             // textBox_checkSumm
             // 
             this.textBox_checkSumm.Location = new System.Drawing.Point(286, 409);
-            this.textBox_checkSumm.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_checkSumm.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_checkSumm.Multiline = true;
             this.textBox_checkSumm.Name = "textBox_checkSumm";
             this.textBox_checkSumm.ScrollBars = System.Windows.Forms.ScrollBars.Horizontal;
@@ -206,14 +206,14 @@
             this.label10.Location = new System.Drawing.Point(284, 392);
             this.label10.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label10.Name = "label10";
-            this.label10.Size = new System.Drawing.Size(123, 15);
+            this.label10.Size = new System.Drawing.Size(110, 13);
             this.label10.TabIndex = 13;
             this.label10.Text = "SHA-256 сообщения";
             // 
             // button3
             // 
             this.button3.Location = new System.Drawing.Point(286, 25);
-            this.button3.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button3.Margin = new System.Windows.Forms.Padding(2);
             this.button3.Name = "button3";
             this.button3.Size = new System.Drawing.Size(143, 46);
             this.button3.TabIndex = 12;
@@ -227,7 +227,7 @@
             this.label9.Location = new System.Drawing.Point(280, 332);
             this.label9.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label9.Name = "label9";
-            this.label9.Size = new System.Drawing.Size(97, 15);
+            this.label9.Size = new System.Drawing.Size(87, 13);
             this.label9.TabIndex = 11;
             this.label9.Text = "Длина символа";
             // 
@@ -238,7 +238,7 @@
             "1 байт",
             "2 байта"});
             this.comboBox1.Location = new System.Drawing.Point(283, 348);
-            this.comboBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox1.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox1.Name = "comboBox1";
             this.comboBox1.Size = new System.Drawing.Size(147, 21);
             this.comboBox1.TabIndex = 10;
@@ -248,7 +248,7 @@
             // textBox_messageBin
             // 
             this.textBox_messageBin.Location = new System.Drawing.Point(283, 200);
-            this.textBox_messageBin.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_messageBin.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_messageBin.Multiline = true;
             this.textBox_messageBin.Name = "textBox_messageBin";
             this.textBox_messageBin.ReadOnly = true;
@@ -262,7 +262,7 @@
             this.label8.Location = new System.Drawing.Point(314, 185);
             this.label8.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label8.Name = "label8";
-            this.label8.Size = new System.Drawing.Size(96, 15);
+            this.label8.Size = new System.Drawing.Size(84, 13);
             this.label8.TabIndex = 8;
             this.label8.Text = "бинарном виде";
             // 
@@ -272,14 +272,14 @@
             this.label7.Location = new System.Drawing.Point(280, 171);
             this.label7.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(83, 15);
+            this.label7.Size = new System.Drawing.Size(74, 13);
             this.label7.TabIndex = 7;
             this.label7.Text = "Сообщение в";
             // 
             // textBox_maxMsgLen
             // 
             this.textBox_maxMsgLen.Location = new System.Drawing.Point(283, 141);
-            this.textBox_maxMsgLen.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_maxMsgLen.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_maxMsgLen.Name = "textBox_maxMsgLen";
             this.textBox_maxMsgLen.ReadOnly = true;
             this.textBox_maxMsgLen.Size = new System.Drawing.Size(147, 20);
@@ -288,7 +288,7 @@
             // textBox_spaces
             // 
             this.textBox_spaces.Location = new System.Drawing.Point(283, 90);
-            this.textBox_spaces.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_spaces.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_spaces.Name = "textBox_spaces";
             this.textBox_spaces.ReadOnly = true;
             this.textBox_spaces.Size = new System.Drawing.Size(147, 20);
@@ -300,14 +300,14 @@
             this.label6.Location = new System.Drawing.Point(445, 298);
             this.label6.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(117, 15);
+            this.label6.Size = new System.Drawing.Size(101, 13);
             this.label6.TabIndex = 8;
             this.label6.Text = "Стеганоконтейнер";
             // 
             // button1
             // 
             this.button1.Location = new System.Drawing.Point(446, 206);
-            this.button1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button1.Margin = new System.Windows.Forms.Padding(2);
             this.button1.Name = "button1";
             this.button1.Size = new System.Drawing.Size(107, 76);
             this.button1.TabIndex = 9;
@@ -318,7 +318,7 @@
             // textBox_result
             // 
             this.textBox_result.Location = new System.Drawing.Point(447, 313);
-            this.textBox_result.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_result.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_result.Multiline = true;
             this.textBox_result.Name = "textBox_result";
             this.textBox_result.ScrollBars = System.Windows.Forms.ScrollBars.Both;
@@ -328,7 +328,7 @@
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(566, 206);
-            this.button2.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button2.Margin = new System.Windows.Forms.Padding(2);
             this.button2.Name = "button2";
             this.button2.Size = new System.Drawing.Size(110, 76);
             this.button2.TabIndex = 11;
@@ -355,14 +355,14 @@
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(866, 28);
+            this.menuStrip1.Size = new System.Drawing.Size(866, 24);
             this.menuStrip1.TabIndex = 12;
             this.menuStrip1.Text = "menuStrip1";
             // 
             // менюToolStripMenuItem
             // 
             this.менюToolStripMenuItem.Name = "менюToolStripMenuItem";
-            this.менюToolStripMenuItem.Size = new System.Drawing.Size(65, 24);
+            this.менюToolStripMenuItem.Size = new System.Drawing.Size(53, 20);
             this.менюToolStripMenuItem.Text = "Меню";
             this.менюToolStripMenuItem.Click += new System.EventHandler(this.менюToolStripMenuItem_Click);
             // 
@@ -372,27 +372,27 @@
             this.сохранитьЛогToolStripMenuItem,
             this.загрузитьЛогToolStripMenuItem});
             this.файлToolStripMenuItem.Name = "файлToolStripMenuItem";
-            this.файлToolStripMenuItem.Size = new System.Drawing.Size(59, 24);
+            this.файлToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.файлToolStripMenuItem.Text = "Файл";
             // 
             // сохранитьЛогToolStripMenuItem
             // 
             this.сохранитьЛогToolStripMenuItem.Name = "сохранитьЛогToolStripMenuItem";
-            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.сохранитьЛогToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.сохранитьЛогToolStripMenuItem.Text = "Сохранить лог";
             this.сохранитьЛогToolStripMenuItem.Click += new System.EventHandler(this.сохранитьЛогToolStripMenuItem_Click);
             // 
             // загрузитьЛогToolStripMenuItem
             // 
             this.загрузитьЛогToolStripMenuItem.Name = "загрузитьЛогToolStripMenuItem";
-            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(193, 26);
+            this.загрузитьЛогToolStripMenuItem.Size = new System.Drawing.Size(155, 22);
             this.загрузитьЛогToolStripMenuItem.Text = "Загрузить лог";
             this.загрузитьЛогToolStripMenuItem.Click += new System.EventHandler(this.загрузитьЛогToolStripMenuItem_Click);
             // 
             // справкаToolStripMenuItem
             // 
             this.справкаToolStripMenuItem.Name = "справкаToolStripMenuItem";
-            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(81, 24);
+            this.справкаToolStripMenuItem.Size = new System.Drawing.Size(65, 20);
             this.справкаToolStripMenuItem.Text = "Справка";
             this.справкаToolStripMenuItem.Click += new System.EventHandler(this.справкаToolStripMenuItem_Click);
             // 
@@ -403,9 +403,9 @@
             this.toolStripButton1,
             this.toolStripButton2,
             this.toolStripButton3});
-            this.toolStrip1.Location = new System.Drawing.Point(0, 28);
+            this.toolStrip1.Location = new System.Drawing.Point(0, 24);
             this.toolStrip1.Name = "toolStrip1";
-            this.toolStrip1.Size = new System.Drawing.Size(866, 27);
+            this.toolStrip1.Size = new System.Drawing.Size(866, 25);
             this.toolStrip1.TabIndex = 13;
             this.toolStrip1.Text = "toolStrip1";
             // 
@@ -415,7 +415,7 @@
             this.toolStripButton1.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton1.Image")));
             this.toolStripButton1.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton1.Name = "toolStripButton1";
-            this.toolStripButton1.Size = new System.Drawing.Size(159, 24);
+            this.toolStripButton1.Size = new System.Drawing.Size(126, 22);
             this.toolStripButton1.Text = "Загрузить контейнер";
             this.toolStripButton1.Click += new System.EventHandler(this.toolStripButton1_Click);
             // 
@@ -425,7 +425,7 @@
             this.toolStripButton2.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton2.Image")));
             this.toolStripButton2.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton2.Name = "toolStripButton2";
-            this.toolStripButton2.Size = new System.Drawing.Size(165, 24);
+            this.toolStripButton2.Size = new System.Drawing.Size(132, 22);
             this.toolStripButton2.Text = "Загрузить сообщение";
             this.toolStripButton2.Click += new System.EventHandler(this.toolStripButton2_Click);
             // 
@@ -435,7 +435,7 @@
             this.toolStripButton3.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton3.Image")));
             this.toolStripButton3.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton3.Name = "toolStripButton3";
-            this.toolStripButton3.Size = new System.Drawing.Size(171, 24);
+            this.toolStripButton3.Size = new System.Drawing.Size(137, 22);
             this.toolStripButton3.Text = "Сохранить сообщение";
             this.toolStripButton3.Click += new System.EventHandler(this.toolStripButton3_Click);
             // 
@@ -445,9 +445,9 @@
             this.toolStrip2.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripButton4,
             this.toolStripButton6});
-            this.toolStrip2.Location = new System.Drawing.Point(0, 55);
+            this.toolStrip2.Location = new System.Drawing.Point(0, 49);
             this.toolStrip2.Name = "toolStrip2";
-            this.toolStrip2.Size = new System.Drawing.Size(866, 27);
+            this.toolStrip2.Size = new System.Drawing.Size(866, 25);
             this.toolStrip2.TabIndex = 14;
             this.toolStrip2.Text = "toolStrip2";
             // 
@@ -457,7 +457,7 @@
             this.toolStripButton4.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton4.Image")));
             this.toolStripButton4.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton4.Name = "toolStripButton4";
-            this.toolStripButton4.Size = new System.Drawing.Size(212, 24);
+            this.toolStripButton4.Size = new System.Drawing.Size(168, 22);
             this.toolStripButton4.Text = "Загрузить стеганоконтейнер";
             this.toolStripButton4.Click += new System.EventHandler(this.toolStripButton4_Click);
             // 
@@ -467,7 +467,7 @@
             this.toolStripButton6.Image = ((System.Drawing.Image)(resources.GetObject("toolStripButton6.Image")));
             this.toolStripButton6.ImageTransparentColor = System.Drawing.Color.Magenta;
             this.toolStripButton6.Name = "toolStripButton6";
-            this.toolStripButton6.Size = new System.Drawing.Size(218, 24);
+            this.toolStripButton6.Size = new System.Drawing.Size(173, 22);
             this.toolStripButton6.Text = "Сохранить стеганоконтейнер";
             this.toolStripButton6.Click += new System.EventHandler(this.toolStripButton6_Click);
             // 
@@ -477,7 +477,7 @@
             this.label11.Location = new System.Drawing.Point(577, 223);
             this.label11.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label11.Name = "label11";
-            this.label11.Size = new System.Drawing.Size(13, 45);
+            this.label11.Size = new System.Drawing.Size(17, 39);
             this.label11.TabIndex = 12;
             this.label11.Text = "/\\\r\n |\r\n |";
             // 
@@ -487,7 +487,7 @@
             this.label12.Location = new System.Drawing.Point(531, 223);
             this.label12.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label12.Name = "label12";
-            this.label12.Size = new System.Drawing.Size(13, 45);
+            this.label12.Size = new System.Drawing.Size(17, 39);
             this.label12.TabIndex = 16;
             this.label12.Text = " |\r\n |\r\n\\/";
             // 
@@ -495,7 +495,7 @@
             // 
             this.richTextBox1.ForeColor = System.Drawing.SystemColors.WindowText;
             this.richTextBox1.Location = new System.Drawing.Point(688, 167);
-            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.richTextBox1.Margin = new System.Windows.Forms.Padding(2);
             this.richTextBox1.Name = "richTextBox1";
             this.richTextBox1.ReadOnly = true;
             this.richTextBox1.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -509,7 +509,7 @@
             this.label13.Location = new System.Drawing.Point(686, 77);
             this.label13.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label13.Name = "label13";
-            this.label13.Size = new System.Drawing.Size(176, 15);
+            this.label13.Size = new System.Drawing.Size(152, 13);
             this.label13.TabIndex = 18;
             this.label13.Text = "Стеганоконтейнер (Формат)";
             // 
@@ -519,14 +519,14 @@
             this.label14.Location = new System.Drawing.Point(14, 558);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
-            this.label14.Size = new System.Drawing.Size(69, 15);
+            this.label14.Size = new System.Drawing.Size(65, 13);
             this.label14.TabIndex = 20;
             this.label14.Text = "Лог сессии";
             // 
             // logBox
             // 
             this.logBox.Location = new System.Drawing.Point(9, 574);
-            this.logBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.logBox.Margin = new System.Windows.Forms.Padding(2);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ReadOnly = true;
@@ -537,7 +537,7 @@
             // button4
             // 
             this.button4.Location = new System.Drawing.Point(688, 94);
-            this.button4.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button4.Margin = new System.Windows.Forms.Padding(2);
             this.button4.Name = "button4";
             this.button4.Size = new System.Drawing.Size(170, 69);
             this.button4.TabIndex = 21;
@@ -568,10 +568,11 @@
             this.Controls.Add(this.label2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.menuStrip1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form1_tz";
-            this.Text = "Lab1";
+            this.Text = "Текст";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();

@@ -34,6 +34,10 @@ namespace Lab1
         public Form2_tz()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.CenterToScreen();
         }
         public static string Reverse(string s)
         {
@@ -140,7 +144,7 @@ namespace Lab1
 
         private void button5_Click(object sender, EventArgs e)
         {
-            try
+            //try
             {
                 /*container_bytes.Clear();
                 if (Container.Image != null)
@@ -245,10 +249,11 @@ namespace Lab1
                     {
                         for (int j = 0; (j < img_width) && !doneMsg; j++) //scans
                         {
-                            int progress = 100 * messagePointer / msgBits.Length;
-                            progress_steg.Value = progress;
+                            int progress = (100 * messagePointer / msgBits.Length);
+                            if (progress <= 100)
+                                progress_steg.Value = progress;
                             progress_steg.Refresh();
-                            label_progress.Text = progress.ToString() + " %";
+                            label_progress.Text = (progress>100?100:progress).ToString() + " %";
                             label_progress.Refresh();
                             //3 bytes per pixel
                             if (combinedMsg[messagePointer] == '1' && !getBit((byte)container_bytes[pixelMemoryPointer], rank))
@@ -294,14 +299,14 @@ namespace Lab1
                 label_task.Visible = false;
                 label_task.Refresh();
             }
-            catch (Exception ex)
+            /*catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            }*/
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -498,6 +503,11 @@ namespace Lab1
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void сохранитьЛогToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }

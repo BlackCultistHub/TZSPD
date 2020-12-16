@@ -15,6 +15,10 @@ namespace Lab1
         public Form_Info()
         {
             InitializeComponent();
+            this.FormBorderStyle = FormBorderStyle.FixedSingle;
+            this.MaximizeBox = false;
+            this.MinimizeBox = false;
+            this.CenterToScreen();
         }
     }
 }
