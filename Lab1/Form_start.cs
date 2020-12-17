@@ -129,5 +129,13 @@ namespace Lab1
             lab2.Closed += (s, args) => this.Close();
             lab2.Show();
         }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var lab3 = new Form3();
+            lab3.Closed += (s, args) => this.Close();
+            lab3.Show();
+        }
     }
 }

@@ -32,6 +32,7 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.справкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button7 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -41,7 +42,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.button7 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -79,6 +79,17 @@
             this.groupBox1.TabIndex = 14;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Распределённые ИС";
+            // 
+            // button7
+            // 
+            this.button7.Location = new System.Drawing.Point(94, 17);
+            this.button7.Margin = new System.Windows.Forms.Padding(2);
+            this.button7.Name = "button7";
+            this.button7.Size = new System.Drawing.Size(86, 45);
+            this.button7.TabIndex = 2;
+            this.button7.Text = "(3)\r\nПотоки";
+            this.button7.UseVisualStyleBackColor = true;
+            this.button7.Click += new System.EventHandler(this.button7_Click);
             // 
             // button2
             // 
@@ -181,16 +192,6 @@
             this.label1.Size = new System.Drawing.Size(89, 13);
             this.label1.TabIndex = 17;
             this.label1.Text = "Глобальный лог";
-            // 
-            // button7
-            // 
-            this.button7.Location = new System.Drawing.Point(94, 17);
-            this.button7.Margin = new System.Windows.Forms.Padding(2);
-            this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(86, 45);
-            this.button7.TabIndex = 2;
-            this.button7.Text = "(3)\r\nПотоки";
-            this.button7.UseVisualStyleBackColor = true;
             // 
             // Form_start
             // 

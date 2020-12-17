@@ -59,9 +59,7 @@ namespace Lab1
             //get adapters
             print_adapters();
 
-            var myIP = getDeviceIpv4Addr(getCurrentAdaptor());
-            string myIPStr = myIP == null ? "127.0.0.1" : myIP.ToString();
-            label_my_ip.Text = myIPStr;
+            label_my_ip.Text = "127.0.0.1";
             label_my_ip.Refresh();
 
             timer1.Start();
@@ -72,6 +70,11 @@ namespace Lab1
         {
             try
             {
+                if (textBox_msg.TextLength >= 256)
+                {
+                    MessageBox.Show("Сообщение не может превышать длину в 255 символов!", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
                 //read ip
                 System.Net.IPAddress ipDestinationAddress;
                 if (!System.Net.IPAddress.TryParse(textBox_reciever_ip.Text, out ipDestinationAddress))
@@ -80,7 +83,7 @@ namespace Lab1
                 }
                 ARP_target_ip = ipDestinationAddress;
                 //:::::::::::::::::::::::::::::OVERALL PREPARE
-                ARP_asker_ip = getDeviceIpv4Addr(getCurrentAdaptor());
+                
                 //::::::::::::::::::::::::::::::DEFINE MAC
                 //1. prepare reciever
                 
@@ -99,6 +102,7 @@ namespace Lab1
                     adaptor.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
                     adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(ARP_recieve_handler);
                 }
+                ARP_asker_ip = getDeviceIpv4Addr(adaptor);
                 //3. send request
                 ARP(ipDestinationAddress, adaptor);
                 //4. wait for response
@@ -114,7 +118,7 @@ namespace Lab1
                 packets_sent = 0;
                 recieve.Clear();
                 label_packets_recieved.Text = recieve.packets_recieved.ToString();
-                var ipSourceAddress = getDeviceIpv4Addr(getCurrentAdaptor());
+                var ipSourceAddress = getDeviceIpv4Addr(adaptor);
 
                 List<IPv4Packet> packets = new List<IPv4Packet>();
                 List<int> keyTable = new List<int>();
@@ -208,6 +212,8 @@ namespace Lab1
                 recieve._updated = false;
                 label_packets_recieved.Text = recieve.packets_recieved.ToString();
                 label_packets_recieved.Refresh();
+                //cut copies
+                recieve.cutCopyPackets();
                 //check packets
                 int[] checkTable = new int[recieve.packetList.Count];
                 for (int i = 0; i < recieve.packetList.Count; i++)
@@ -260,12 +266,16 @@ namespace Lab1
                 richTextBox_history.AppendText("(");
                 richTextBox_history.AppendText(Capture_target_ip.ToString(), Color.DarkGoldenrod);
                 richTextBox_history.AppendText("): " + message + Environment.NewLine);
+                Capture_target_ip = null;
+                recieve.Clear();
             }
             catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
+                recieve.Clear();
             }
         }
         private void bubbleSort(List<HiddenMessage.CustomPacket> packetList)
@@ -291,22 +301,6 @@ namespace Lab1
             recieve._locked = false;
         }
 
-        //public void startCapture()
-        //{
-        //    try
-        //    {
-        //        capture_device.Capture();
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        var logLine = DateTime.Now.ToString() + ex.Message;
-        //        log.Add(logLine);
-        //        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
-        //        capture_device.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
-        //        capture_device.Close();
-        //    }
-        //}
-
         private void device_OnPacketArrival(object sender, CaptureEventArgs packet)
         {
             var ethPacket = PacketDotNet.Packet.ParsePacket(packet.Packet.LinkLayerType, packet.Packet.Data);
@@ -316,16 +310,18 @@ namespace Lab1
             if (parsedEthernetPacket.Type == EthernetType.IPv4)
             {
                 var ipv4Packet = (IPv4Packet)parsedEthernetPacket.PayloadPacket;
-                if (ipv4Packet.SourceAddress.Equals(Capture_target_ip) && ipv4Packet.DestinationAddress.Equals(Capture_self_ip))
+                if ((ipv4Packet.SourceAddress.Equals(Capture_target_ip) || Capture_target_ip == null) && ipv4Packet.DestinationAddress.Equals(Capture_self_ip))
                 {
                     if (!ipv4Packet.HasPayloadPacket)
                     {
+                        if (!recieve._locked)
+                            recieve._locked = true;
+                        if (Capture_target_ip == null)
+                            Capture_target_ip = ipv4Packet.SourceAddress;
                         int index = ipv4Packet.TypeOfService;
                         int totalLen = ipv4Packet.TotalLength;
                         recieve.addPacket(index, 20, totalLen);
                         recieve._updated = true;
-                        if (!recieve._locked)
-                            recieve._locked = true;
                         LockTimer.Stop();
                         LockTimer.Interval = 1500;
                         LockTimer.Start();
@@ -345,6 +341,21 @@ namespace Lab1
                 this.packets_recieved++;
                 this.packetList.Add(new HiddenMessage.CustomPacket(TypeOfService, HeaderLen, TotalLen));
             }
+            public void cutCopyPackets()
+            {
+                for (int i = 0; i < packetList.Count; i++)
+                {
+                    for (int j = i + 1; j < packetList.Count; j++)
+                    {
+                        if (packetList[i].Equals(packetList[j]))
+                        {
+                            packetList.RemoveAt(j);
+                            j--;
+                        }
+                    }
+
+                }
+            }
             public void Clear()
             {
                 this.packetList.Clear();
@@ -359,6 +370,14 @@ namespace Lab1
                     this.index = TypeOfService;
                     this.value = TotalLen - HeaderLen;
                 }
+                public bool Equals(CustomPacket packet)
+                {
+                    if ((this.index == packet.index) && (this.value == packet.value))
+                        return true;
+                    else
+                        return false;
+                }
+
                 public int index = 0; //8bit index
                 public int value = 0; //16bit
             }
@@ -446,23 +465,12 @@ namespace Lab1
         {
             try
             {
-                //parse target address
-                if (!System.Net.IPAddress.TryParse(textBox_sender_ip.Text, out Capture_target_ip))
-                {
-                    throw new Exception("IP-адрес отправителя имеет неверный формат!");
-                }
-                Capture_self_ip = getDeviceIpv4Addr(getCurrentAdaptor());
-                if (Capture_self_ip == null)
-                    throw new Exception("Невозможно установить собственный IP. Вы используете loopback или виртуальный адаптер?");
-
                 label_packets_recieved.Text = "0";
                 label_packets_recieved.Refresh();
                 button_begin_recieve.Enabled = false;
                 button_begin_recieve.Refresh();
                 button_end_recieve.Enabled = true;
                 button_end_recieve.Refresh();
-                textBox_sender_ip.ReadOnly = true;
-                textBox_sender_ip.Refresh();
 
                 recieve.Clear();
 
@@ -479,6 +487,8 @@ namespace Lab1
                 {
                     adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
                 }
+
+                Capture_self_ip = getDeviceIpv4Addr(adaptor);
 
                 LockTimer = new System.Timers.Timer(1500);
                 var reader_thread = Thread.CurrentThread;
@@ -529,11 +539,27 @@ namespace Lab1
         {
             try
             {
+                if (!adaptor_opened)
+                {
+                    adaptor_opened = true;
+                    adaptor = getCurrentAdaptor();
+                    adaptor.Open(DeviceMode.Promiscuous);
+                    adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(ARPSCAN_recieve_handler);
+                    capture_thread = new Thread(adaptor.Capture);
+                    capture_thread.Start();
+                }
+                else
+                {
+                    adaptor.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
+                    adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(ARPSCAN_recieve_handler);
+                }
+                ARPSCAN_sender_ip = getDeviceIpv4Addr(adaptor);
+
                 //get subnet
                 System.Net.IPAddress subnet = null;
-                ARPSCAN_sender_ip = getDeviceIpv4Addr(getCurrentAdaptor());
+                
                 //find Ipv4 of current device
-                var devAddrs = ((SharpPcap.LibPcap.LibPcapLiveDevice)getCurrentAdaptor()).Addresses;
+                var devAddrs = ((SharpPcap.LibPcap.LibPcapLiveDevice)adaptor).Addresses;
                 SharpPcap.LibPcap.PcapAddress gotAddr = null;
                 foreach (var addr in devAddrs)
                 {
@@ -561,6 +587,9 @@ namespace Lab1
                         return;
                 }
 
+                //1. prepare reciever
+
+                
                 var byte_myIp = ARPSCAN_sender_ip.GetAddressBytes();
 
                 for (int i = 0; i < byte_currentIp.Length; i++)
@@ -574,22 +603,7 @@ namespace Lab1
                 scanWindow.Refresh();
 
 
-                //1. prepare reciever
-
-                if (!adaptor_opened)
-                {
-                    adaptor_opened = true;
-                    adaptor = getCurrentAdaptor();
-                    adaptor.Open(DeviceMode.Promiscuous);
-                    adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(ARPSCAN_recieve_handler);
-                    capture_thread = new Thread(adaptor.Capture);
-                    capture_thread.Start();
-                }
-                else
-                {
-                    adaptor.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
-                    adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(ARPSCAN_recieve_handler);
-                }
+                
                 //3. send requests
 
                 //send scanning requests
@@ -667,6 +681,9 @@ namespace Lab1
                 for (int i = 0; i < ARPSCAN_target_ips.Count; i++)
                     scanWindow.addRow(ARPSCAN_target_ips[i].ToString(), ARPSCAN_destinationHWs[i].ToString());
 
+                ARPSCAN_target_ips.Clear();
+                ARPSCAN_destinationHWs.Clear();
+
                 //end scan
                 scanWindow.SetStatus("Scan complete.");
             }
@@ -690,8 +707,6 @@ namespace Lab1
             button_begin_recieve.Refresh();
             button_end_recieve.Enabled = false;
             button_end_recieve.Refresh();
-            textBox_sender_ip.ReadOnly = false;
-            textBox_sender_ip.Refresh();
             pictureBox_led_recieve.Image = Lab1.Properties.Resources.LED_red;
         }
 
@@ -711,8 +726,6 @@ namespace Lab1
                 button_begin_recieve.Refresh();
                 button_end_recieve.Enabled = false;
                 button_end_recieve.Refresh();
-                textBox_sender_ip.ReadOnly = false;
-                textBox_sender_ip.Refresh();
                 if (adaptor != null)
                     adaptor.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
                 adaptor = null;

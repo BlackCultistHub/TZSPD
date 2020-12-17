@@ -57,8 +57,6 @@
             this.label_packets_recieved = new System.Windows.Forms.Label();
             this.button_begin_recieve = new System.Windows.Forms.Button();
             this.label4 = new System.Windows.Forms.Label();
-            this.textBox_sender_ip = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.textBox_recieve = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
@@ -280,8 +278,6 @@
             this.groupBox2.Controls.Add(this.label_packets_recieved);
             this.groupBox2.Controls.Add(this.button_begin_recieve);
             this.groupBox2.Controls.Add(this.label4);
-            this.groupBox2.Controls.Add(this.textBox_sender_ip);
-            this.groupBox2.Controls.Add(this.label6);
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Controls.Add(this.textBox_recieve);
             this.groupBox2.Location = new System.Drawing.Point(385, 28);
@@ -304,9 +300,9 @@
             // button_end_recieve
             // 
             this.button_end_recieve.Enabled = false;
-            this.button_end_recieve.Location = new System.Drawing.Point(90, 60);
+            this.button_end_recieve.Location = new System.Drawing.Point(150, 15);
             this.button_end_recieve.Name = "button_end_recieve";
-            this.button_end_recieve.Size = new System.Drawing.Size(75, 52);
+            this.button_end_recieve.Size = new System.Drawing.Size(135, 52);
             this.button_end_recieve.TabIndex = 35;
             this.button_end_recieve.Text = "Завершить";
             this.button_end_recieve.UseVisualStyleBackColor = true;
@@ -315,7 +311,7 @@
             // label_packets_recieved
             // 
             this.label_packets_recieved.AutoSize = true;
-            this.label_packets_recieved.Location = new System.Drawing.Point(248, 80);
+            this.label_packets_recieved.Location = new System.Drawing.Point(267, 75);
             this.label_packets_recieved.Name = "label_packets_recieved";
             this.label_packets_recieved.Size = new System.Drawing.Size(13, 13);
             this.label_packets_recieved.TabIndex = 3;
@@ -323,9 +319,9 @@
             // 
             // button_begin_recieve
             // 
-            this.button_begin_recieve.Location = new System.Drawing.Point(9, 60);
+            this.button_begin_recieve.Location = new System.Drawing.Point(9, 15);
             this.button_begin_recieve.Name = "button_begin_recieve";
-            this.button_begin_recieve.Size = new System.Drawing.Size(75, 52);
+            this.button_begin_recieve.Size = new System.Drawing.Size(135, 52);
             this.button_begin_recieve.TabIndex = 34;
             this.button_begin_recieve.Text = "Начать";
             this.button_begin_recieve.UseVisualStyleBackColor = true;
@@ -334,32 +330,16 @@
             // label4
             // 
             this.label4.AutoSize = true;
-            this.label4.Location = new System.Drawing.Point(171, 79);
+            this.label4.Location = new System.Drawing.Point(156, 74);
             this.label4.Name = "label4";
-            this.label4.Size = new System.Drawing.Size(53, 13);
+            this.label4.Size = new System.Drawing.Size(97, 13);
             this.label4.TabIndex = 1;
-            this.label4.Text = "Принято:";
-            // 
-            // textBox_sender_ip
-            // 
-            this.textBox_sender_ip.Location = new System.Drawing.Point(9, 34);
-            this.textBox_sender_ip.Name = "textBox_sender_ip";
-            this.textBox_sender_ip.Size = new System.Drawing.Size(274, 20);
-            this.textBox_sender_ip.TabIndex = 33;
-            // 
-            // label6
-            // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(9, 18);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(84, 13);
-            this.label6.TabIndex = 32;
-            this.label6.Text = "IP отправителя";
+            this.label4.Text = "Пакетов принято:";
             // 
             // label2
             // 
             this.label2.AutoSize = true;
-            this.label2.Location = new System.Drawing.Point(9, 115);
+            this.label2.Location = new System.Drawing.Point(6, 76);
             this.label2.Name = "label2";
             this.label2.Size = new System.Drawing.Size(65, 13);
             this.label2.TabIndex = 29;
@@ -367,12 +347,12 @@
             // 
             // textBox_recieve
             // 
-            this.textBox_recieve.Location = new System.Drawing.Point(9, 131);
+            this.textBox_recieve.Location = new System.Drawing.Point(9, 92);
             this.textBox_recieve.Multiline = true;
             this.textBox_recieve.Name = "textBox_recieve";
             this.textBox_recieve.ReadOnly = true;
             this.textBox_recieve.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_recieve.Size = new System.Drawing.Size(274, 133);
+            this.textBox_recieve.Size = new System.Drawing.Size(274, 172);
             this.textBox_recieve.TabIndex = 28;
             // 
             // timer1
@@ -489,8 +469,6 @@
         private System.Windows.Forms.Timer timer1;
         private System.Windows.Forms.TextBox textBox_reciever_ip;
         private System.Windows.Forms.Label label5;
-        private System.Windows.Forms.TextBox textBox_sender_ip;
-        private System.Windows.Forms.Label label6;
         private System.Windows.Forms.Label label7;
         private System.Windows.Forms.ComboBox comboBox_adapters;
         private System.Windows.Forms.GroupBox groupBox4;
