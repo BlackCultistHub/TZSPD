@@ -53,7 +53,6 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
 
             //get adapters
@@ -74,6 +73,14 @@ namespace Lab1
                 {
                     MessageBox.Show("Сообщение не может превышать длину в 255 символов!", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
+                }
+                for (int i = 0; i < textBox_msg.TextLength; i++)
+                {
+                    if (textBox_msg.Text[i] > 256)
+                    {
+                        MessageBox.Show("Могут использоваться только символы таблицы ASCII!", "Предупреждение", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
                 }
                 //read ip
                 System.Net.IPAddress ipDestinationAddress;
@@ -141,36 +148,72 @@ namespace Lab1
                 chain.AddRange(values.ToArray());
 
                 int pkg_index = 0;
-                //N + table packages
-                for (int i = 0; i < chain.Count; i++)
+                if (checkBox_fake_payload.Checked) //USE FAKE PAYLOAD
                 {
-                    packets.Add(new IPv4Packet(ipSourceAddress, ipDestinationAddress));
-                    //write index
-                    packets[packets.Count - 1].TypeOfService = pkg_index;
-                    pkg_index++;
-                    //write value (totalLen - headerLen)
-                    List<byte> Payload = new List<byte>();
-                    for (int j = 0; j < chain[i]; j++)
+                    int fakePort = 0;
+                    if (!int.TryParse(textBox_fakePort.Text, out fakePort))
+                        throw new Exception("Фейк-порт имеет неверный формат!");
+                    if (fakePort > 65535 || fakePort < 0)
+                        throw new Exception("Фейк-порт должен находится в диапазоне от 0 до 65535!");
+                    for (int i = 0; i < chain.Count; i++)
                     {
-                        Payload.Add((byte)rnd.Next(0, 255));
+                        //UDP
+                        var UDPpacket = new UdpPacket((ushort)fakePort, (ushort)fakePort);
+                        List<byte> Payload = new List<byte>();
+                        Payload.Add((byte)(0xF0));
+                        Payload.Add((byte)(0x3F));
+                        Payload.Add((byte)(0xF0));
+                        for (int j = 0; j < chain[i]; j++)
+                        {
+                            Payload.Add((byte)rnd.Next(0, 255));
+                        }
+                        UDPpacket.PayloadData = Payload.ToArray();
+                        //IP
+                        var IPpacket = new IPv4Packet(ipSourceAddress, ipDestinationAddress);
+                        IPpacket.TypeOfService = pkg_index;
+                        IPpacket.PayloadPacket = UDPpacket;
+                        //Ethernet
+                        var EthernetPacket = new EthernetPacket(sourceHW,
+                                destinationHW,
+                                EthernetType.IPv4);
+                        EthernetPacket.PayloadPacket = IPpacket;
+                        UDPpacket.Checksum = UDPpacket.CalculateUdpChecksum();
+                        //SEND
+                        adaptor.SendPacket(EthernetPacket);
+                        pkg_index++;
                     }
-                    packets[packets.Count - 1].PayloadData = Payload.ToArray();
+                }
+                else //USE RAW IP-PACKETS
+                {
+                    //N + table packages
+                    for (int i = 0; i < chain.Count; i++)
+                    {
+                        packets.Add(new IPv4Packet(ipSourceAddress, ipDestinationAddress));
+                        //write index
+                        packets[packets.Count - 1].TypeOfService = pkg_index;
+                        pkg_index++;
+                        //write value (totalLen - headerLen)
+                        List<byte> Payload = new List<byte>();
+                        for (int j = 0; j < chain[i]; j++)
+                        {
+                            Payload.Add((byte)rnd.Next(0, 255));
+                        }
+                        packets[packets.Count - 1].PayloadData = Payload.ToArray();
+                    }
+                    foreach (IPv4Packet packet in packets)
+                    {
+                        var ethernetPacket = new EthernetPacket(sourceHW,
+                            destinationHW,
+                            EthernetType.IPv4);
+                        ethernetPacket.PayloadPacket = packet;
+
+                        // Send the packet out the network device
+                        adaptor.SendPacket(ethernetPacket);
+                    }
                 }
 
                 packets_sent = pkg_index;
                 label_packets_sent.Text = pkg_index.ToString();
-
-                foreach (IPv4Packet packet in packets)
-                {
-                    var ethernetPacket = new EthernetPacket(sourceHW,
-                        destinationHW,
-                        EthernetType.IPv4);
-                    ethernetPacket.PayloadPacket = packet;
-                    // Send the packet out the network device
-
-                    adaptor.SendPacket(ethernetPacket);
-                    //Console.WriteLine("-- Packet sent successfuly.");
-                }
 
                 richTextBox_history.AppendText(DateTime.Now + " ", Color.Gray);
                 richTextBox_history.AppendText("Отправлено ", Color.Green);
@@ -190,7 +233,21 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
+                //UNLOCK CONTROLS
+                textBox_reciever_ip.ReadOnly = false;
+                textBox_reciever_ip.Refresh();
+                button_send.Enabled = true;
+                button_send.Refresh();
             }
         }
 
@@ -274,6 +331,15 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 recieve.Clear();
             }
@@ -299,8 +365,11 @@ namespace Lab1
         public void elapseLock(Object source, ElapsedEventArgs e)
         {
             recieve._locked = false;
+            capturing_udp = false;
         }
 
+        //bool begin_recieve = false;
+        bool capturing_udp = false;
         private void device_OnPacketArrival(object sender, CaptureEventArgs packet)
         {
             var ethPacket = PacketDotNet.Packet.ParsePacket(packet.Packet.LinkLayerType, packet.Packet.Data);
@@ -312,20 +381,86 @@ namespace Lab1
                 var ipv4Packet = (IPv4Packet)parsedEthernetPacket.PayloadPacket;
                 if ((ipv4Packet.SourceAddress.Equals(Capture_target_ip) || Capture_target_ip == null) && ipv4Packet.DestinationAddress.Equals(Capture_self_ip))
                 {
-                    if (!ipv4Packet.HasPayloadPacket)
+                    if (!recieve._locked) //IP
                     {
-                        if (!recieve._locked)
+                        if (!ipv4Packet.HasPayloadPacket)
+                        {
                             recieve._locked = true;
-                        if (Capture_target_ip == null)
                             Capture_target_ip = ipv4Packet.SourceAddress;
-                        int index = ipv4Packet.TypeOfService;
-                        int totalLen = ipv4Packet.TotalLength;
-                        recieve.addPacket(index, 20, totalLen);
-                        recieve._updated = true;
-                        LockTimer.Stop();
-                        LockTimer.Interval = 1500;
-                        LockTimer.Start();
+                            int index = ipv4Packet.TypeOfService;
+                            int totalLen = ipv4Packet.TotalLength;
+                            recieve.addPacket(index, 20, totalLen);
+                            recieve._updated = true;
+                            LockTimer.Stop();
+                            LockTimer.Interval = 1500;
+                            LockTimer.Start();
+                        }
+                        else if (ipv4Packet.Protocol == ProtocolType.Udp)//UDP
+                        {
+                            var udpPacket = (UdpPacket)ipv4Packet.PayloadPacket;
+                            if (!udpPacket.HasPayloadPacket)
+                            {
+                                var payloadData = udpPacket.PayloadData;
+                                if (payloadData.Length >= 3)
+                                {
+                                    //check message signature 0xF0 0x3F 0xF0
+                                    if ((payloadData[0] == 0xF0) &&
+                                    (payloadData[1] == 0x3F) &&
+                                    (payloadData[2] == 0xF0))
+                                    {
+                                        capturing_udp = true;
+                                        recieve._locked = true;
+                                        Capture_target_ip = ipv4Packet.SourceAddress;
+                                        int index = ipv4Packet.TypeOfService;
+                                        int totalLen = ipv4Packet.TotalLength;
+                                        recieve.addPacket(index, 28+3, totalLen);
+                                        recieve._updated = true;
+                                        LockTimer.Stop();
+                                        LockTimer.Interval = 1500;
+                                        LockTimer.Start();
+                                    }
+                                }
+                            }
+                        }
                     }
+                    else
+                    {
+                        if ((!ipv4Packet.HasPayloadPacket) && (!capturing_udp)) //IP
+                        {
+                            int index = ipv4Packet.TypeOfService;
+                            int totalLen = ipv4Packet.TotalLength;
+                            recieve.addPacket(index, 20, totalLen);
+                            recieve._updated = true;
+                            LockTimer.Stop();
+                            LockTimer.Interval = 1500;
+                            LockTimer.Start();
+                        }
+                        else if (ipv4Packet.Protocol == ProtocolType.Udp)//UDP
+                        {
+                            var udpPacket = (UdpPacket)ipv4Packet.PayloadPacket;
+                            if (!udpPacket.HasPayloadPacket)
+                            {
+                                var payloadData = udpPacket.PayloadData;
+                                if (payloadData.Length >= 3)
+                                {
+                                    //check message signature 0xF0 0x3F 0xF0
+                                    if ((payloadData[0] == 0xF0) &&
+                                    (payloadData[1] == 0x3F) &&
+                                    (payloadData[2] == 0xF0))
+                                    {
+                                        int index = ipv4Packet.TypeOfService;
+                                        int totalLen = ipv4Packet.TotalLength;
+                                        recieve.addPacket(index, 28+3, totalLen);
+                                        recieve._updated = true;
+                                        LockTimer.Stop();
+                                        LockTimer.Interval = 1500;
+                                        LockTimer.Start();
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
                 }
             }
         }
@@ -459,6 +594,11 @@ namespace Lab1
             string myIPStr = myIP == null ? "127.0.0.1" : myIP.ToString();
             label_my_ip.Text = myIPStr;
             label_my_ip.Refresh();
+            if (checkBox_fake_payload.Checked)
+                textBox_fakePort.ReadOnly = false;
+            else
+                textBox_fakePort.ReadOnly = true;
+            textBox_fakePort.Refresh();
         }
 
         private void button5_Click(object sender, EventArgs e)
@@ -503,13 +643,20 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
 
         //SCANNER
-        System.Timers.Timer closeTimer = null;
-        bool closeTImerElapsed = false;
         public System.Net.IPAddress ARPSCAN_sender_ip = null;
         public List<System.Net.IPAddress> ARPSCAN_target_ips = new List<System.Net.IPAddress>();
         public List<System.Net.NetworkInformation.PhysicalAddress> ARPSCAN_destinationHWs = new List<System.Net.NetworkInformation.PhysicalAddress>();
@@ -529,10 +676,6 @@ namespace Lab1
                     ARPSCAN_destinationHWs.Add(arpPacket.SenderHardwareAddress);
                 }
             }
-        }
-        public void closeSCANCapture(Object source, ElapsedEventArgs e)
-        {
-            closeTImerElapsed = true;
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -651,15 +794,12 @@ namespace Lab1
                     }
                 }
                 //4. wait for response a bit and close
-                closeTimer = new System.Timers.Timer(2000);
-                closeTimer.Elapsed += (senderE, eE) => closeSCANCapture(senderE, eE);
-                closeTimer.Start();
-                while (!closeTImerElapsed) { }
+                Thread.Sleep(2000);
                 adaptor.OnPacketArrival -= new SharpPcap.PacketArrivalEventHandler(ARPSCAN_recieve_handler);
                 adaptor.OnPacketArrival += new SharpPcap.PacketArrivalEventHandler(device_OnPacketArrival);
 
 
-                //split copies
+                //cut copies
                 List<System.Net.IPAddress> copyips = new List<System.Net.IPAddress>();
                 copyips.AddRange(ARPSCAN_target_ips.ToArray());
                 for (int i = 0; i < copyips.Count; i++)
@@ -685,7 +825,7 @@ namespace Lab1
                 ARPSCAN_destinationHWs.Clear();
 
                 //end scan
-                scanWindow.SetStatus("Scan complete.");
+                scanWindow.SetStatus("Сканирование завершено.");
             }
             catch (Exception ex)
             {
@@ -693,6 +833,15 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
@@ -738,6 +887,15 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }

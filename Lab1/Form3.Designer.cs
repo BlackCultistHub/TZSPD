@@ -126,7 +126,7 @@
             "Случайно",
             "Случайно с частотой"});
             this.comboBox_inputMode.Location = new System.Drawing.Point(20, 66);
-            this.comboBox_inputMode.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.comboBox_inputMode.Margin = new System.Windows.Forms.Padding(2);
             this.comboBox_inputMode.Name = "comboBox_inputMode";
             this.comboBox_inputMode.Size = new System.Drawing.Size(146, 21);
             this.comboBox_inputMode.TabIndex = 1;
@@ -154,7 +154,7 @@
             // textBox_randomFrequency
             // 
             this.textBox_randomFrequency.Location = new System.Drawing.Point(176, 67);
-            this.textBox_randomFrequency.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_randomFrequency.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_randomFrequency.Name = "textBox_randomFrequency";
             this.textBox_randomFrequency.ReadOnly = true;
             this.textBox_randomFrequency.Size = new System.Drawing.Size(146, 20);
@@ -166,8 +166,9 @@
             this.dataGridView1.AllowUserToDeleteRows = false;
             this.dataGridView1.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             this.dataGridView1.Location = new System.Drawing.Point(20, 90);
-            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.dataGridView1.Margin = new System.Windows.Forms.Padding(2);
             this.dataGridView1.Name = "dataGridView1";
+            this.dataGridView1.RowHeadersVisible = false;
             this.dataGridView1.RowHeadersWidth = 51;
             this.dataGridView1.RowTemplate.Height = 24;
             this.dataGridView1.Size = new System.Drawing.Size(484, 135);
@@ -187,7 +188,7 @@
             // logBox
             // 
             this.logBox.Location = new System.Drawing.Point(20, 246);
-            this.logBox.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.logBox.Margin = new System.Windows.Forms.Padding(2);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ReadOnly = true;
@@ -204,7 +205,7 @@
             // 
             this.button_generate.Enabled = false;
             this.button_generate.Location = new System.Drawing.Point(327, 47);
-            this.button_generate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button_generate.Margin = new System.Windows.Forms.Padding(2);
             this.button_generate.Name = "button_generate";
             this.button_generate.Size = new System.Drawing.Size(92, 38);
             this.button_generate.TabIndex = 15;
@@ -215,7 +216,7 @@
             // button_calculate
             // 
             this.button_calculate.Location = new System.Drawing.Point(423, 47);
-            this.button_calculate.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.button_calculate.Margin = new System.Windows.Forms.Padding(2);
             this.button_calculate.Name = "button_calculate";
             this.button_calculate.Size = new System.Drawing.Size(80, 38);
             this.button_calculate.TabIndex = 16;
@@ -232,7 +233,7 @@
             this.checkBox_startGenTimer.AutoSize = true;
             this.checkBox_startGenTimer.Enabled = false;
             this.checkBox_startGenTimer.Location = new System.Drawing.Point(270, 46);
-            this.checkBox_startGenTimer.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.checkBox_startGenTimer.Margin = new System.Windows.Forms.Padding(2);
             this.checkBox_startGenTimer.Name = "checkBox_startGenTimer";
             this.checkBox_startGenTimer.Size = new System.Drawing.Size(55, 17);
             this.checkBox_startGenTimer.TabIndex = 17;
@@ -248,9 +249,9 @@
             this.groupBox1.Controls.Add(this.textBox_elementsOfA);
             this.groupBox1.Controls.Add(this.label3);
             this.groupBox1.Location = new System.Drawing.Point(508, 47);
-            this.groupBox1.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Margin = new System.Windows.Forms.Padding(2);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Padding = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.groupBox1.Padding = new System.Windows.Forms.Padding(2);
             this.groupBox1.Size = new System.Drawing.Size(183, 178);
             this.groupBox1.TabIndex = 18;
             this.groupBox1.TabStop = false;
@@ -259,7 +260,7 @@
             // textBox_gen_max
             // 
             this.textBox_gen_max.Location = new System.Drawing.Point(8, 108);
-            this.textBox_gen_max.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_gen_max.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_gen_max.Name = "textBox_gen_max";
             this.textBox_gen_max.Size = new System.Drawing.Size(172, 20);
             this.textBox_gen_max.TabIndex = 22;
@@ -279,7 +280,7 @@
             // textBox_gen_min
             // 
             this.textBox_gen_min.Location = new System.Drawing.Point(8, 72);
-            this.textBox_gen_min.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_gen_min.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_gen_min.Name = "textBox_gen_min";
             this.textBox_gen_min.Size = new System.Drawing.Size(172, 20);
             this.textBox_gen_min.TabIndex = 20;
@@ -299,7 +300,7 @@
             // textBox_elementsOfA
             // 
             this.textBox_elementsOfA.Location = new System.Drawing.Point(7, 35);
-            this.textBox_elementsOfA.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_elementsOfA.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_elementsOfA.Name = "textBox_elementsOfA";
             this.textBox_elementsOfA.Size = new System.Drawing.Size(172, 20);
             this.textBox_elementsOfA.TabIndex = 19;
@@ -319,7 +320,7 @@
             // textBox_time_linear
             // 
             this.textBox_time_linear.Location = new System.Drawing.Point(512, 279);
-            this.textBox_time_linear.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_time_linear.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_time_linear.Multiline = true;
             this.textBox_time_linear.Name = "textBox_time_linear";
             this.textBox_time_linear.ReadOnly = true;
@@ -329,7 +330,7 @@
             // textBox_time_parallel
             // 
             this.textBox_time_parallel.Location = new System.Drawing.Point(512, 322);
-            this.textBox_time_parallel.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.textBox_time_parallel.Margin = new System.Windows.Forms.Padding(2);
             this.textBox_time_parallel.Multiline = true;
             this.textBox_time_parallel.Name = "textBox_time_parallel";
             this.textBox_time_parallel.ReadOnly = true;
@@ -379,7 +380,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.MainMenuStrip = this.menuStrip1;
-            this.Margin = new System.Windows.Forms.Padding(2, 2, 2, 2);
+            this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form3";
             this.Text = "Потоки";
             this.menuStrip1.ResumeLayout(false);

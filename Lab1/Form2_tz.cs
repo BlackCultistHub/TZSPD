@@ -36,7 +36,6 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
         }
         public static string Reverse(string s)
@@ -144,7 +143,7 @@ namespace Lab1
 
         private void button5_Click(object sender, EventArgs e)
         {
-            //try
+            try
             {
                 /*container_bytes.Clear();
                 if (Container.Image != null)
@@ -299,14 +298,23 @@ namespace Lab1
                 label_task.Visible = false;
                 label_task.Refresh();
             }
-            /*catch (Exception ex)
+            catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }*/
+            }
         }
 
         private void button2_Click(object sender, EventArgs e)
@@ -339,6 +347,15 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -500,6 +517,15 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

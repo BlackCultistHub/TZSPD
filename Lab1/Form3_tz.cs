@@ -48,7 +48,6 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
         }
 

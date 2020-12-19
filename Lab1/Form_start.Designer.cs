@@ -31,7 +31,10 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form_start));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.справкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.параметрыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.параметрыToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
@@ -42,6 +45,7 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.логБазыДанныхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -51,7 +55,9 @@
             // 
             this.menuStrip1.ImageScalingSize = new System.Drawing.Size(20, 20);
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.справкаToolStripMenuItem});
+            this.справкаToolStripMenuItem,
+            this.параметрыToolStripMenuItem,
+            this.логБазыДанныхToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
@@ -66,8 +72,24 @@
             this.справкаToolStripMenuItem.Text = "Справка";
             this.справкаToolStripMenuItem.Click += new System.EventHandler(this.справкаToolStripMenuItem_Click);
             // 
+            // параметрыToolStripMenuItem
+            // 
+            this.параметрыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.параметрыToolStripMenuItem1});
+            this.параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
+            this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
+            this.параметрыToolStripMenuItem.Text = "Файл";
+            // 
+            // параметрыToolStripMenuItem1
+            // 
+            this.параметрыToolStripMenuItem1.Name = "параметрыToolStripMenuItem1";
+            this.параметрыToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.параметрыToolStripMenuItem1.Text = "Параметры";
+            this.параметрыToolStripMenuItem1.Click += new System.EventHandler(this.параметрыToolStripMenuItem1_Click);
+            // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button8);
             this.groupBox1.Controls.Add(this.button7);
             this.groupBox1.Controls.Add(this.button2);
             this.groupBox1.Controls.Add(this.button1);
@@ -80,12 +102,23 @@
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Распределённые ИС";
             // 
+            // button8
+            // 
+            this.button8.Location = new System.Drawing.Point(94, 66);
+            this.button8.Margin = new System.Windows.Forms.Padding(2);
+            this.button8.Name = "button8";
+            this.button8.Size = new System.Drawing.Size(104, 55);
+            this.button8.TabIndex = 3;
+            this.button8.Text = "(4)\r\nИспользование БД";
+            this.button8.UseVisualStyleBackColor = true;
+            this.button8.Click += new System.EventHandler(this.button8_Click);
+            // 
             // button7
             // 
             this.button7.Location = new System.Drawing.Point(94, 17);
             this.button7.Margin = new System.Windows.Forms.Padding(2);
             this.button7.Name = "button7";
-            this.button7.Size = new System.Drawing.Size(86, 45);
+            this.button7.Size = new System.Drawing.Size(104, 45);
             this.button7.TabIndex = 2;
             this.button7.Text = "(3)\r\nПотоки";
             this.button7.UseVisualStyleBackColor = true;
@@ -193,6 +226,13 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Глобальный лог";
             // 
+            // логБазыДанныхToolStripMenuItem
+            // 
+            this.логБазыДанныхToolStripMenuItem.Name = "логБазыДанныхToolStripMenuItem";
+            this.логБазыДанныхToolStripMenuItem.Size = new System.Drawing.Size(113, 20);
+            this.логБазыДанныхToolStripMenuItem.Text = "Лог базы данных";
+            this.логБазыДанныхToolStripMenuItem.Click += new System.EventHandler(this.логБазыДанныхToolStripMenuItem_Click);
+            // 
             // Form_start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -207,6 +247,7 @@
             this.Margin = new System.Windows.Forms.Padding(2);
             this.Name = "Form_start";
             this.Text = "Меню";
+            this.Shown += new System.EventHandler(this.Form_start_Shown);
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
@@ -231,5 +272,9 @@
         private System.Windows.Forms.Button button5;
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
+        private System.Windows.Forms.ToolStripMenuItem параметрыToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem параметрыToolStripMenuItem1;
+        private System.Windows.Forms.Button button8;
+        private System.Windows.Forms.ToolStripMenuItem логБазыДанныхToolStripMenuItem;
     }
 }

@@ -50,7 +50,8 @@
             this.button});
             this.dataGridView_ip_table.Location = new System.Drawing.Point(12, 12);
             this.dataGridView_ip_table.Name = "dataGridView_ip_table";
-            this.dataGridView_ip_table.Size = new System.Drawing.Size(347, 302);
+            this.dataGridView_ip_table.RowHeadersVisible = false;
+            this.dataGridView_ip_table.Size = new System.Drawing.Size(304, 302);
             this.dataGridView_ip_table.TabIndex = 0;
             this.dataGridView_ip_table.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView_ip_table_CellClick);
             // 
@@ -78,28 +79,28 @@
             this.toolStripStatusLabel_scanStatus});
             this.statusStrip1.Location = new System.Drawing.Point(0, 330);
             this.statusStrip1.Name = "statusStrip1";
-            this.statusStrip1.Size = new System.Drawing.Size(371, 22);
+            this.statusStrip1.Size = new System.Drawing.Size(330, 22);
             this.statusStrip1.TabIndex = 1;
             this.statusStrip1.Text = "statusStrip1";
             // 
             // toolStripStatusLabel_scanStatus
             // 
             this.toolStripStatusLabel_scanStatus.Name = "toolStripStatusLabel_scanStatus";
-            this.toolStripStatusLabel_scanStatus.Size = new System.Drawing.Size(65, 17);
-            this.toolStripStatusLabel_scanStatus.Text = "Scanning...";
+            this.toolStripStatusLabel_scanStatus.Size = new System.Drawing.Size(96, 17);
+            this.toolStripStatusLabel_scanStatus.Text = "Сканирование...";
             // 
             // Form4_tz_scan
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.AutoSize = true;
-            this.ClientSize = new System.Drawing.Size(371, 352);
+            this.ClientSize = new System.Drawing.Size(330, 352);
             this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.dataGridView_ip_table);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form4_tz_scan";
             this.SizeGripStyle = System.Windows.Forms.SizeGripStyle.Hide;
-            this.Text = "Form4_tz_scan";
+            this.Text = "Сканер подсети";
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView_ip_table)).EndInit();
             this.statusStrip1.ResumeLayout(false);
             this.statusStrip1.PerformLayout();

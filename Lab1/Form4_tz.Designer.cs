@@ -44,6 +44,7 @@
             this.textBox_msg = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.checkBox_fake_payload = new System.Windows.Forms.CheckBox();
             this.label_my_ip = new System.Windows.Forms.Label();
             this.label_packets_sent = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
@@ -66,6 +67,8 @@
             this.timer_check_message = new System.Windows.Forms.Timer(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.richTextBox_history = new System.Windows.Forms.RichTextBox();
+            this.textBox_fakePort = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -76,9 +79,9 @@
             // 
             // button_send
             // 
-            this.button_send.Location = new System.Drawing.Point(6, 181);
+            this.button_send.Location = new System.Drawing.Point(190, 167);
             this.button_send.Name = "button_send";
-            this.button_send.Size = new System.Drawing.Size(358, 23);
+            this.button_send.Size = new System.Drawing.Size(174, 37);
             this.button_send.TabIndex = 0;
             this.button_send.Text = "Отправить";
             this.button_send.UseVisualStyleBackColor = true;
@@ -178,7 +181,7 @@
             this.textBox_msg.Multiline = true;
             this.textBox_msg.Name = "textBox_msg";
             this.textBox_msg.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.textBox_msg.Size = new System.Drawing.Size(358, 103);
+            this.textBox_msg.Size = new System.Drawing.Size(358, 90);
             this.textBox_msg.TabIndex = 28;
             // 
             // label1
@@ -192,6 +195,10 @@
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.textBox_fakePort);
+            this.groupBox1.Controls.Add(this.label6);
+            this.groupBox1.Controls.Add(this.button_send);
+            this.groupBox1.Controls.Add(this.checkBox_fake_payload);
             this.groupBox1.Controls.Add(this.label_my_ip);
             this.groupBox1.Controls.Add(this.label_packets_sent);
             this.groupBox1.Controls.Add(this.label3);
@@ -199,7 +206,6 @@
             this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.textBox_msg);
             this.groupBox1.Controls.Add(this.button_scan_network);
-            this.groupBox1.Controls.Add(this.button_send);
             this.groupBox1.Controls.Add(this.textBox_reciever_ip);
             this.groupBox1.Controls.Add(this.label5);
             this.groupBox1.Location = new System.Drawing.Point(7, 88);
@@ -208,6 +214,16 @@
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Отправка";
+            // 
+            // checkBox_fake_payload
+            // 
+            this.checkBox_fake_payload.AutoSize = true;
+            this.checkBox_fake_payload.Location = new System.Drawing.Point(5, 167);
+            this.checkBox_fake_payload.Name = "checkBox_fake_payload";
+            this.checkBox_fake_payload.Size = new System.Drawing.Size(189, 17);
+            this.checkBox_fake_payload.TabIndex = 35;
+            this.checkBox_fake_payload.Text = "Использовать ложную нагрузку";
+            this.checkBox_fake_payload.UseVisualStyleBackColor = true;
             // 
             // label_my_ip
             // 
@@ -414,6 +430,25 @@
             this.richTextBox_history.TabIndex = 0;
             this.richTextBox_history.Text = "";
             // 
+            // textBox_fakePort
+            // 
+            this.textBox_fakePort.Location = new System.Drawing.Point(117, 184);
+            this.textBox_fakePort.Name = "textBox_fakePort";
+            this.textBox_fakePort.ReadOnly = true;
+            this.textBox_fakePort.Size = new System.Drawing.Size(66, 20);
+            this.textBox_fakePort.TabIndex = 37;
+            this.textBox_fakePort.Text = "80";
+            this.textBox_fakePort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 187);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(112, 13);
+            this.label6.TabIndex = 36;
+            this.label6.Text = "Фейк-порт (RX = TX)";
+            // 
             // Form4_tz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -483,5 +518,8 @@
         private System.Windows.Forms.ToolStripMenuItem сохранитьИсториюToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem загрузитьИториюToolStripMenuItem;
         private System.Windows.Forms.PictureBox pictureBox_led_recieve;
+        private System.Windows.Forms.CheckBox checkBox_fake_payload;
+        private System.Windows.Forms.TextBox textBox_fakePort;
+        private System.Windows.Forms.Label label6;
     }
 }

@@ -39,10 +39,43 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
 
             ReadLogFile();
+            if (!File.Exists("settings.ini"))
+                File.WriteAllText("settings.ini", "");
+        }
+        private void Form_start_Shown(object sender, EventArgs e)
+        {
+            tryInitDB();
+        }
+
+        private void tryInitDB()
+        {
+            if ((new Form_Params()).dataBaseEndabled())
+            {
+                if (!DatabaseOperations.initDB())
+                {
+                    Form shadow = new Form();
+                    shadow.MinimizeBox = false;
+                    shadow.MaximizeBox = false;
+                    shadow.ControlBox = false;
+
+                    shadow.Text = "";
+                    shadow.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
+                    shadow.Size = this.Size;
+                    shadow.BackColor = Color.Black;
+                    shadow.Opacity = 0.3;
+                    shadow.Show();
+                    shadow.Location = this.Location;
+                    shadow.Enabled = false;
+
+                    var msgBox = new Form_DB_init_error();
+                    msgBox.ShowDialog();
+                    shadow.Dispose();
+                    shadow.Close();
+                }
+            }
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -136,6 +169,25 @@ namespace Lab1
             var lab3 = new Form3();
             lab3.Closed += (s, args) => this.Close();
             lab3.Show();
+        }
+
+        private void button8_Click(object sender, EventArgs e)
+        {
+            var db = new Form_showDB();
+            db.ShowDialog();
+        }
+
+        private void параметрыToolStripMenuItem1_Click(object sender, EventArgs e)
+        {
+            var paramms = new Form_Params();
+            paramms.ShowDialog();
+            tryInitDB();
+        }
+
+        private void логБазыДанныхToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var db = new Form_showDB();
+            db.ShowDialog();
         }
     }
 }

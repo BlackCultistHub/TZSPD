@@ -102,6 +102,15 @@
     <ApplicationIcon>tools.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
+      <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Npgsql, Version=5.0.1.1, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.5.0.1.1\lib\netstandard2.0\Npgsql.dll</HintPath>
+    </Reference>
     <Reference Include="PacketDotNet, Version=1.1.1.0, Culture=neutral, PublicKeyToken=451414c7667b2a58, processorArchitecture=MSIL">
       <HintPath>..\packages\PacketDotNet.1.1.1\lib\net45\PacketDotNet.dll</HintPath>
     </Reference>
@@ -123,6 +132,21 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.0\lib\netstandard2.0\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.4.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.6.0\lib\netstandard2.0\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.6.0\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Channels, Version=4.0.2.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.4.7.0\lib\netstandard2.0\System.Threading.Channels.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.3\lib\netstandard2.0\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -134,6 +158,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DatabaseOperations.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -182,11 +207,29 @@
     <Compile Include="Form4_tz_scan.Designer.cs">
       <DependentUpon>Form4_tz_scan.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_DB_init_error.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_DB_init_error.Designer.cs">
+      <DependentUpon>Form_DB_init_error.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Info.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_Info.Designer.cs">
       <DependentUpon>Form_Info.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_Params.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_Params.Designer.cs">
+      <DependentUpon>Form_Params.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_showDB.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_showDB.designer.cs">
+      <DependentUpon>Form_showDB.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_start.cs">
       <SubType>Form</SubType>
@@ -220,8 +263,17 @@
     <EmbeddedResource Include="Form4_tz_scan.resx">
       <DependentUpon>Form4_tz_scan.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_DB_init_error.resx">
+      <DependentUpon>Form_DB_init_error.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Info.resx">
       <DependentUpon>Form_Info.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_Params.resx">
+      <DependentUpon>Form_Params.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_showDB.resx">
+      <DependentUpon>Form_showDB.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_start.resx">
       <DependentUpon>Form_start.cs</DependentUpon>

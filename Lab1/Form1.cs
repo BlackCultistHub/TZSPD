@@ -41,7 +41,6 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
 
             timer1.Start();
@@ -117,36 +116,87 @@ namespace Lab1
             {
                 result.Text = "Out of Range!";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
-                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
             }
             catch (ArgumentException ex)
             {
                 result.Text = "Incorrect inp";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
-                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
             }
             catch (IndexOutOfRangeException ex)
             {
                 result.Text = "Index OOR!";
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
-                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
             }
             catch (SystemCharException ex)
             {
                 result.Text = "System char!";
                 result_ascii.Text = ex.code.ToString();
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + ",char=" + ex.code;
-                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + ",char=" + ex.code;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
             }
-            catch
+            catch (Exception ex)
             {
-                result.Text = "Exception occured";
-                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Unhandled Exception; INFO: name=" + name.Text + ",surname=" + surname.Text);
-                log.Add("Unhandled exception!");
+                result.Text = ex.Message;
+                var logLine = DateTime.Now.ToString() + ": " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Unhandled Exception; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
+                log.Add(logLine);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
             }
             finally
             {

@@ -39,7 +39,6 @@ namespace Lab1
             InitializeComponent();
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
-            this.MinimizeBox = false;
             this.CenterToScreen();
 
             timer1.Start();
@@ -109,27 +108,57 @@ namespace Lab1
             if (textBox_message.TextLength > msg_max_len)
             {
                 var logLine = DateTime.Now.ToString() + ": Сообщение слишком длинное для данного контейнера!";
+                var lineNoTime = "Сообщение слишком длинное для данного контейнера!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение слишком длинное для данного контейнера!" + Environment.NewLine);
                 MessageBox.Show("Сообщение слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             if (textBox_message.TextLength + 256 > msg_max_len && checkBox_sha256.Checked)
             {
                 var logLine = DateTime.Now.ToString() + ": Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
+                var lineNoTime = "Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!" + Environment.NewLine);
                 MessageBox.Show("Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             if (textBoxContainer.Text.Contains("  "))
             {
                 var logLine = DateTime.Now.ToString() + ": В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
+                var lineNoTime = "В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!" + Environment.NewLine);
                 MessageBox.Show("В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                if ((new Form_Params()).dataBaseEndabled())
+                {
+                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
+                    {
+                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
+                        log.Add(logLineDB);
+                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
+                    }
+                }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
