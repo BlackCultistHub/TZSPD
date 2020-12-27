@@ -80,7 +80,11 @@ namespace Lab1
             }
             catch (Exception ex)
             {
-
+                var logLine = DateTime.Now.ToString() + ex.Message;
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
+                MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logBox.Refresh();
             }
         }
 
@@ -432,8 +436,8 @@ namespace Lab1
                 }
                 
 
-                if (cvzArray.Count + input_key_zeros > container_capacity*8) //!!!!!!!!!!!!!!!!!!!!!!!
-                    throw new Exception("");
+                if (cvzArray.Count + input_key_zeros > container_capacity*8)
+                    throw new Exception("Итоговый размер сообщения больше допустимого!");
 
                 //hide
                 toolStripStatusLabel_status.Text = "Модификация ДКП...";
@@ -654,7 +658,11 @@ namespace Lab1
             }
             catch (Exception ex)
             {
-                
+                var logLine = DateTime.Now.ToString() + ex.Message;
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
+                MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logBox.Refresh();
             }
         }
 
@@ -898,7 +906,11 @@ namespace Lab1
             }
             catch (Exception ex)
             {
-
+                var logLine = DateTime.Now.ToString() + ex.Message;
+                log.Add(logLine);
+                File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
+                MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                logBox.Refresh();
             }
         }
 
