@@ -30,18 +30,59 @@ namespace Lab1
             }
         }
 
-        byte[] container;
-        byte[] cvz;
-        byte[] steganoContainer;
-        byte[] out_cvz;
-        int container_capacity;
-        int cvz_length;
+        //SETTINGS
+        bool useY = true;
+        bool useCb = true;
+        bool useCr = true;
+        int N = 100;
+        int C1_x = 6;
+        int C1_y = 3;
+        int C2_x = 3;
+        int C2_y = 5;
 
-        const int N = 0;
-        readonly int[] C1 = { 3, 6 };
-        readonly int C1_ind = 30;
-        readonly int[] C2 = { 5, 3 };
-        readonly int C2_ind = 23;
+        //HIDE
+        Bitmap imageBitMap; // container raw
+        List<Pack_1H1V> packs; //packs of matrixes INPUT
+        int final_width;
+        int final_height;
+        int container_capacity;
+        byte[] cvz;
+        int cvzSize;
+        byte[] input_key;
+        int input_key_zeros;
+        int finalMsgSize;
+
+        //REVEAL
+        Bitmap imageSteganoBitMap;
+        List<Pack_1H1V> packsStegano; //packs of matrixes INPUT
+        byte[] out_cvz;
+        byte[] output_key;
+
+        private void button_apply_settings_Click(object sender, EventArgs e)
+        {
+            applySettings();
+        }
+
+        private void applySettings()
+        {
+            try
+            {
+                useY = checkBox_use_Y.Checked;
+                useCb = checkBox_use_Cb.Checked;
+                useCr = checkBox_use_Cr.Checked;
+                N = int.Parse(textBox_setting_N.Text);
+                C1_x = int.Parse(textBox_C1_x.Text);
+                C1_y = int.Parse(textBox_C1_y.Text);
+                C2_x = int.Parse(textBox_C2_x.Text);
+                C2_y = int.Parse(textBox_C2_y.Text);
+                System.Media.SoundPlayer simpleSound = new System.Media.SoundPlayer(@"C:\Windows\Media\Windows Notify.wav");
+                simpleSound.Play();
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
 
         public Form3_tz()
         {
@@ -49,6 +90,8 @@ namespace Lab1
             this.FormBorderStyle = FormBorderStyle.FixedSingle;
             this.MaximizeBox = false;
             this.CenterToScreen();
+
+            timer_UI_update.Start();
         }
 
         private void менюToolStripMenuItem_Click(object sender, EventArgs e)
@@ -113,32 +156,87 @@ namespace Lab1
             info.Show();
         }
 
-        private void button1_Click(object sender, EventArgs e)
+        private void button1_Click(object sender, EventArgs e) // CONTAINER
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                using (var file = openFileDialog1.OpenFile())
+                textBox_container_path.Text = openFileDialog1.FileName;
+                textBox_container_path.Refresh();
+                toolStripStatusLabel_status.Text = "Чтение цветовой палитры...";
+                statusStrip1.Refresh();
+
+                imageBitMap = new Bitmap(Image.FromFile(openFileDialog1.FileName));
+
+                toolStripStatusLabel_status.Text = "Конвертация цветовой палитры...";
+                statusStrip1.Refresh();
+
+                //unpack bitmap
+                var NewBitMap = new Bitmap_YCbCr(imageBitMap);
+                NewBitMap.apply2h2v();
+
+                final_width = NewBitMap.width;
+                final_height = NewBitMap.height;
+
+                toolStripStatusLabel_status.Text = "Разметка на матрицы...";
+                statusStrip1.Refresh();
+
+                var BitMapRawMatrixes = NewBitMap.GetRawMatrixes();
+
+                toolStripStatusLabel_status.Text = "Разметка на пачки...";
+                statusStrip1.Refresh();
+
+                //RAW MATRIXES
+                packs = new List<Pack_1H1V>();
+                foreach (var matrix in BitMapRawMatrixes)
+                    packs.Add(new Pack_1H1V(matrix));
+
+                //define capacity
+                int multiplier = 0;
+                if (useY)
+                    multiplier++;
+                if (useCb)
+                    multiplier++;
+                if (useCr)
+                    multiplier++;
+                label_container_capacity.Text = (packs.Count*multiplier/8 - 2).ToString()+" символов";
+                container_capacity = (packs.Count * multiplier / 8) - 2;
+                label_container_capacity.Refresh();
+
+                toolStripStatusLabel_status.Text = "Просчёт ДКП...";
+                toolStripProgressBar_work_progress.Visible = true;
+                toolStripProgressBar_work_progress.Maximum = packs.Count;
+                label_statusProgressBar_text_new.Visible = true;
+                label_statusProgressBar_text_new.Text = "0/" + packs.Count;
+                statusStrip1.Refresh();
+
+                //DCT
+                int working_pack = 0;
+                foreach (var pack in packs)
                 {
-                    BinaryReader binaryReader = new BinaryReader(file);
-                    if (file != null)
-                    {
-                        container = binaryReader.ReadBytes((int)binaryReader.BaseStream.Length);
-                        textBox_container_path.Text = openFileDialog1.FileName;
-                        textBox_container_path.Refresh();
-                        file.Dispose();
-                        file.Close();
-                    }
+                    pack.Y_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Y_Matrix));
+                    pack.Cb_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Cb_Matrix));
+                    pack.Cr_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Cr_Matrix));
+                        working_pack++;
+                        toolStripProgressBar_work_progress.Value = working_pack;
+                        label_statusProgressBar_text_new.Text = working_pack + "/" + packs.Count;
+                        statusStrip1.Refresh();
                 }
+                label_statusProgressBar_text_new.Visible = false;
+                toolStripProgressBar_work_progress.Visible = false;
+                toolStripStatusLabel_status.Text = "Готово.";
+                statusStrip1.Refresh();
+                button_hide.Enabled = true;
+                pictureBox_container_status.Image = Lab1.Properties.Resources.LED_green;
             }
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Text file (*.txt)|*.txt";
+            openFileDialog1.Filter = "Message source (*.txt)|*.txt";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -155,27 +253,70 @@ namespace Lab1
                     }
                 }
             }
+            label_message_size.Text = (cvz.Length/2).ToString()+" символов";
+            cvzSize = cvz.Length/2;
+            label_message_size.Refresh();
         }
 
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e) //STEGANO
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
             openFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                using (var file = openFileDialog1.OpenFile())
+                textBox_stegano_path.Text = openFileDialog1.FileName;
+                textBox_stegano_path.Refresh();
+                toolStripStatusLabel_status.Text = "Чтение цветовой палитры...";
+                statusStrip1.Refresh();
+
+                imageSteganoBitMap = new Bitmap(Image.FromFile(openFileDialog1.FileName));
+
+                toolStripStatusLabel_status.Text = "Конвертация цветовой палитры...";
+                statusStrip1.Refresh();
+
+                //unpack bitmap
+                var NewBitMap = new Bitmap_YCbCr(imageSteganoBitMap);
+                NewBitMap.apply2h2v();
+
+                toolStripStatusLabel_status.Text = "Разметка на матрицы...";
+                statusStrip1.Refresh();
+
+                var BitMapRawMatrixes = NewBitMap.GetRawMatrixes();
+
+                toolStripStatusLabel_status.Text = "Разметка на пачки...";
+                statusStrip1.Refresh();
+
+                //RAW MATRIXES
+                packsStegano = new List<Pack_1H1V>();
+                foreach (var matrix in BitMapRawMatrixes)
+                    packsStegano.Add(new Pack_1H1V(matrix));
+
+                toolStripStatusLabel_status.Text = "Просчёт ДКП...";
+                toolStripProgressBar_work_progress.Visible = true;
+                toolStripProgressBar_work_progress.Maximum = packsStegano.Count;
+                label_statusProgressBar_text_new.Visible = true;
+                label_statusProgressBar_text_new.Text = "0/" + packsStegano.Count;
+                statusStrip1.Refresh();
+
+                //DCT
+                int working_pack = 0;
+                foreach (var pack in packsStegano)
                 {
-                    BinaryReader binaryReader = new BinaryReader(file);
-                    if (file != null)
-                    {
-                        steganoContainer = binaryReader.ReadBytes((int)binaryReader.BaseStream.Length);
-                        textBox_stegano_path.Text = openFileDialog1.FileName;
-                        textBox_stegano_path.Refresh();
-                        file.Dispose();
-                        file.Close();
-                    }
+                    pack.Y_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Y_Matrix));
+                    pack.Cb_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Cb_Matrix));
+                    pack.Cr_Matrix = DCT.DCTMatrix(DCT.DCTRangeMatrix(pack.Cr_Matrix));
+                        working_pack++;
+                        toolStripProgressBar_work_progress.Value = working_pack;
+                        label_statusProgressBar_text_new.Text = working_pack + "/" + packsStegano.Count;
+                        statusStrip1.Refresh();
                 }
+                label_statusProgressBar_text_new.Visible = false;
+                toolStripProgressBar_work_progress.Visible = false;
+                toolStripStatusLabel_status.Text = "Готово.";
+                statusStrip1.Refresh();
+                button_reveal.Enabled = true;
+                pictureBox_stegano_status.Image = Lab1.Properties.Resources.LED_green;
             }
         }
 
@@ -183,30 +324,639 @@ namespace Lab1
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.FileName = "SteganoContainer.jpg";
-            saveFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
+            saveFileDialog1.FileName = "CVZ.txt";
+            saveFileDialog1.Filter = "Recieved message (*.txt)|*.txt";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                using (FileStream file = new FileStream(saveFileDialog1.FileName, FileMode.Create))
+                StreamWriter file = new StreamWriter(saveFileDialog1.OpenFile());
+                if (file != null)
                 {
-                    file.Write(out_cvz, 0, out_cvz.Length);
+                    UnicodeEncoding uniEncoding = new UnicodeEncoding();
+                    foreach (string line in textBox_output.Lines)
+                    {
+                        file.WriteLine(line + Environment.NewLine);
+                    }
+                    file.Dispose();
+                    file.Close();
                 }
             }
+            textBox_output_path.Text = saveFileDialog1.FileName;
+            textBox_output_path.Refresh();
         }
-        private int getBit(int code, int pointer)
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            try
+            {
+
+                //DEFINE SAVE PARAMS
+                SaveFileDialog saveFileDialog1 = new SaveFileDialog();
+
+                string savePath = "";
+
+                saveFileDialog1.FileName = "SteganoContainer.jpg";
+                saveFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
+                saveFileDialog1.FilterIndex = 2;
+                saveFileDialog1.RestoreDirectory = true;
+
+                if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+                {
+                    savePath = saveFileDialog1.FileName;
+                }
+                //get cvz
+                toolStripStatusLabel_status.Text = "Чтение ЦВЗ...";
+                statusStrip1.Refresh();
+
+                if (radioButton_cvz_input_text.Checked)
+                {
+                    List<byte> cvz_temp = new List<byte>();
+                    foreach (var symb in textBox_cvz.Text)
+                    {
+                        cvz_temp.Add((byte)(symb >> 8));
+                        cvz_temp.Add((byte)symb);
+                    }
+                    cvz = cvz_temp.ToArray();
+                }
+
+                List<byte> cvzArray = new List<byte>();
+                for (int i = 0; i < cvz.Length * 8; i++)
+                {
+                    if (getBit(cvz[i / 8], 7 - i % 8))
+                        cvzArray.Add(1);
+                    else
+                        cvzArray.Add(0);
+                }
+                //get key
+                toolStripStatusLabel_status.Text = "Чтение ключа...";
+                statusStrip1.Refresh();
+
+                
+                List<byte> keyArray = new List<byte>();
+                if (checkBox_use_key.Checked)
+                {
+                    if (radioButton_key_input_text.Checked)
+                    {
+                        if (textBox_input_key.TextLength == 0)
+                        {
+                            for (int i = 0; i < 8; i++)
+                                keyArray.Add(1);
+                            input_key = keyArray.ToArray();
+                        }
+                        else
+                        {
+                            foreach (var symb in textBox_input_key.Text)
+                            {
+                                for (int i = 0; i < 8; i++) //USING ONLY FIRST BYTE
+                                {
+                                    if (getBit(symb, 7 - i))
+                                        keyArray.Add(1);
+                                    else
+                                    {
+                                        keyArray.Add(0);
+                                        input_key_zeros++;
+                                    }
+                                }
+                            }
+                            input_key = keyArray.ToArray();
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 8; i++)
+                        keyArray.Add(1);
+                    input_key = keyArray.ToArray();
+                }
+                
+
+                if (cvzArray.Count + input_key_zeros > container_capacity*8) //!!!!!!!!!!!!!!!!!!!!!!!
+                    throw new Exception("");
+
+                //hide
+                toolStripStatusLabel_status.Text = "Модификация ДКП...";
+                toolStripProgressBar_work_progress.Visible = true;
+                toolStripProgressBar_work_progress.Maximum = packs.Count;
+                label_statusProgressBar_text_new.Visible = true;
+                label_statusProgressBar_text_new.Text = "0/" + packs.Count;
+                statusStrip1.Refresh();
+
+                //insert message len in the beginning
+                int size = cvzArray.Count + 16;
+                byte len_high = (byte)(size >> 8);
+                byte len_low = (byte)(size & 0x00FF);
+                for (int i = 0; i < 8; i++)
+                {
+                    if (getBit(len_low, i))
+                        cvzArray.Insert(0, 1);
+                    else
+                        cvzArray.Insert(0, 0);
+                }
+                for (int i = 0; i < 8; i++)
+                {
+                    if (getBit(len_high, i))
+                        cvzArray.Insert(0, 1);
+                    else
+                        cvzArray.Insert(0, 0);
+                }
+                //cvzArray.Insert(0, len_low);
+                //cvzArray.Insert(0, len_high);
+
+                int keyPointer = 0;
+                int cvzPointer = 0;
+                int working_pack = 0;
+                foreach (var pack in packs)
+                {
+                    //Y
+                    if (useY)
+                    {
+                        if (keyPointer == input_key.Length)
+                            keyPointer = 0;
+                        if (cvzPointer == cvzArray.Count)
+                            break;
+                        if (input_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            if (cvzArray[cvzPointer] == 1)
+                            {
+                                pack.Y_Matrix[C1_y, C1_x] -= N / 2;
+                                pack.Y_Matrix[C2_y, C2_x] += N / 2;
+                            }
+                            else
+                            {
+                                pack.Y_Matrix[C1_y, C1_x] += N / 2;
+                                pack.Y_Matrix[C2_y, C2_x] -= N / 2;
+                            }
+                            cvzPointer++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cb
+                    if (useCb)
+                    {
+                        if (keyPointer == input_key.Length)
+                            keyPointer = 0;
+                        if (cvzPointer == cvzArray.Count)
+                            break;
+                        if (input_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            if (cvzArray[cvzPointer] == 1)
+                            {
+                                pack.Cb_Matrix[C1_y, C1_x] -= N / 2;
+                                pack.Cb_Matrix[C2_y, C2_x] += N / 2;
+                            }
+                            else
+                            {
+                                pack.Cb_Matrix[C1_y, C1_x] += N / 2;
+                                pack.Cb_Matrix[C2_y, C2_x] -= N / 2;
+                            }
+                            cvzPointer++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cr
+                    if (useCr)
+                    {
+                        if (keyPointer == input_key.Length)
+                            keyPointer = 0;
+                        if (cvzPointer == cvzArray.Count)
+                            break;
+                        if (input_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            if (cvzArray[cvzPointer] == 1)
+                            {
+                                pack.Cr_Matrix[C1_y, C1_x] -= N / 2;
+                                pack.Cr_Matrix[C2_y, C2_x] += N / 2;
+                            }
+                            else
+                            {
+                                pack.Cr_Matrix[C1_y, C1_x] += N / 2;
+                                pack.Cr_Matrix[C2_y, C2_x] -= N / 2;
+                            }
+                            cvzPointer++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //::::UI
+                    working_pack++;
+                    toolStripProgressBar_work_progress.Value = working_pack;
+                    label_statusProgressBar_text_new.Text = working_pack + "/" + packs.Count;
+                    statusStrip1.Refresh();
+                }
+
+                //PACK BACK to bitMap
+                //IDCT
+                toolStripStatusLabel_status.Text = "Просчёт ИДКП...";
+                toolStripProgressBar_work_progress.Maximum = packs.Count;
+                working_pack = 0;
+                toolStripProgressBar_work_progress.Value = 0;
+                label_statusProgressBar_text_new.Text = "0/" + packs.Count;
+                statusStrip1.Refresh();
+
+                foreach (var pack in packs)
+                {
+                    pack.Y_Matrix = DCT.IDCTRangeMatrix(DCT.IDCTMatrix(pack.Y_Matrix));
+                    pack.Cb_Matrix = DCT.IDCTRangeMatrix(DCT.IDCTMatrix(pack.Cb_Matrix));
+                    pack.Cr_Matrix = DCT.IDCTRangeMatrix(DCT.IDCTMatrix(pack.Cr_Matrix));
+                    //::::UI
+                    working_pack++;
+                    toolStripProgressBar_work_progress.Value = working_pack;
+                    label_statusProgressBar_text_new.Text = working_pack + "/" + packs.Count;
+                    statusStrip1.Refresh();
+                }
+                toolStripProgressBar_work_progress.Value = 0;
+                toolStripProgressBar_work_progress.Visible = false;
+                label_statusProgressBar_text_new.Visible = false;
+
+                toolStripStatusLabel_status.Text = "Конвертация цветовой палитры...";
+                statusStrip1.Refresh();
+
+                var RGBMatrixes = new List<Color[,]>();
+                foreach (var pack in packs)
+                    RGBMatrixes.Add(pack.Get_Pixel_Matrix_RGB());
+
+                toolStripStatusLabel_status.Text = "Формирование матрицы картинки...";
+                toolStripProgressBar_work_progress.Value = 0;
+                toolStripProgressBar_work_progress.Visible = true;
+                toolStripProgressBar_work_progress.Maximum = RGBMatrixes.Count;
+                label_statusProgressBar_text_new.Visible = true;
+                label_statusProgressBar_text_new.Text = "0/" + RGBMatrixes.Count;
+                statusStrip1.Refresh();
+                
+                working_pack = 0;
+
+                Color[,] newMatrix = new Color[final_height, final_width];
+                int x_offset = 0;
+                int y_offset = 0;
+                foreach (var mini_matrix in RGBMatrixes)
+                {
+                    //check offsets
+                    if (x_offset >= final_width)
+                    {
+                        x_offset = 0;
+                        y_offset += 8;
+                    }
+                    //y_offset cannot be > height here
+
+                    //write 8x8 matrix
+                    for (int i = 0; i < 8; i++)
+                    {
+                        for (int j = 0; j < 8; j++)
+                        {
+                            newMatrix[i + y_offset, j + x_offset] = mini_matrix[i, j];
+                        }
+                    }
+                    //move offsets
+                    x_offset += 8;
+
+                    //::::UI
+                    working_pack++;
+                    toolStripProgressBar_work_progress.Value = working_pack;
+                    label_statusProgressBar_text_new.Text = working_pack + "/" + RGBMatrixes.Count;
+                    statusStrip1.Refresh();
+                }
+                toolStripProgressBar_work_progress.Value = 0;
+                toolStripProgressBar_work_progress.Visible = false;
+                label_statusProgressBar_text_new.Visible = false;
+
+                toolStripStatusLabel_status.Text = "Создание карты...";
+                statusStrip1.Refresh();
+
+                var newImg = makeBitmap(newMatrix, final_width, final_height);
+
+                toolStripStatusLabel_status.Text = "Сохранение...";
+                statusStrip1.Refresh();
+
+                //ENCODER SETTING
+                var format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                var quality = 100L;
+
+                System.Drawing.Imaging.ImageCodecInfo formatEncoder = GetEncoder(format);
+                System.Drawing.Imaging.Encoder encoder = System.Drawing.Imaging.Encoder.Quality;                                //dummy encoder for params
+                System.Drawing.Imaging.EncoderParameters encoderParameters = new System.Drawing.Imaging.EncoderParameters(1);
+                System.Drawing.Imaging.EncoderParameter qualityParameter = new System.Drawing.Imaging.EncoderParameter(encoder, quality);
+                encoderParameters.Param[0] = qualityParameter;
+
+                newImg.Save(savePath, formatEncoder, encoderParameters);
+
+                toolStripStatusLabel_status.Text = "Готово.";
+                statusStrip1.Refresh();
+
+                button_hide.Enabled = false;
+                pictureBox_container_status.Image = Lab1.Properties.Resources.LED_red;
+            }
+            catch (Exception ex)
+            {
+                
+            }
+        }
+
+        private void button_reveal_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                toolStripStatusLabel_status.Text = "Чтение ключа...";
+                statusStrip1.Refresh();
+                
+                List<byte> keyArray = new List<byte>();
+                if (checkBox_stegano_use_key.Checked)
+                {
+                    if (radioButton_output_key_text.Checked)
+                    {
+                        if (textBox_output_key.TextLength == 0)
+                        {
+                            for (int i = 0; i < 8; i++)
+                                keyArray.Add(1);
+                            output_key = keyArray.ToArray();
+                        }
+                        else
+                        {
+                            foreach (var symb in textBox_output_key.Text)
+                            {
+                                for (int i = 0; i < 8; i++) //USING ONLY FIRST BYTE
+                                {
+                                    if (getBit(symb, 7 - i))
+                                        keyArray.Add(1);
+                                    else
+                                        keyArray.Add(0);
+                                }
+                            }
+                            output_key = keyArray.ToArray();
+                        }
+                    }
+                }
+                else
+                {
+                    for (int i = 0; i < 8; i++)
+                        keyArray.Add(1);
+                    output_key = keyArray.ToArray();
+                }
+
+                toolStripStatusLabel_status.Text = "Экспорт размера сообщения...";
+                statusStrip1.Refresh();
+
+                //extract size
+                int expectedSize = 0;
+                int size_part_extracted = 0; //16 bit
+
+                int keyPointer = 0;
+                int working_pack = 0;
+                foreach (var pack in packsStegano)
+                {
+                    //Y
+                    if (useY)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (size_part_extracted == 16)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Y_Matrix[C1_y, C1_x];
+                            int C2 = pack.Y_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                expectedSize += 1;
+                            expectedSize <<= 1;
+                            size_part_extracted++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cb
+                    if (useCb)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (size_part_extracted == 16)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Cb_Matrix[C1_y, C1_x];
+                            int C2 = pack.Cb_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                expectedSize += 1;
+                            expectedSize <<= 1;
+                            size_part_extracted++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cr
+                    if (useCr)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (size_part_extracted == 16)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Cr_Matrix[C1_y, C1_x];
+                            int C2 = pack.Cr_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                expectedSize += 1;
+                            expectedSize <<= 1;
+                            size_part_extracted++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //::::UI
+                    working_pack++;
+                    toolStripProgressBar_work_progress.Value = working_pack;
+                    label_statusProgressBar_text_new.Text = working_pack + "/" + packsStegano.Count;
+                    statusStrip1.Refresh();
+                }
+                expectedSize >>= 1;
+
+                //extract message
+                toolStripStatusLabel_status.Text = "Экспорт сообщения...";
+                statusStrip1.Refresh();
+
+                keyPointer = 0;
+                int bitsRead = 0; // 8
+                byte temp_byte = 0;
+                List<byte> message_raw = new List<byte>();
+                foreach (var pack in packsStegano)
+                {
+                    //Y
+                    if (useY)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (bitsRead == 8)
+                        {
+                            bitsRead = 0;
+                            message_raw.Add((byte)(temp_byte >> 1));
+                            temp_byte = 0;
+                        }
+                        if (message_raw.Count == expectedSize / 8)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Y_Matrix[C1_y, C1_x];
+                            int C2 = pack.Y_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                temp_byte += 1;
+                            temp_byte <<= 1;
+                            bitsRead++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cb
+                    if (useCb)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (bitsRead == 8)
+                        {
+                            bitsRead = 0;
+                            message_raw.Add((byte)(temp_byte >> 1));
+                            temp_byte = 0;
+                        }
+                        if (message_raw.Count == expectedSize / 8)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Cb_Matrix[C1_y, C1_x];
+                            int C2 = pack.Cb_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                temp_byte += 1;
+                            temp_byte <<= 1;
+                            bitsRead++;
+                        }
+                        else
+                            keyPointer++;
+                    }
+                    //Cr
+                    if (useCr)
+                    {
+                        if (keyPointer == output_key.Length)
+                            keyPointer = 0;
+                        if (bitsRead == 8)
+                        {
+                            bitsRead = 0;
+                            message_raw.Add((byte)(temp_byte >> 1));
+                            temp_byte = 0;
+                        }
+                        if (message_raw.Count == expectedSize / 8)
+                            break;
+                        if (output_key[keyPointer] == 1)
+                        {
+                            keyPointer++;
+                            int C1 = pack.Cr_Matrix[C1_y, C1_x];
+                            int C2 = pack.Cr_Matrix[C2_y, C2_x];
+                            if (C1 < C2)
+                                temp_byte += 1;
+                            temp_byte <<= 1;
+                            bitsRead++;
+                        }
+                        else
+                            keyPointer++;
+                        //::::UI
+                        working_pack++;
+                        toolStripProgressBar_work_progress.Value = working_pack;
+                        label_statusProgressBar_text_new.Text = working_pack + "/" + packsStegano.Count;
+                        statusStrip1.Refresh();
+                    }
+                }
+
+                //remove size
+                message_raw.RemoveAt(0);
+                message_raw.RemoveAt(0);
+                out_cvz = message_raw.ToArray();
+
+                toolStripStatusLabel_status.Text = "Отображение...";
+                statusStrip1.Refresh();
+
+                //shrink to char
+                textBox_output.Text = "";
+                for (int i = 0; i < message_raw.Count; i += 2)
+                {
+                    char tempChar;
+                    tempChar = (char)message_raw[i];
+                    tempChar <<= 8;
+                    tempChar += (char)message_raw[i + 1];
+                    textBox_output.Text += tempChar;
+                }
+                toolStripStatusLabel_status.Text = "Готово.";
+                statusStrip1.Refresh();
+                button_reveal.Enabled = false;
+                pictureBox_stegano_status.Image = Lab1.Properties.Resources.LED_red;
+            }
+            catch (Exception ex)
+            {
+
+            }
+        }
+
+        private System.Drawing.Imaging.ImageCodecInfo GetEncoder(System.Drawing.Imaging.ImageFormat format)
+        {
+            System.Drawing.Imaging.ImageCodecInfo[] codecs = System.Drawing.Imaging.ImageCodecInfo.GetImageDecoders();
+            foreach (System.Drawing.Imaging.ImageCodecInfo codec in codecs)
+            {
+                if (codec.FormatID == format.Guid)
+                {
+                    return codec;
+                }
+            }
+            return null;
+        }
+
+        private static Bitmap makeBitmap(Color[,] newMatrix, int width, int height)
+        {
+            Bitmap newBitMap = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format24bppRgb);
+
+            Rectangle BoundsRect = new Rectangle(0, 0, width, height);
+            System.Drawing.Imaging.BitmapData bitMapData = newBitMap.LockBits(BoundsRect,
+                                            System.Drawing.Imaging.ImageLockMode.WriteOnly,
+                                            newBitMap.PixelFormat);
+            IntPtr ptr = bitMapData.Scan0;
+
+            int scanWidth = bitMapData.Stride;
+            byte[] rawImg = new byte[width * height * 3];
+
+            int rawImgCounter = 0;
+            for (int i = 0; i < height; i++)
+            {
+                for (int j = 0; j < width; j++)
+                {
+                    rawImg[rawImgCounter] = newMatrix[i, j].R;
+                    rawImgCounter++;
+                    rawImg[rawImgCounter] = newMatrix[i, j].G;
+                    rawImgCounter++;
+                    rawImg[rawImgCounter] = newMatrix[i, j].B;
+                    rawImgCounter++;
+                }
+            }
+
+            // fill in rgbValues
+            Marshal.Copy(rawImg, 0, ptr, rawImg.Length);
+            newBitMap.UnlockBits(bitMapData);
+            return newBitMap;
+        }
+        private bool getBit(int code, int pointer)
         {
             int pointerBit = 0, temp = 0;
             pointerBit = (int)Math.Pow(2, pointer);
             temp = code ^ pointerBit;
             if (temp < code)
-                return 1;
+                return true;
             else
-                return 0;
+                return false;
         }
-
         public int binaryLen(ulong msg)
         {
             int i;
@@ -221,1987 +971,795 @@ namespace Lab1
             return --i;
         }
 
-        private void button5_Click(object sender, EventArgs e)
+        public static int FairRound(double numb)
         {
-            byte p1 = 0;
-            byte p2 = 0;
-            List<int> huff_tables_types = new List<int>();
-            List<int> huff_tables_inds = new List<int>();
-            //Amounts of huffman codes of various lengths in bits
-            List<int[]> huff_tables_codeLens = new List<int[]>();
-            //Huffman codes - nodes of tree
-            List<int[]> huff_tables_codes = new List<int[]>(); //component of decode
-            //Decoded Huffman codes in binary from tree
-            //List<int[]> huff_tables_codes_binary = new List<int[]>(); 
-            List<List<int>> huff_tables_codes_binary = new List<List<int>>(); //target to decode
-            //quantization matrixes
-            List<int> quant_matrix_ids = new List<int>();
-            List<List<int>> quant_matrixes = new List<List<int>>();
-            //picture matrixes
-            List<List<int>> picture_matrixes = new List<List<int>>();
-            int container_pointer = 0;
-            //read FFDB
-            while (true)
+            int real = (int)numb;
+            double tail = numb - real;
+            if (tail < 0.5)
+                return real;
+            else
+                return real + 1;
+        }
+
+        public static class DCT
+        {
+            public static int[,] DCTRangeMatrix(int[,] srcMatrix) //make -128 =< value-128 =< 127 OK
             {
-                while (!(p1 == 0xFF && p2 == 0xDB))
+                int[,] srcShifted = new int[8, 8];
+                for (int i = 0; i < 8; i++)
                 {
-                    p1 = container[container_pointer];
-                    p2 = container[container_pointer + 1];
-                    container_pointer++;
-                    if (p1 == 0xFF && p2 == 0xC4)
+                    for (int j = 0; j < 8; j++)
                     {
-                        //container_pointer++;
-                        goto FFC4;
+                        srcShifted[i, j] = Math.Max(Math.Min(srcMatrix[i, j] - 128, 127), -128);
                     }
                 }
-                container_pointer++;
-                p1 = 0;
-                p2 = 0;
-                //read quant table
-                //read table len
-                int block_len = 0;
-                block_len = container[container_pointer];
-                block_len <<= 8;
-                container_pointer++;
-                block_len += container[container_pointer];
-                //read type + index
-                container_pointer++;
-                byte temp_byte = container[container_pointer];
-                int temp_type = temp_byte & 0xF0;
-                temp_type >>= 4;
-                //if (temp_type == 1) //2 bytes per value
-                //    throw shit;
-                quant_matrix_ids.Add(temp_byte & 0x0F);
-                container_pointer++;
-                quant_matrixes.Add(new List<int>());
-                quant_matrixes[quant_matrixes.Count - 1].Add(container_pointer + 23); // no need to take a full matrix
-                quant_matrixes[quant_matrixes.Count - 1].Add(container_pointer + 30); // these two needed for hide
+                return srcShifted;
             }
-        FFC4:
-            //read FFC4
-            int huff_table_ind = 0;
-            
-            while (true)
+            public static int[,] DCTMatrix(int[,] srcMatrix) //OK
             {
-                while (!(p1 == 0xFF && p2 == 0xC4))
+                int[,] srcDCT = new int[8, 8];
+                for (int u = 0; u < 8; u++)
                 {
-                    p1 = container[container_pointer];
-                    p2 = container[container_pointer+1];
-                    container_pointer++;
-                    if (p1 == 0xFF && p2 == 0xDA)
+                    for (int v = 0; v < 8; v++)
                     {
-                        container_pointer++;
-                        goto FFDA;
-                    }
-                }
-                container_pointer++;
-                p1 = 0;
-                p2 = 0;
-                //read block
-                //read block len
-                int block_len = 0;
-                block_len = container[container_pointer];
-                block_len <<= 8;
-                container_pointer++;
-                block_len += container[container_pointer];
-                //read table type and ind
-                container_pointer++; //type and index byte
-                byte temp_byte = container[container_pointer];
-                int temp_type = temp_byte & 0xF0;
-                temp_type >>= 4;
-                huff_tables_types.Add(temp_type);
-                huff_tables_inds.Add(temp_byte & 0x0F);
-                //read code lens
-                container_pointer++; //start of code lens
-                huff_tables_codeLens.Add(new int[16]);
-                for (int i = 0; i < 16; i++)
-                {
-                    (huff_tables_codeLens[huff_tables_codeLens.Count-1])[i] = container[container_pointer];
-                    container_pointer++;
-                }
-                //int one_byte_vals = 0;
-                ////count
-                //for (int i = 0; i < 8; i++)
-                //{
-                //    one_byte_vals += (huff_tables_codeLens[huff_tables_codeLens.Count - 1])[i];
-                //}
-                //int two_byte_vals = 0;
-                ////count
-                //for (int i = 8; i < 16; i++)
-                //{
-                //    two_byte_vals += (huff_tables_codeLens[huff_tables_codeLens.Count - 1])[i];
-                //}
-                ////read codes
-                //List<int> temp_code_vals = new List<int>();
-                //for (int i = 0; i < one_byte_vals; i++)
-                //{
-                //    temp_code_vals.Add(container[container_pointer]);
-                //    container_pointer++;
-                //}
-                //for (int i = 0; i < two_byte_vals; i++)
-                //{
-                //    int tempVal = container[container_pointer];
-                //    tempVal <<= 8;
-                //    container_pointer++;
-                //    tempVal += container[container_pointer];
-                //    container_pointer++;
-                //    temp_code_vals.Add(tempVal);
-                //}
-                //huff_tables_codes.Add(temp_code_vals.ToArray());
-
-                huff_tables_codes.Add(new int[block_len - 19]);
-                for (int i = 0; i < block_len-19; i++)
-                {
-                    (huff_tables_codes[huff_tables_codes.Count - 1])[i] = container[container_pointer];
-                    container_pointer++;
-                }
-                huff_table_ind++;
-            }
-        FFDA:
-            if (huff_table_ind != 4)
-                throw new Exception("not working with not 4-table jpeg");
-            //read len
-            /*
-             * read
-             */
-            container_pointer += 2;
-            //read channels
-            byte channels = container[container_pointer];
-            //if (channels != 3)
-            //    throw shit;
-            byte[] channels_table_match = new byte[3];
-            container_pointer++;
-            //read matches
-            // ->01 xx 02 xx 03 xx
-            container_pointer++; //channel 01
-            channels_table_match[0] = container[container_pointer];
-            container_pointer+=2; //channel 02
-            channels_table_match[1] = container[container_pointer];
-            container_pointer+=2; //channel 03
-            channels_table_match[2] = container[container_pointer];
-            container_pointer++;
-
-            List<byte> serviceFFDAbytes = new List<byte>();
-            serviceFFDAbytes.Add(container[container_pointer]); //1b
-            container_pointer++;
-            serviceFFDAbytes.Add(container[container_pointer]); //2b
-            container_pointer++;
-            serviceFFDAbytes.Add(container[container_pointer]); //3b
-            container_pointer++;
-
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                huff_tables_codes_binary.Add(new List<int>());
-                int code = 2;
-                for (int j = 0; j < huff_tables_codeLens[i].Length; j++)
-                {
-                    for (int k = 0; k < (huff_tables_codeLens[i])[j]; k++)
-                    {
-                        (huff_tables_codes_binary[huff_tables_codes_binary.Count - 1]).Add(code);
-                        code++;
-                    }
-                    code <<= 1;
-                }
-            }
-
-            for (int i = 0; i < huff_tables_codes_binary.Count; i++)
-            {
-                Console.WriteLine("table #" + i + " TYPE: " + (huff_tables_types[i]==0?"DC":"AC") + "-" + huff_tables_inds[i]);
-                for (int j = 0; j < huff_tables_codes_binary[i].Count; j++)
-                {
-                    Console.Write("VALUE---> 0x" + (huff_tables_codes[i][j]>0x0F?"":"0"));
-                    Console.Write(huff_tables_codes[i][j].ToString("X"));
-                    Console.WriteLine(" + CODE---> " + ToBinaryString((uint)huff_tables_codes_binary[i][j]));
-                }
-            }
-
-            //filling matrixes
-            //match channels--tables
-            int[] matched_dc = new int[6]; //contains table inds YYYYCbCr
-            int[] matched_ac = new int[6]; //contains table inds YYYYCbCr
-
-            //int[] matched_dc = new int[3]; //contains table inds YCbCr
-            //int[] matched_ac = new int[3]; //contains table inds YCbCr
-            //channel Y
-            //DC search
-            int target_index = channels_table_match[0];
-            target_index >>= 4;
-            int found_dc_index = -1;
-            int found_ac_index = -1;
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 0 && huff_tables_inds[i] == target_index) //DC table with target index
-                {
-                    found_dc_index = i;
-                    break;
-                }
-            }
-            target_index = channels_table_match[0];
-            target_index &= 0x0F;
-            //AC search
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 1 && huff_tables_inds[i] == target_index) //AC table with target index
-                {
-                    found_ac_index = i;
-                    break;
-                }
-            }
-            //DC
-            matched_dc[0] = found_dc_index;
-            matched_dc[1] = found_dc_index;
-            matched_dc[2] = found_dc_index;
-            matched_dc[3] = found_dc_index;
-            //AC
-            matched_ac[0] = found_ac_index;
-            matched_ac[1] = found_ac_index;
-            matched_ac[2] = found_ac_index;
-            matched_ac[3] = found_ac_index;
-            //channel Cb
-            found_dc_index = -1;
-            found_ac_index = -1;
-            target_index = channels_table_match[1];
-            target_index >>= 4;
-            //DC Search
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 0 && huff_tables_inds[i] == target_index) //DC table with target index
-                {
-                    found_dc_index = i;
-                    break;
-                }
-            }
-            target_index = channels_table_match[1];
-            target_index &= 0x0F;
-            //AC search
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 1 && huff_tables_inds[i] == target_index) //AC table with target index
-                {
-                    found_ac_index = i;
-                    break;
-                }
-            }
-            //DC
-            matched_dc[4] = found_dc_index;
-            //matched_dc[1] = found_dc_index;
-            //AC
-            matched_ac[4] = found_ac_index;
-            //matched_ac[1] = found_ac_index;
-            //channel Cr
-            found_dc_index = -1;
-            found_ac_index = -1;
-            target_index = channels_table_match[2];
-            target_index >>= 4;
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 0 && huff_tables_inds[i] == target_index) //DC table with target index
-                {
-                    found_dc_index = i;
-                    break;
-                }
-            }
-            target_index = channels_table_match[2];
-            target_index &= 0x0F;
-            //AC search
-            for (int i = 0; i < huff_tables_codes.Count; i++)
-            {
-                if (huff_tables_types[i] == 1 && huff_tables_inds[i] == target_index) //AC table with target index
-                {
-                    found_ac_index = i;
-                    break;
-                }
-            }
-            //DC
-            matched_dc[5] = found_dc_index;
-            //matched_dc[2] = found_dc_index;
-            //AC
-            matched_ac[5] = found_ac_index;
-            //matched_ac[2] = found_ac_index;
-
-            int current_table_ind = 0;
-            bool use_dc = true;
-
-            int pointerDataStart = container_pointer;
-            int bits_counter = 0;
-            int buffer = 2;
-            List<int> tempMatrix = new List<int>();
-
-            while (true)
-            {
-                if (container[pointerDataStart + (bits_counter / 8)] == 0xFF)
-                {
-                    if (container[pointerDataStart + (bits_counter / 8) + 1] == 0xD9)
-                        break;
-                }
-
-
-                buffer += getBit(container[pointerDataStart + (bits_counter / 8)], 7 - (bits_counter % 8));
-                var TRACKER_buffer = ToBinaryString((uint)buffer); //DEBUG=====================================================
-                bits_counter++;
-
-                int value = 0;
-                if (use_dc)
-                {
-                    int[] values_list = huff_tables_codes[matched_dc[current_table_ind % matched_dc.Length]];
-                    List<int> codes_list = huff_tables_codes_binary[matched_dc[current_table_ind % matched_ac.Length]];
-                    value = checkCode(buffer, values_list, codes_list);
-                }
-                else //AC
-                {
-                    int[] values_list = huff_tables_codes[matched_ac[current_table_ind % 6]];
-                    List<int> codes_list = huff_tables_codes_binary[matched_ac[current_table_ind % 6]];
-                    value = checkCode(buffer, values_list, codes_list);
-                }
-
-                if (value == -1)
-                {
-                    buffer <<= 1;
-                }
-                else
-                {
-                    if (use_dc) //DC
-                    {
-                        use_dc = false;
-                        if (value == 0x00) // Zero-DC-Coeff
+                        double au = (u == 0 ? (1 / Math.Sqrt(2)) : 1);
+                        double av = (v == 0 ? (1 / Math.Sqrt(2)) : 1);
+                        double mult = (au * av) / 4;
+                        double summ1x = 0;
+                        for (int x = 0; x < 8; x++)
                         {
-                            tempMatrix.Add(0);
+                            double summ2y = 0;
+                            for (int y = 0; y < 8; y++)
+                            {
+                                double valcos1 = (((2 * x) + 1) * u * Math.PI) / 16;
+                                double multcos1 = Math.Cos(valcos1);
+                                double valcos2 = (((2 * y) + 1) * v * Math.PI) / 16;
+                                double multcos2 = Math.Cos(valcos2);
+                                summ2y += srcMatrix[y, x] * multcos1 * multcos2;
+                            }
+                            summ1x += summ2y;
                         }
-                        else
-                        {
-                            bool negative_coeff = false;
-                            if (getBit(container[pointerDataStart + (bits_counter / 8)], 7 - (bits_counter % 8)) == 0)
-                                negative_coeff = true;
-                            int coeff_buffer = 0;
-
-                            int end_of_coeff = bits_counter + value;
-                            for (int i = bits_counter; i < end_of_coeff; i++)
-                            {
-                                coeff_buffer <<= 1;
-                                coeff_buffer += getBit(container[pointerDataStart + (bits_counter / 8)], 7 - (bits_counter % 8));
-                                var TRACKER_coeff_buffer = ToBinaryString((uint)coeff_buffer); //DEBUG=====================================================
-                                bits_counter++;
-                            }
-
-                            int read_coeff = 0;
-                            if (negative_coeff)
-                            {
-                                read_coeff = coeff_buffer + 1 - (int)Math.Pow(2, value);
-                            }
-                            else
-                            {
-                                read_coeff = coeff_buffer;
-                            }
-                            tempMatrix.Add(read_coeff);
-                        }
+                        srcDCT[v, u] = (int)(mult * summ1x);
                     }
-                    else //AC
+                }
+                return srcDCT;
+            }
+
+            public static int[,] IDCTRangeMatrix(int[,] srcMatrix) //make 0 =< value+128 =< 255 OK
+            {
+                int[,] srcShifted = new int[8, 8];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
                     {
-                        if (value == 0x00) //STOP-CODE
-                        {
-                            //fill until size is 64
-                            int zerosToFill = 64 - tempMatrix.Count;
-                            for (int i = 0; i < zerosToFill; i++)
-                                tempMatrix.Add(0);
-                            //END MATRIX
-                            picture_matrixes.Add(new List<int>(tempMatrix.ToArray()));
-                            tempMatrix.Clear();
-                            use_dc = true;
-                            current_table_ind++;
-                        }
-                        else
-                        {
-                            int zerosBefore = value >> 4;
-                            int coeff_bits_len = (byte)value & 0x0F;
+                        srcShifted[i, j] = Math.Min(Math.Max(0, srcMatrix[i, j] + 128), 255);
+                    }
+                }
+                return srcShifted;
+            }
 
-                            if (coeff_bits_len == 0)
+            public static int[,] IDCTMatrix(int[,] srcMatrix)
+            {
+                int[,] IDCT = new int[8, 8];
+                for (int x = 0; x < 8; x++)
+                {
+                    for (int y = 0; y < 8; y++)
+                    {
+                        double mult = 0.25;
+                        double summ1x = 0;
+                        for (int u = 0; u < 8; u++)
+                        {
+                            double summ2y = 0;
+                            for (int v = 0; v < 8; v++)
                             {
-                                for (int i = 0; i < 16; i++)
-                                    tempMatrix.Add(0);
+                                double Cu = (u == 0 ? 1 / Math.Sqrt(2) : 1);
+                                double Cv = (v == 0 ? 1 / Math.Sqrt(2) : 1);
+                                double valcos1 = (((2 * x) + 1) * u * Math.PI) / 16;
+                                double multcos1 = Math.Cos(valcos1);
+                                double valcos2 = (((2 * y) + 1) * v * Math.PI) / 16;
+                                double multcos2 = Math.Cos(valcos2);
+                                summ2y += srcMatrix[v, u] * Cu * Cv * multcos1 * multcos2;
                             }
-                            else
+                            summ1x += summ2y;
+                        }
+                        IDCT[y, x] = (int)(mult * summ1x);
+                    }
+                }
+                return IDCT;
+            }
+        }
+        public class Bitmap_YCbCr
+        {
+            public Bitmap_YCbCr(Bitmap oldBitMap)
+            {
+                int newWidth = oldBitMap.Width;
+                if (oldBitMap.Width % 16 != 0)
+                    newWidth = oldBitMap.Width + (16 - oldBitMap.Width % 16);
+                int newHeight = oldBitMap.Height;
+                if (oldBitMap.Height % 16 != 0)
+                    newHeight = oldBitMap.Height + (16 - oldBitMap.Height % 16);
+                this.width = newWidth;
+                this.height = newHeight;
+                bitmap = new Pixel[newHeight, newWidth];
+
+                var resizedOldBitMap = ResizeImage(oldBitMap, newWidth, newHeight);
+
+                for (int i = 0; i < resizedOldBitMap.Height; i++)
+                {
+                    for (int j = 0; j < resizedOldBitMap.Width; j++)
+                    {
+                        var pixel = resizedOldBitMap.GetPixel(j, i);
+                        bitmap[i, j] = new Pixel(pixel.R, pixel.G, pixel.B);
+                    }
+                }
+            }
+            public Bitmap_YCbCr(int width, int height)
+            {
+                int newWidth = width;
+                if (width % 16 != 0)
+                    newWidth = width + (16 - width % 16);
+                int newHeight = height;
+                if (height % 16 != 0)
+                    newHeight = height + (16 - height % 16);
+                bitmap = new Pixel[newHeight, newWidth];
+            }
+
+            public Bitmap_YCbCr(Bitmap_YCbCr bitmap_)
+            {
+                bitmap = new Pixel[bitmap_.height, bitmap_.width];
+                for (int i = 0; i < bitmap_.height; i++)
+                {
+                    for (int j = 0; j < bitmap_.width; j++)
+                    {
+                        var pixel = bitmap_.GetPixel(j, i);
+                        bitmap[i, j] = new Pixel(pixel.Y, pixel.Cb, pixel.Cr, true);
+                    }
+                }
+            }
+
+            public Bitmap_YCbCr Copy()
+            {
+                return new Bitmap_YCbCr(this);
+            }
+
+            public void addPixel(int x, int y, int R, int G, int B)
+            {
+                bitmap[y, x] = new Pixel(R, G, B);
+            }
+            public Pixel GetPixel(int x, int y)
+            {
+                return bitmap[y, x];
+            }
+
+            public void apply2h2v()
+            {
+                this.Sampling_Mode = JPEG_Sampling_Mode._2H2V;
+                for (int i = 0; i < this.height - 1; i += 2)
+                {
+                    for (int j = 0; j < this.width; j += 2)
+                    {
+                        var thisPixel = this.GetPixel(j, i);
+                        var nextPixel = this.GetPixel(j + 1, i);
+                        var this_nextPixel = this.GetPixel(j, i + 1);
+                        var next_nextPixel = this.GetPixel(j + 1, i + 1);
+                        int averageCb = (thisPixel.Cb + nextPixel.Cb + this_nextPixel.Cb + next_nextPixel.Cb) / 4;
+                        int averageCr = (thisPixel.Cr + nextPixel.Cr + this_nextPixel.Cr + next_nextPixel.Cr) / 4;
+                        //Cb
+                        this.bitmap[i, j].Cb = averageCb;
+                        this.bitmap[i, j + 1].Cb = averageCb;
+                        this.bitmap[i + 1, j].Cb = averageCb;
+                        this.bitmap[i + 1, j + 1].Cb = averageCb;
+                        //Cr
+                        this.bitmap[i, j].Cr = averageCr;
+                        this.bitmap[i, j + 1].Cr = averageCr;
+                        this.bitmap[i + 1, j].Cr = averageCr;
+                        this.bitmap[i + 1, j + 1].Cr = averageCr;
+                    }
+                }
+            }
+
+            public JPEG_Sampling_Mode GetSampling_Mode()
+            {
+                return this.Sampling_Mode;
+            }
+
+            public List<Bitmap_YCbCr.Pixel[,]> GetRawMatrixes()
+            {
+                List<Bitmap_YCbCr.Pixel[,]> rawMatrixes = new List<Pixel[,]>();
+
+                for (int i = 0; i < height / 8; i++)
+                {
+                    for (int j = 0; j < width / 8; j++)
+                    {
+                        Bitmap_YCbCr.Pixel[,] newMatrix = new Pixel[8, 8];
+                        for (int k = 0; k < 8; k++)
+                        {
+                            for (int h = 0; h < 8; h++)
                             {
-                                for (int i = 0; i < zerosBefore; i++)
-                                    tempMatrix.Add(0);
-
-                                bool negative_coeff = false;
-                                if (getBit(container[pointerDataStart + (bits_counter / 8)], 7 - (bits_counter % 8)) == 0)
-                                    negative_coeff = true;
-
-                                int coeff_buffer = 0;
-
-                                int end_of_coeff = bits_counter + coeff_bits_len;
-                                for (int i = bits_counter; i < end_of_coeff; i++)
-                                {
-                                    coeff_buffer <<= 1;
-                                    coeff_buffer += getBit(container[pointerDataStart + (bits_counter / 8)], 7 - (bits_counter % 8));
-                                    var TRACKER_coeff_buffer = ToBinaryString((uint)coeff_buffer); //DEBUG=====================================================
-                                    bits_counter++;
-                                }
-
-                                int read_coeff = 0;
-                                if (negative_coeff)
-                                {
-                                    read_coeff = coeff_buffer + 1 - (int)Math.Pow(2, coeff_bits_len);
-                                }
-                                else
-                                {
-                                    read_coeff = coeff_buffer;
-                                }
-                                tempMatrix.Add(read_coeff);
-
-                                if (tempMatrix.Count == 64) //END MATRIX
-                                {
-                                    picture_matrixes.Add(new List<int>(tempMatrix.ToArray()));
-                                    tempMatrix.Clear();
-                                    use_dc = true;
-                                    current_table_ind++;
-                                }
+                                int global_i = i * 8 + k;
+                                int global_j = j * 8 + h;
+                                newMatrix[k, h] = bitmap[global_i, global_j];
                             }
                         }
+                        rawMatrixes.Add(newMatrix);
                     }
-                    buffer = 2;
                 }
+                return rawMatrixes;
             }
 
-            for (int i = 0; i < picture_matrixes.Count; i++)
+            public int width;
+            public int height;
+
+            private JPEG_Sampling_Mode Sampling_Mode = JPEG_Sampling_Mode._None;
+
+            public Pixel[,] bitmap;
+
+            public enum JPEG_Sampling_Mode
             {
-                Console.WriteLine("matrix #" + i);
-                for (int j = 0; j < picture_matrixes[i].Count; j++)
+                _None,
+                _2H2V,
+                _2H1V
+            }
+            public class Pixel
+            {
+                public Pixel(int R, int G, int B)
                 {
-                    Console.WriteLine(picture_matrixes[i][j]);
+                    //METHOD 1
+                    //this.Y = (int)((0.299 * R) + (0.587 * G) + (0.114 * B));
+                    //this.Cb = (int)(128 - (0.168736 * R) - (0.331264 * G) + (0.5 * B));
+                    //this.Cr = (int)(128 + (0.5 * R) - (0.418688 * G) - (0.081312 * B));
+                    ////test for back
+                    //double Rn = this.Y + (1.402 * (this.Cr - 128));
+                    //double Gn = this.Y - (0.34414 * (this.Cb - 128)) - (0.71414 * (this.Cr - 128));
+                    //double Bn = this.Y + (1.772 * (this.Cb - 128));
+
+                    //METHOD 2
+                    this.Y = FairRound(16 + ((65.738 * R) / 256) + ((129.057 * G) / 256) + ((25.064 * B) / 256));
+                    this.Cb = FairRound(128 + ((-37.945 * R) / 256) - ((74.494 * G) / 256) + ((112.439 * B) / 256));
+                    this.Cr = FairRound(128 + ((112.439 * R) / 256) - ((94.154 * G) / 256) - ((18.285 * B) / 256));
+                    //check
+                    double Rn = ((298.082 * this.Y) / 256) + ((408.583 * this.Cr) / 256) - 222.921;
+                    double Gn = ((298.082 * this.Y) / 256) - ((100.291 * this.Cb) / 256) - ((208.120 * this.Cr) / 256) + 135.576;
+                    double Bn = ((298.082 * this.Y) / 256) + ((516.412 * this.Cb) / 256) - 276.836;
+
+                    int Ri = FairRound(Rn);
+                    int Gi = FairRound(Gn);
+                    int Bi = FairRound(Bn);
                 }
-            }
-
-            //cvz max len define
-            int cvz_max_len = picture_matrixes.Count/8;
-
-            //quant
-            //for (int i = 0; i < picture_matrixes.Count; i++)
-            //{
-            //    if ((i+1)%5 == 0 || (i+1)%6 == 0) //Cb Cr
-            //    {
-            //        (picture_matrixes[i])[C1_ind] *= (quant_matrixes[1])[1];
-            //        (picture_matrixes[i])[C2_ind] *= (quant_matrixes[1])[1];
-            //    }
-            //    else //Y
-            //    {
-            //        (picture_matrixes[i])[C1_ind] *= (quant_matrixes[0])[1];
-            //        (picture_matrixes[i])[C2_ind] *= (quant_matrixes[0])[1];
-            //    }
-            //}
-
-            //hide
-            //auto
-            //int matrix_counter = 0;
-            //for (int i = 0; i < cvz.Length; i++)
-            //{
-            //    for (int j = 0; j < 8; j++)
-            //    {
-            //        if (getBit(cvz[i], 7 - j) == 0)
-            //        {
-            //            (picture_matrixes[matrix_counter])[C1_ind] += (N / 2) + 5;
-            //            (picture_matrixes[matrix_counter])[C2_ind] -= ((N / 2) + 5);
-            //        }
-            //        else
-            //        {
-            //            (picture_matrixes[matrix_counter])[C1_ind] -= (N / 2) + 5;
-            //            (picture_matrixes[matrix_counter])[C2_ind] += ((N / 2) + 5);
-            //        }
-            //        matrix_counter++;
-            //    }
-            //}
-
-            //MANUAL
-            //(picture_matrixes[0])[C1_ind] -= 1; // 1
-            //(picture_matrixes[0])[C2_ind] += 1;
-            //(picture_matrixes[1])[C1_ind] += 1; // 0
-            //(picture_matrixes[1])[C2_ind] -= 1;
-            //(picture_matrixes[2])[C1_ind] -= 1; // 1
-            //(picture_matrixes[2])[C2_ind] += 1;
-
-            //back quant
-            //for (int i = 0; i < picture_matrixes.Count; i++)
-            //{
-            //    if ((i + 1) % 5 == 0 || (i + 1) % 6 == 0) //Cb Cr
-            //    {
-            //        (picture_matrixes[i])[C1_ind] /= (quant_matrixes[1])[1];
-            //        (picture_matrixes[i])[C2_ind] /= (quant_matrixes[1])[1];
-            //    }
-            //    else //Y
-            //    {
-            //        (picture_matrixes[i])[C1_ind] /= (quant_matrixes[0])[1];
-            //        (picture_matrixes[i])[C2_ind] /= (quant_matrixes[0])[1];
-            //    }
-            //}
-
-            //DC reveal and hide not needed
-
-            //picture_matrixes[4][0] = 3;
-
-            byte[] changedBlock = packWithHuffman(picture_matrixes, serviceFFDAbytes, 3);
-
-            //copy headers before FFC4
-            List<byte> newImg = new List<byte>();
-            container_pointer = 0;
-            while (!(p1 == 0xFF && p2 == 0xC4))
-            {
-                newImg.Add(container[container_pointer]);
-                p1 = container[container_pointer];
-                p2 = container[container_pointer + 1];
-                container_pointer++;
-            }
-            newImg.RemoveAt(newImg.Count-1);
-
-            newImg.AddRange(changedBlock);
-
-            //temporary save
-            File.WriteAllBytes("C:/Users/BlackCultist/Desktop/cursed.jpg", newImg.ToArray());
-
-        }
-
-        private unsafe byte[] packWithHuffman(List<List<int>> matrixes, List<byte> serviceFFDA, int channels) //returns from first FFC4 to FFD9
-        {
-            try
-            {
-                JpegShell jpeg = new JpegShell(matrixes, serviceFFDA, channels);
-                return jpeg.getData();
-            }
-            catch
-            {
-                return null;
-            }
-        }
-
-        //private unsafe void doStuff()
-        //{
-        //    //byte[] input = { 0, 1 };
-        //    IntPtr Ptr_input = Marshal.AllocHGlobal(2 * sizeof(byte));
-        //    byte* input = (byte*)Ptr_input;
-        //    input[0] = 0;
-        //    input[1] = 1;
-
-        //    IntPtr codesLen = Marshal.AllocHGlobal(sizeof(int));
-        //    IntPtr valuesLen = Marshal.AllocHGlobal(sizeof(int));
-
-        //    IntPtr codes = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[uint16_t]
-        //    IntPtr values = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[char]
-
-        //    Encode_getCodes_Wrapper(Ptr_input.ToInt32(), 2, codes.ToInt32(), codesLen.ToInt32(), values.ToInt32(), valuesLen.ToInt32());
-        //    int codesLenInt = Marshal.ReadInt32(codesLen);
-        //    int valuesLenInt = Marshal.ReadInt32(valuesLen);
-        //    Console.Write("CodesLen: ");
-        //    Console.WriteLine(codesLenInt);
-        //    Console.Write("ValuesLen: ");
-        //    Console.WriteLine(valuesLenInt);
-        //    ulong* codesArr = (ulong*)Marshal.ReadInt32(codes);
-        //    byte* valuesArr = (byte*)Marshal.ReadInt32(values);
-
-        //    Console.WriteLine("Code table:");
-        //    Console.WriteLine("__|Value|------------|Code|__");
-        //    for (int i = 0; i < codesLenInt; i++)
-        //    {
-        //        Console.Write("|    ");
-        //        Console.Write(valuesArr[i]);
-        //        Console.Write("  >----------->  ");
-        //        Console.Write(codesArr[i]);
-        //        Console.WriteLine("    |");
-        //    }
-        //    Console.WriteLine("-----------------------------");
-        //}
-
-        private int checkCode(int binaryCode, int[] codes_list, List<int> codes_binary_list)
-        {
-            for (int i = 0; i < codes_binary_list.Count; i++)
-            {
-                if (binaryCode == codes_binary_list[i])
-                    return codes_list[i];
-            }
-            return -1;
-        }
-        public static string ToBinaryString(uint num)
-        {
-            return Convert.ToString(num, 2).PadLeft(16, '0');
-        }
-
-        
-    }
-
-    public class ChannelMode
-    {
-        //channel 1
-        public bool is_Y = false;
-        public int Y_DC_huffman_ind = 0;
-        public int Y_AC_huffman_ind = 0;
-        //channel 2
-        public bool is_Cb = false;
-        public int Cb_DC_huffman_ind = 0;
-        public int Cb_AC_huffman_ind = 0;
-        //channel 3
-        public bool is_Cr = false;
-        public int Cr_DC_huffman_ind = 0;
-        public int Cr_AC_huffman_ind = 0;
-    }
-
-    public class JpegShell
-    {
-        public unsafe JpegShell(List<List<int>> matrixes, List<byte> serviceFFDA, int channels)
-        {
-            structMemHandler.serviceFFDA = serviceFFDA;
-            structMemHandler.channels = channels;
-
-            structMemHandler.matrixes_amount = matrixes.Count;
-            this.HuffDLL = new HuffmanDLLHandler(rawMemHandler);
-
-            JpegBuilder builder = new JpegBuilder(rawMemHandler, structMemHandler);
-            builder.init(matrixes);
-            this.HuffDLL.Encode();
-            rawMemHandler.init_output();
-            jpeg_changed_data.AddRange(builder.build());
-
-        }
-
-        public byte[] getData() { return jpeg_changed_data.ToArray(); }
-
-
-        private HuffmanMemoryHandler rawMemHandler = new HuffmanMemoryHandler();
-        private JpegMemoryHandler structMemHandler = new JpegMemoryHandler();
-        private HuffmanDLLHandler HuffDLL = null;
-        List<byte> jpeg_changed_data = new List<byte>();
-    }
-
-    public class HuffmanDLLHandler
-    {
-        [
-            DllImport("C:\\Users\\BlackCultist\\source\\repos\\HaffmanPack\\Debug\\Huffman_RBClib.dll", 
-            CharSet = CharSet.Unicode, 
-            CallingConvention = CallingConvention.Cdecl)
-        ]
-        private static extern bool Encode_getCodes_Freq_Wrapper(int ADDR_input_stream, int input_stream_len,
-                                                                int ADDR_OF_ARRAY_huffman_codes, int ADDR_huffman_codes_len,
-                                                                int ADDR_OF_ARRAY_values, int ADDR_values_len,
-                                                                int ADDR_OF_ARRAY_freqs, int ADDR_freqs_len);
-        [
-            DllImport("C:\\Users\\BlackCultist\\source\\repos\\HaffmanPack\\Debug\\Huffman_RBClib.dll",
-            CharSet = CharSet.Unicode,
-            CallingConvention = CallingConvention.Cdecl)
-        ]
-        private static extern bool Encode_getCodes_Wrapper(int ADDR_input_stream, int input_stream_len,
-                                                                int ADDR_OF_ARRAY_huffman_codes, int ADDR_huffman_codes_len,
-                                                                int ADDR_OF_ARRAY_values, int ADDR_values_len);
-        [
-            DllImport("C:\\Users\\BlackCultist\\source\\repos\\HaffmanPack\\Debug\\Huffman_RBClib.dll", 
-            CharSet = CharSet.Unicode, 
-            CallingConvention = CallingConvention.Cdecl)
-        ]
-        private static extern bool Free_Encode_getCodes_Wrapper(int ADDR_OF_ARRAY_huffman_codes, int ADDR_OF_ARRAY_values);
-        public HuffmanDLLHandler(HuffmanMemoryHandler memHandler_) 
-        {
-            this.memHandler = memHandler_;
-        }
-
-        public bool Encode()
-        {
-
-            if (!Encode_getCodes_Freq_Wrapper(memHandler.OPtr_YDc_codelen.ToInt32(), memHandler.OPtr_YDc_codelen_Length,
-                                        memHandler.codes_YDc.ToInt32(), memHandler.codesLen_YDc.ToInt32(),
-                                        memHandler.values_YDc.ToInt32(), memHandler.valuesLen_YDc.ToInt32(),
-                                        memHandler.freqs_YDc.ToInt32(), memHandler.freqsLen_YDc.ToInt32()))
-                return false;
-            if (!Encode_getCodes_Freq_Wrapper(memHandler.OPtr_YAc_codelen.ToInt32(), memHandler.OPtr_YAc_codelen_Length,
-                                        memHandler.codes_YAc.ToInt32(), memHandler.codesLen_YAc.ToInt32(),
-                                        memHandler.values_YAc.ToInt32(), memHandler.valuesLen_YAc.ToInt32(),
-                                        memHandler.freqs_YAc.ToInt32(), memHandler.freqsLen_YAc.ToInt32()))
-                return false;
-            if (!Encode_getCodes_Freq_Wrapper(memHandler.OPtr_CbCrDc_codelen.ToInt32(), memHandler.OPtr_CbCrDc_codelen_Length,
-                                        memHandler.codes_CbCrDc.ToInt32(), memHandler.codesLen_CbCrDc.ToInt32(),
-                                        memHandler.values_CbCrDc.ToInt32(), memHandler.valuesLen_CbCrDc.ToInt32(),
-                                        memHandler.freqs_CbCrDc.ToInt32(), memHandler.freqsLen_CbCrDc.ToInt32()))
-                return false;
-            if (!Encode_getCodes_Freq_Wrapper(memHandler.OPtr_CbCrAc_codelen.ToInt32(), memHandler.OPtr_CbCrAc_codelen_Length,
-                                        memHandler.codes_CbCrAc.ToInt32(), memHandler.codesLen_CbCrAc.ToInt32(),
-                                        memHandler.values_CbCrAc.ToInt32(), memHandler.valuesLen_CbCrAc.ToInt32(),
-                                        memHandler.freqs_CbCrAc.ToInt32(), memHandler.freqsLen_CbCrAc.ToInt32()))
-                return false;
-            //if (!Encode_getCodes_Wrapper(memHandler.OPtr_YDc_codelen.ToInt32(), memHandler.OPtr_YDc_codelen_Length,
-            //                            memHandler.codes_YDc.ToInt32(), memHandler.codesLen_YDc.ToInt32(),
-            //                            memHandler.values_YDc.ToInt32(), memHandler.valuesLen_YDc.ToInt32()))
-            //    return false;
-            //if (!Encode_getCodes_Wrapper(memHandler.OPtr_YAc_codelen.ToInt32(), memHandler.OPtr_YAc_codelen_Length,
-            //                            memHandler.codes_YAc.ToInt32(), memHandler.codesLen_YAc.ToInt32(),
-            //                            memHandler.values_YAc.ToInt32(), memHandler.valuesLen_YAc.ToInt32()))
-            //    return false;
-            //if (!Encode_getCodes_Wrapper(memHandler.OPtr_CbCrDc_codelen.ToInt32(), memHandler.OPtr_CbCrDc_codelen_Length,
-            //                            memHandler.codes_CbCrDc.ToInt32(), memHandler.codesLen_CbCrDc.ToInt32(),
-            //                            memHandler.values_CbCrDc.ToInt32(), memHandler.valuesLen_CbCrDc.ToInt32()))
-            //    return false;
-            //if (!Encode_getCodes_Wrapper(memHandler.OPtr_CbCrAc_codelen.ToInt32(), memHandler.OPtr_CbCrAc_codelen_Length,
-            //                            memHandler.codes_CbCrAc.ToInt32(), memHandler.codesLen_CbCrAc.ToInt32(),
-            //                            memHandler.values_CbCrAc.ToInt32(), memHandler.valuesLen_CbCrAc.ToInt32()))
-            //    return false;
-            return true;
-        }
-
-        public bool FreeHuffmanMem()
-        {
-            /*
-            * Free memory
-            */
-            //free ints
-            //Marshal.FreeHGlobal(codesLen_YDc);
-            //Marshal.FreeHGlobal(valuesLen_YDc);
-            //Marshal.FreeHGlobal(codesLen_YAc);
-            //Marshal.FreeHGlobal(valuesLen_YAc);
-            //Marshal.FreeHGlobal(codesLen_CbCrDc);
-            //Marshal.FreeHGlobal(valuesLen_CbCrDc);
-            //Marshal.FreeHGlobal(codesLen_CbCrAc);
-            //Marshal.FreeHGlobal(valuesLen_CbCrAc);
-            ////free pointers
-            //Free_Encode_getCodes_Wrapper(Marshal.ReadInt32(codes_YDc), Marshal.ReadInt32(values_YDc));
-            //Free_Encode_getCodes_Wrapper(Marshal.ReadInt32(codes_YAc), Marshal.ReadInt32(values_YAc));
-            //Free_Encode_getCodes_Wrapper(codes_CbCrDc.ToInt32(), values_CbCrDc.ToInt32()); //fix
-            //Free_Encode_getCodes_Wrapper(codes_CbCrAc.ToInt32(), values_CbCrAc.ToInt32()); //fix
-            //if (!Free_Encode_getCodes_Wrapper(int ADDR_OF_ARRAY_huffman_codes, int ADDR_OF_ARRAY_values))
-            //    return false;
-            //if (!Free_Encode_getCodes_Wrapper(int ADDR_OF_ARRAY_huffman_codes, int ADDR_OF_ARRAY_values))
-            //    return false;
-            //if (!Free_Encode_getCodes_Wrapper(int ADDR_OF_ARRAY_huffman_codes, int ADDR_OF_ARRAY_values))
-            //    return false;
-            //if (!Free_Encode_getCodes_Wrapper(int ADDR_OF_ARRAY_huffman_codes, int ADDR_OF_ARRAY_values))
-            //    return false;
-            return true;
-        }
-
-        HuffmanMemoryHandler memHandler = null;
-    }
-
-    public class JpegBuilder
-    {
-        public JpegBuilder(HuffmanMemoryHandler huffmanMemoryHandler_, JpegMemoryHandler memoryHandler_) 
-        {
-            this.huffmanMemoryHandler = huffmanMemoryHandler_;
-            this.memoryHandler = memoryHandler_;
-        }
-
-        public void init(List<List<int>> matrixes)
-        {
-            make_coeffs(matrixes);
-            make_codeLens(matrixes);
-            huffmanMemoryHandler.init_input(memoryHandler.Y_DC_CodeLens, memoryHandler.Y_AC_CodeLens, memoryHandler.CbCr_DC_CodeLens, memoryHandler.CbCr_AC_CodeLens);
-        }
-
-        public byte[] build()
-        {
-            this.memoryHandler.CodesTable.Init(huffmanMemoryHandler);
-            huffmanMemoryHandler.FreeInputStreams();
-            make_codeLensAmount();
-            bubbleSortTables();
-
-            convertTreeToJPEG_style();
-
-            byte[] FFC4 = packFFC4Headers();
-            byte[] FFDA = packFFDAHeader();
-
-            orderTables();
-            reCalcCodeLens();
-            printCodeTable();
-            byte[] data = packFFDAData();
-
-            byte[] endBytes = { 0xFF, 0xD9 };
-
-            List<byte> concat = new List<byte>();
-            concat.AddRange(FFC4);
-            concat.AddRange(FFDA);
-            concat.AddRange(data);
-            concat.AddRange(endBytes);
-            return concat.ToArray();
-        }
-
-        private void printCodeTable()
-        {
-            Console.WriteLine("===========GENERATED CODES===========");
-            Console.WriteLine("Y-channel. DC-table.");
-            for (int i = 0; i < memoryHandler.CodesTable.Y_DC_Table.Count; i++)
-            {
-                Console.Write("VALUE---> 0x" + (memoryHandler.CodesTable.Y_DC_Table[i].value > 0x0F ? "" : "0"));
-                Console.Write(memoryHandler.CodesTable.Y_DC_Table[i].value.ToString("X"));
-                Console.Write(" + CODE---> " + ToBinaryString((uint)memoryHandler.CodesTable.Y_DC_Table[i].code));
-                Console.WriteLine(" F=" + memoryHandler.CodesTable.Y_DC_Table[i].frequency + 
-                                " [ len(V)=" + memoryHandler.CodesTable.Y_DC_Table[i].value_length_bits + 
-                                "; len(C)=" + memoryHandler.CodesTable.Y_DC_Table[i].code_length_bits + " ]");
-            }
-            Console.WriteLine("Y-channel. AC-table.");
-            for (int i = 0; i < memoryHandler.CodesTable.Y_AC_Table.Count; i++)
-            {
-                Console.Write("VALUE---> 0x" + (memoryHandler.CodesTable.Y_AC_Table[i].value > 0x0F ? "" : "0"));
-                Console.Write(memoryHandler.CodesTable.Y_AC_Table[i].value.ToString("X"));
-                Console.Write(" + CODE---> " + ToBinaryString((uint)memoryHandler.CodesTable.Y_AC_Table[i].code));
-                Console.WriteLine(" F=" + memoryHandler.CodesTable.Y_AC_Table[i].frequency +
-                                " [ len(V)=" + memoryHandler.CodesTable.Y_AC_Table[i].value_length_bits +
-                                "; len(C)=" + memoryHandler.CodesTable.Y_AC_Table[i].code_length_bits + " ]");
-            }
-            Console.WriteLine("CbCr-channel. DC-table.");
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_DC_Table.Count; i++)
-            {
-                Console.Write("VALUE---> 0x" + (memoryHandler.CodesTable.CbCr_DC_Table[i].value > 0x0F ? "" : "0"));
-                Console.Write(memoryHandler.CodesTable.CbCr_DC_Table[i].value.ToString("X"));
-                Console.Write(" + CODE---> " + ToBinaryString((uint)memoryHandler.CodesTable.CbCr_DC_Table[i].code));
-                Console.WriteLine(" F=" + memoryHandler.CodesTable.CbCr_DC_Table[i].frequency +
-                                " [ len(V)=" + memoryHandler.CodesTable.CbCr_DC_Table[i].value_length_bits +
-                                "; len(C)=" + memoryHandler.CodesTable.CbCr_DC_Table[i].code_length_bits + " ]");
-            }
-            Console.WriteLine("Y-channel. DC-table.");
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_AC_Table.Count; i++)
-            {
-                Console.Write("VALUE---> 0x" + (memoryHandler.CodesTable.CbCr_AC_Table[i].value > 0x0F ? "" : "0"));
-                Console.Write(memoryHandler.CodesTable.CbCr_AC_Table[i].value.ToString("X"));
-                Console.Write(" + CODE---> " + ToBinaryString((uint)memoryHandler.CodesTable.CbCr_AC_Table[i].code));
-                Console.WriteLine(" F=" + memoryHandler.CodesTable.CbCr_AC_Table[i].frequency +
-                                " [ len(V)=" + memoryHandler.CodesTable.CbCr_AC_Table[i].value_length_bits +
-                                "; len(C)=" + memoryHandler.CodesTable.CbCr_AC_Table[i].code_length_bits + " ]");
-            }
-            Console.WriteLine("===========GENERATED CODES END===========");
-        }
-        private static string ToBinaryString(uint num)
-        {
-            return Convert.ToString(num, 2).PadLeft(16, '0');
-        }
-
-        private static string ToBinaryString(byte num)
-        {
-            return Convert.ToString(num, 2).PadLeft(8, '0');
-        }
-
-        private static string ToBinaryString(int num, int numBits)
-        {
-            return Convert.ToString(num, 2).PadLeft(numBits, '0');
-        }
-
-        private void reCalcCodeLens()
-        {
-            //Y DC
-            for (int i = 0; i < memoryHandler.JpegCodes.Y_DC_Table.Count; i++)
-                memoryHandler.JpegCodes.Y_DC_Table[i].code_length_bits = binaryLenHuffCodes(memoryHandler.JpegCodes.Y_DC_Table[i].code);
-            //Y AC
-            for (int i = 0; i < memoryHandler.JpegCodes.Y_AC_Table.Count; i++)
-                memoryHandler.JpegCodes.Y_AC_Table[i].code_length_bits = binaryLenHuffCodes(memoryHandler.JpegCodes.Y_AC_Table[i].code);
-            //CbCr DC
-            for (int i = 0; i < memoryHandler.JpegCodes.CbCr_DC_Table.Count; i++)
-                memoryHandler.JpegCodes.CbCr_DC_Table[i].code_length_bits = binaryLenHuffCodes(memoryHandler.JpegCodes.CbCr_DC_Table[i].code);
-            //CbCr AC
-            for (int i = 0; i < memoryHandler.JpegCodes.CbCr_AC_Table.Count; i++)
-                memoryHandler.JpegCodes.CbCr_AC_Table[i].code_length_bits = binaryLenHuffCodes(memoryHandler.JpegCodes.CbCr_AC_Table[i].code);
-        }
-
-        private void convertTreeToJPEG_style()
-        {
-            var new_Y_DC_codes = readHuffmanTree(memoryHandler.Y_DC_Amounts_of_code_lens);
-            var new_Y_AC_codes = readHuffmanTree(memoryHandler.Y_AC_Amounts_of_code_lens);
-            var new_CbCr_DC_codes = readHuffmanTree(memoryHandler.CbCr_DC_Amounts_of_code_lens);
-            var new_CbCr_AC_codes = readHuffmanTree(memoryHandler.CbCr_AC_Amounts_of_code_lens);
-
-            var new_Y_DC_codes_ulong = new_Y_DC_codes.Select(item => (ulong)item).ToArray();
-            var new_Y_AC_codes_ulong = new_Y_AC_codes.Select(item => (ulong)item).ToArray();
-            var new_CbCr_DC_codes_ulong = new_CbCr_DC_codes.Select(item => (ulong)item).ToArray();
-            var new_CbCr_AC_codes_ulong = new_CbCr_AC_codes.Select(item => (ulong)item).ToArray();
-
-            List<ulong[]> newCodes = new List<ulong[]>();
-            newCodes.Add(new_Y_DC_codes_ulong);
-            newCodes.Add(new_Y_AC_codes_ulong);
-            newCodes.Add(new_CbCr_DC_codes_ulong);
-            newCodes.Add(new_CbCr_AC_codes_ulong);
-
-            memoryHandler.CodesTable.updateCodes(newCodes);
-
-            //MOVE MOST 1 CODE
-            MoveMost1Code();
-        }
-
-        private void MoveMost1Code()
-        {
-            if (getBit((int)memoryHandler.CodesTable.Y_DC_Table[memoryHandler.CodesTable.Y_DC_Table.Count - 1].code, 0) != 0)
-            {
-                memoryHandler.CodesTable.Y_DC_Table[memoryHandler.CodesTable.Y_DC_Table.Count - 1].code <<= 1;
-                memoryHandler.Y_DC_Amounts_of_code_lens[memoryHandler.CodesTable.Y_DC_Table[memoryHandler.CodesTable.Y_DC_Table.Count - 1].code_length_bits - 1]--;
-                memoryHandler.CodesTable.Y_DC_Table[memoryHandler.CodesTable.Y_DC_Table.Count - 1].code_length_bits++;
-                memoryHandler.Y_DC_Amounts_of_code_lens[memoryHandler.CodesTable.Y_DC_Table[memoryHandler.CodesTable.Y_DC_Table.Count - 1].code_length_bits - 1]++;
-            }
-            if (getBit((int)memoryHandler.CodesTable.Y_AC_Table[memoryHandler.CodesTable.Y_AC_Table.Count - 1].code, 0) != 0)
-            {
-                memoryHandler.CodesTable.Y_AC_Table[memoryHandler.CodesTable.Y_AC_Table.Count - 1].code <<= 1;
-                memoryHandler.Y_AC_Amounts_of_code_lens[memoryHandler.CodesTable.Y_AC_Table[memoryHandler.CodesTable.Y_AC_Table.Count - 1].code_length_bits - 1]--;
-                memoryHandler.CodesTable.Y_AC_Table[memoryHandler.CodesTable.Y_AC_Table.Count - 1].code_length_bits++;
-                memoryHandler.Y_AC_Amounts_of_code_lens[memoryHandler.CodesTable.Y_AC_Table[memoryHandler.CodesTable.Y_AC_Table.Count - 1].code_length_bits - 1]++;
-            }
-            if (getBit((int)memoryHandler.CodesTable.CbCr_DC_Table[memoryHandler.CodesTable.CbCr_DC_Table.Count - 1].code, 0) != 0)
-            {
-                memoryHandler.CodesTable.CbCr_DC_Table[memoryHandler.CodesTable.CbCr_DC_Table.Count - 1].code <<= 1;
-                memoryHandler.CbCr_DC_Amounts_of_code_lens[memoryHandler.CodesTable.CbCr_DC_Table[memoryHandler.CodesTable.CbCr_DC_Table.Count - 1].code_length_bits - 1]--;
-                memoryHandler.CodesTable.CbCr_DC_Table[memoryHandler.CodesTable.CbCr_DC_Table.Count - 1].code_length_bits++;
-                memoryHandler.CbCr_DC_Amounts_of_code_lens[memoryHandler.CodesTable.CbCr_DC_Table[memoryHandler.CodesTable.CbCr_DC_Table.Count - 1].code_length_bits - 1]++;
-            }
-            if (getBit((int)memoryHandler.CodesTable.CbCr_AC_Table[memoryHandler.CodesTable.CbCr_AC_Table.Count - 1].code, 0) != 0)
-            {
-                memoryHandler.CodesTable.CbCr_AC_Table[memoryHandler.CodesTable.CbCr_AC_Table.Count - 1].code <<= 1;
-                memoryHandler.CbCr_AC_Amounts_of_code_lens[memoryHandler.CodesTable.CbCr_AC_Table[memoryHandler.CodesTable.CbCr_AC_Table.Count - 1].code_length_bits - 1]--;
-                memoryHandler.CodesTable.CbCr_AC_Table[memoryHandler.CodesTable.CbCr_AC_Table.Count - 1].code_length_bits++;
-                memoryHandler.CbCr_AC_Amounts_of_code_lens[memoryHandler.CodesTable.CbCr_AC_Table[memoryHandler.CodesTable.CbCr_AC_Table.Count - 1].code_length_bits - 1]++;
-            }
-        }
-        private int[] readHuffmanTree(int[] code_lens_amounts)
-        {
-            List<int> codes = new List<int>();
-
-            int code = 2;
-            for (int j = 0; j < code_lens_amounts.Length; j++)
-            {
-                for (int k = 0; k < code_lens_amounts[j]; k++)
+                public Pixel(int Y, int Cb, int Cr, bool noConvert = true)
                 {
-                    codes.Add(code);
-                    code++;
+                    this.Y = Y;
+                    this.Cb = Cb;
+                    this.Cr = Cr;
                 }
-                code <<= 1;
+
+                public int Y;
+                public int Cb;
+                public int Cr;
             }
-            return codes.ToArray();
-        }
-        private void make_codeLens(List<List<int>> matrixes)
-        {
-            memoryHandler.Y_AC_CodeLens.Add(0x00); //Stop-code val
-            memoryHandler.CbCr_AC_CodeLens.Add(0x00); //Stop-code val
-            for (int i = 0; i < matrixes.Count; i++)
+            /// <summary>
+            /// Resize the image to the specified width and height.
+            /// </summary>
+            /// <param name="image">The image to resize.</param>
+            /// <param name="width">The width to resize to.</param>
+            /// <param name="height">The height to resize to.</param>
+            /// <returns>The resized image.</returns>
+            public static Bitmap ResizeImage(Image image, int width, int height)
             {
-                if ((i + 1) % 5 == 0 || (i + 1) % 6 == 0) //Cb Cr
+                var destRect = new Rectangle(0, 0, width, height);
+                var destImage = new Bitmap(width, height);
+
+                destImage.SetResolution(image.HorizontalResolution, image.VerticalResolution);
+
+                using (var graphics = Graphics.FromImage(destImage))
                 {
-                    //DC
+                    graphics.CompositingMode = System.Drawing.Drawing2D.CompositingMode.SourceCopy;
+                    graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
+                    graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
+                    graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
+                    graphics.PixelOffsetMode = System.Drawing.Drawing2D.PixelOffsetMode.HighQuality;
+
+                    using (var wrapMode = new System.Drawing.Imaging.ImageAttributes())
                     {
-                        int current_dc = (matrixes[i])[0];
-                        byte dc_binary_len = (byte)binaryLen((ulong)Math.Abs(current_dc));
-                        memoryHandler.CbCr_DC_CodeLens.Add(dc_binary_len);
+                        wrapMode.SetWrapMode(System.Drawing.Drawing2D.WrapMode.TileFlipXY);
+                        graphics.DrawImage(image, destRect, 0, 0, image.Width, image.Height, GraphicsUnit.Pixel, wrapMode);
                     }
-                    //AC
+                }
+
+                return destImage;
+            }
+        }
+
+        public class Pack_1H1V
+        {
+            public Pack_1H1V(Bitmap_YCbCr.Pixel[,] pixel_Matrix)
+            {
+                Y_Matrix = new int[8, 8];
+                Cb_Matrix = new int[8, 8];
+                Cr_Matrix = new int[8, 8];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
                     {
-                        byte zerosBefore = 0;
-                        List<byte> tempBuffer = new List<byte>();
-                        for (int j = 1; j < (matrixes[i]).Count; j++)
+                        Y_Matrix[i, j] = pixel_Matrix[i, j].Y;
+                        Cb_Matrix[i, j] = pixel_Matrix[i, j].Cb;
+                        Cr_Matrix[i, j] = pixel_Matrix[i, j].Cr;
+                    }
+                }
+            }
+
+            public Color[,] Get_Pixel_Matrix_RGB()
+            {
+                Color[,] pixel_Matrix_RGB = new Color[8, 8];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        //METHOD 1
+                        //int R = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] + (1.402 * (Cr_Matrix[i, j] - 128)))));
+                        //int G = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] - (0.34414 * (Cb_Matrix[i, j] - 128)) - (0.71414 * (Cr_Matrix[i, j] - 128)))));
+                        //int B = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] + (1.772 * (Cb_Matrix[i, j] - 128)))));
+                        //pixel_Matrix_RGB[i, j] = Color.FromArgb(B, G, R);
+
+                        //working
+                        //int R = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] + (1.402 * (Cb_Matrix[i, j] - 128)))));
+                        //int G = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] - (0.34414 * (Cr_Matrix[i, j] - 128)) - (0.71414 * (Cb_Matrix[i, j] - 128)))));
+                        //int B = Math.Max(0, Math.Min(255, (int)(Y_Matrix[i, j] + (1.772 * (Cr_Matrix[i, j] - 128)))));
+                        //pixel_Matrix_RGB[i, j] = Color.FromArgb(R, G, B); //так надо. не трогать.
+
+                        //METHOD 2
+                        double Rn = ((298.082 * Y_Matrix[i, j]) / 256) + ((408.583 * Cr_Matrix[i, j]) / 256) - 222.921;
+                        double Gn = ((298.082 * Y_Matrix[i, j]) / 256) - ((100.291 * Cb_Matrix[i, j]) / 256) - ((208.120 * Cr_Matrix[i, j]) / 256) + 135.576;
+                        double Bn = ((298.082 * Y_Matrix[i, j]) / 256) + ((516.412 * Cb_Matrix[i, j]) / 256) - 276.836;
+                        int R = Math.Max(0, Math.Min(255, FairRound(Rn)));
+                        int G = Math.Max(0, Math.Min(255, FairRound(Gn)));
+                        int B = Math.Max(0, Math.Min(255, FairRound(Bn)));
+                        pixel_Matrix_RGB[i, j] = Color.FromArgb(B, G, R);
+                    }
+                }
+                return pixel_Matrix_RGB;
+            }
+
+            public int[,] Y_Matrix;
+            public int[,] Cb_Matrix;
+            public int[,] Cr_Matrix;
+        }
+
+        public class Pack_2H2V
+        {
+            public Pack_2H2V()
+            {
+            }
+
+            public void insertM00(Bitmap_YCbCr.Pixel[,] M00_)
+            {
+                M00 = M00_;
+            }
+            public void insertM01(Bitmap_YCbCr.Pixel[,] M01_)
+            {
+                M01 = M01_;
+            }
+            public void insertM10(Bitmap_YCbCr.Pixel[,] M10_)
+            {
+                M10 = M10_;
+            }
+            public void insertM11(Bitmap_YCbCr.Pixel[,] M11_)
+            {
+                M11 = M11_;
+            }
+
+            public void calcSampling()
+            {
+                //fill Y
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        Y0_matrix[i, j] = M00[i, j].Y;
+                        Y1_matrix[i, j] = M01[i, j].Y;
+                        Y2_matrix[i, j] = M10[i, j].Y;
+                        Y3_matrix[i, j] = M11[i, j].Y;
+                    }
+                }
+                //fill Cb Cr
+                int[,] tempCb = new int[16, 16];
+                int[,] tempCr = new int[16, 16];
+                //block 00
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempCb[i, j] = M00[i, j].Cb;
+                        tempCr[i, j] = M00[i, j].Cr;
+                    }
+                }
+                //block 01
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempCb[i, j + 8] = M01[i, j].Cb;
+                        tempCr[i, j + 8] = M01[i, j].Cr;
+                    }
+                }
+                //block 10
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempCb[i + 8, j] = M10[i, j].Cb;
+                        tempCr[i + 8, j] = M10[i, j].Cr;
+                    }
+                }
+                //block 11
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        tempCb[i + 8, j + 8] = M11[i, j].Cb;
+                        tempCr[i + 8, j + 8] = M11[i, j].Cr;
+                    }
+                }
+                //squish to 8x8
+                for (int i = 0; i < 16; i += 2)
+                {
+                    for (int j = 0; j < 16; j += 2)
+                    {
+                        Cb_matrix[i / 2, j / 2] = tempCb[i, j];
+                        Cr_matrix[i / 2, j / 2] = tempCr[i, j];
+                    }
+                }
+            }
+            public void appyZigZag()
+            {
+                strip_Y0_matrix = transform(Y0_matrix);
+                strip_Y1_matrix = transform(Y1_matrix);
+                strip_Y2_matrix = transform(Y2_matrix);
+                strip_Y3_matrix = transform(Y3_matrix);
+                strip_Cb_matrix = transform(Cb_matrix);
+                strip_Cr_matrix = transform(Cr_matrix);
+            }
+
+            private int[] transform(int[,] srcMatrix)
+            {
+                int[] strip_matrix = new int[64];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        strip_matrix[(zigZagOrder[i, j])] = srcMatrix[i, j];
+                    }
+                }
+                return strip_matrix;
+            }
+
+            public void applyDCT()
+            {
+                Y0_matrix = DCTRangeMatrix(Y0_matrix);
+                Y0_matrix = DCTMatrix(Y0_matrix);
+                Y1_matrix = DCTRangeMatrix(Y1_matrix);
+                Y1_matrix = DCTMatrix(Y1_matrix);
+                Y2_matrix = DCTRangeMatrix(Y2_matrix);
+                Y2_matrix = DCTMatrix(Y2_matrix);
+                Y3_matrix = DCTRangeMatrix(Y3_matrix);
+                Y3_matrix = DCTMatrix(Y3_matrix);
+                Cb_matrix = DCTRangeMatrix(Cb_matrix);
+                Cb_matrix = DCTMatrix(Cb_matrix);
+                Cr_matrix = DCTRangeMatrix(Cr_matrix);
+                Cr_matrix = DCTMatrix(Cr_matrix);
+            }
+
+            public void applyIDCT()
+            {
+
+            }
+
+            int[,] testMatrix =
+            {
+                { -76, -73, -67, -62, -58, -67, -64, -55 },
+                { -65, -69, -73, -38, -19, -43, -59, -56 },
+                { -66, -69, -60, -15,  16, -24, -62, -55 },
+                {  65,  70,  57,   6,  26,  22,  58,  59 },
+                { -61, -67, -60, -24,  -2, -40, -60, -58 },
+                { -49, -63, -68, -58, -51, -60, -70, -53 },
+                {  43,  57,  64,  69,  73,  67,  63,  45 },
+                { -41, -49, -59, -60, -63, -52, -50, -34 }
+            };
+
+            private int[,] DCTMatrix(int[,] srcMatrix) //OK
+            {
+                int[,] srcDCT = new int[8, 8];
+                for (int u = 0; u < 8; u++)
+                {
+                    for (int v = 0; v < 8; v++)
+                    {
+                        double au = (u == 0 ? (1 / Math.Sqrt(2)) : 1);
+                        double av = (v == 0 ? (1 / Math.Sqrt(2)) : 1);
+                        double mult = (au * av) / 4;
+                        double summ1x = 0;
+                        for (int x = 0; x < 8; x++)
                         {
-                            if ((matrixes[i])[j] == 0) //count zeros before coeff
+                            double summ2y = 0;
+                            for (int y = 0; y < 8; y++)
                             {
-                                if (zerosBefore == 0x0F)
-                                {
-                                    tempBuffer.Add(0xF0);
-                                    zerosBefore = 1;
-                                }
-                                else
-                                    zerosBefore++;
+                                double valcos1 = (((2 * x) + 1) * u * Math.PI) / 16;
+                                double multcos1 = Math.Cos(valcos1);
+                                double valcos2 = (((2 * y) + 1) * v * Math.PI) / 16;
+                                double multcos2 = Math.Cos(valcos2);
+                                summ2y += srcMatrix[y, x] * multcos1 * multcos2;
                             }
-                            else //save val
+                            summ1x += summ2y;
+                        }
+                        srcDCT[v, u] = (int)(mult * summ1x);
+                    }
+                }
+                return srcDCT;
+            }
+
+            private int[,] DCTRangeMatrix(int[,] srcMatrix) //make -128 =< value-128 =< 127 OK
+            {
+                int[,] srcShifted = new int[8, 8];
+                for (int i = 0; i < 8; i++)
+                {
+                    for (int j = 0; j < 8; j++)
+                    {
+                        srcShifted[i, j] = Math.Max(Math.Min(srcMatrix[i, j] - 128, 127), -128);
+                    }
+                }
+                return srcShifted;
+            }
+
+            private void IDCTMatrix(int[,] srcMatrix)
+            {
+                int[,] IDCT = new int[8, 8];
+                for (int x = 0; x < 8; x++)
+                {
+                    for (int y = 0; y < 8; y++)
+                    {
+                        double mult = 0.25;
+                        double summ1x = 0;
+                        for (int u = 0; u < 8; u++)
+                        {
+                            double summ2y = 0;
+                            for (int v = 0; v < 8; v++)
                             {
-                                //load buffer
-                                for (int k = 0; k < tempBuffer.Count; k++)
-                                {
-                                    memoryHandler.CbCr_AC_CodeLens.Add(tempBuffer[k]);
-                                }
-                                tempBuffer.Clear();
-                                //
-                                int current_ac = (matrixes[i])[j];
-                                byte ac_binary_len = (byte)binaryLen((ulong)Math.Abs(current_ac));
-                                byte ac_val = (byte)((zerosBefore << 4) + ((byte)0x0F & ac_binary_len));
-                                zerosBefore = 0;
-                                memoryHandler.CbCr_AC_CodeLens.Add(ac_val);
+                                double Cu = (u == 0 ? 1 / Math.Sqrt(2) : 1);
+                                double Cv = (v == 0 ? 1 / Math.Sqrt(2) : 1);
+                                double valcos1 = (((2 * x) + 1) * u * Math.PI) / 16;
+                                double multcos1 = Math.Cos(valcos1);
+                                double valcos2 = (((2 * y) + 1) * v * Math.PI) / 16;
+                                double multcos2 = Math.Cos(valcos2);
+                                summ2y += srcMatrix[v, u] * Cu * Cv * multcos1 * multcos2;
                             }
+                            summ1x += summ2y;
+                        }
+                        IDCT[y, x] = (int)(mult * summ1x);
+                    }
+                }
+            }
+
+            public void applyQuantY(List<byte> quantMatrix)
+            {
+                for (int i = 0; i < 64; i++)
+                {
+                    strip_Y0_matrix[i] /= quantMatrix[i];
+                    strip_Y1_matrix[i] /= quantMatrix[i];
+                    strip_Y2_matrix[i] /= quantMatrix[i];
+                    strip_Y3_matrix[i] /= quantMatrix[i];
+                }
+            }
+
+            public void applyQuantCbCr(List<byte> quantMatrix)
+            {
+                for (int i = 0; i < 64; i++)
+                {
+                    strip_Cb_matrix[i] /= quantMatrix[i];
+                    strip_Cr_matrix[i] /= quantMatrix[i];
+                }
+            }
+
+            public Bitmap_YCbCr.Pixel[,] M00;
+            public Bitmap_YCbCr.Pixel[,] M01;
+            public Bitmap_YCbCr.Pixel[,] M10;
+            public Bitmap_YCbCr.Pixel[,] M11;
+
+            int[,] Y0_matrix = new int[8, 8];
+            int[,] Y1_matrix = new int[8, 8];
+            int[,] Y2_matrix = new int[8, 8];
+            int[,] Y3_matrix = new int[8, 8];
+
+            int[,] Cb_matrix = new int[8, 8];
+            int[,] Cr_matrix = new int[8, 8];
+
+            //strips
+            public int[] strip_Y0_matrix;
+            public int[] strip_Y1_matrix;
+            public int[] strip_Y2_matrix;
+            public int[] strip_Y3_matrix;
+
+            public int[] strip_Cb_matrix;
+            public int[] strip_Cr_matrix;
+
+
+
+            int[,] zigZagOrder =
+            {
+                {  0,  1,  5,  6, 14, 15, 27, 28 },
+                {  2,  4,  7, 13, 16, 26, 29, 42 },
+                {  3,  8, 12, 17, 25, 30, 41, 43 },
+                {  9, 11, 18, 24, 31, 40, 44, 53 },
+                { 10, 19, 23, 32, 39, 45, 52, 54 },
+                { 20, 22, 33, 38, 46, 51, 55, 60 },
+                { 21, 34, 37, 47, 50, 56, 59, 61 },
+                { 35, 36, 48, 49, 57, 58, 62, 63 }
+            };
+        }
+
+        public void diffDC(List<Pack_2H2V> packs)
+        {
+            int lastYDC = 0;
+            int lastCbDC = 0;
+            int lastCrDC = 0;
+            foreach (var pack in packs)
+            {
+                int tempDC = 0;
+                //Y1
+                tempDC = pack.strip_Y0_matrix[0];
+                pack.strip_Y0_matrix[0] -= lastYDC;
+                lastYDC = tempDC;
+                //Y2
+                tempDC = pack.strip_Y1_matrix[0];
+                pack.strip_Y1_matrix[0] -= lastYDC;
+                lastYDC = tempDC;
+                //Y3
+                tempDC = pack.strip_Y2_matrix[0];
+                pack.strip_Y2_matrix[0] -= lastYDC;
+                lastYDC = tempDC;
+                //Y4
+                tempDC = pack.strip_Y3_matrix[0];
+                pack.strip_Y3_matrix[0] -= lastYDC;
+                lastYDC = tempDC;
+                //Cb
+                tempDC = pack.strip_Cb_matrix[0];
+                pack.strip_Cb_matrix[0] -= lastCbDC;
+                lastCbDC = tempDC;
+                //Cr
+                tempDC = pack.strip_Cr_matrix[0];
+                pack.strip_Cr_matrix[0] -= lastCrDC;
+                lastCrDC = tempDC;
+            }
+        }
+
+        private void timer_UI_update_Tick(object sender, EventArgs e)
+        {
+            //:::::HIDE TAB
+            //INPUT CVZ METHOD
+            if (radioButton_cvz_input_file.Checked)
+            {
+                textBox_cvz.ReadOnly = true;
+                button_locate_cvz.Enabled = true;
+            }
+            else if (radioButton_cvz_input_text.Checked)
+            {
+                textBox_cvz.ReadOnly = false;
+                button_locate_cvz.Enabled = false;
+                label_message_size.Text = textBox_cvz.TextLength.ToString() + " символов";
+                cvzSize = textBox_cvz.TextLength;
+                label_message_size.Refresh();
+            }
+            //INPUT KEY
+            int zeros_in_key = 0;
+            if (checkBox_use_key.Checked)
+            {
+                groupBox_input_key.Enabled = true;
+                if (radioButton_key_input_file.Checked)
+                {
+                    textBox_input_key.ReadOnly = true;
+                    button_locate_input_key.Enabled = true;
+                }
+                else if (radioButton_key_input_text.Checked)
+                {
+                    textBox_input_key.ReadOnly = false;
+                    button_locate_input_key.Enabled = false;
+                    label_key_unique_symbols.Text = textBox_input_key.TextLength.ToString() + " символов";
+                    label_key_unique_symbols.Refresh();
+                    //recalc zeros
+                    foreach (var symb in textBox_input_key.Text)
+                    {
+                        for (int i = 0; i < 8; i++) //USING ONLY FIRST BYTE
+                        {
+                            if (!getBit(symb, 7 - i))
+                                zeros_in_key++;
                         }
                     }
                 }
-                else //Y
-                {
-                    //DC
-                    {
-                        int current_dc = (matrixes[i])[0];
-                        byte dc_binary_len = (byte)binaryLen((ulong)Math.Abs(current_dc));
-                        memoryHandler.Y_DC_CodeLens.Add(dc_binary_len);
-                    }
-                    //AC
-                    {
-                        byte zerosBefore = 0;
-                        List<byte> tempBuffer = new List<byte>();
-                        for (int j = 1; j < (matrixes[i]).Count; j++)
-                        {
-                            if ((matrixes[i])[j] == 0) //count zeros before coeff
-                            {
-                                if (zerosBefore == 0x0F)
-                                {
-                                    tempBuffer.Add(0xF0);
-                                    zerosBefore = 1;
-                                }
-                                else
-                                    zerosBefore++;
-                            }
-                            else //save val
-                            {
-                                //load buffer
-                                for (int k = 0; k < tempBuffer.Count; k++)
-                                {
-                                    memoryHandler.Y_AC_CodeLens.Add(tempBuffer[k]);
-                                }
-                                tempBuffer.Clear();
-                                //
-                                int current_ac = (matrixes[i])[j];
-                                byte ac_binary_len = (byte)binaryLen((ulong)Math.Abs(current_ac));
-                                byte ac_val = (byte)((zerosBefore << 4) + ((byte)0x0F & ac_binary_len));
-                                zerosBefore = 0;
-                                memoryHandler.Y_AC_CodeLens.Add(ac_val);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void make_coeffs(List<List<int>> matrixes)
-        {
-            int AC_MATRIX_STOP_HEX = 0x7FFF8080;
-            //DC
-            for (int i = 0; i < matrixes.Count; i++)
-            {
-                if ((i + 1) % 5 == 0 || (i + 1) % 6 == 0) //Cb Cr
-                {
-                    int current_dc = (matrixes[i])[0];
-                    byte dc_binary_len = (byte)binaryLen((ulong)Math.Abs(current_dc));
-                    if (current_dc < 0)
-                        current_dc = (byte)((int)Math.Pow(2, dc_binary_len) - (int)Math.Abs(current_dc) - 1);
-                    memoryHandler.CbCr_DC_coeffs.Add(new CoeffValue(current_dc, dc_binary_len, dc_binary_len));
-                }
-                else //Y
-                {
-                    int current_dc = (matrixes[i])[0];
-                    byte dc_binary_len = (byte)binaryLen((ulong)Math.Abs(current_dc));
-                    if (current_dc < 0)
-                        current_dc = (byte)((int)Math.Pow(2, dc_binary_len) - (int)Math.Abs(current_dc) - 1);
-                    memoryHandler.Y_DC_coeffs.Add(new CoeffValue(current_dc, dc_binary_len, dc_binary_len));
-                }
-            }
-            //AC
-            for (int i = 0; i < matrixes.Count; i++)
-            {
-                if ((i + 1) % 5 == 0 || (i + 1) % 6 == 0) //Cb Cr
-                {
-                    byte zerosBefore = 0;
-                    int coeffs_written = 0;
-                    List<CoeffValue> tempBuffer = new List<CoeffValue>();
-                    for (int j = 1; j < (matrixes[i]).Count; j++)
-                    {
-                        if ((matrixes[i])[j] == 0)
-                        {
-                            if (zerosBefore == 0x0F)
-                            {
-                                tempBuffer.Add(new CoeffValue(0, 0, 0xF0));
-                                zerosBefore = 1;
-                            }
-                            else
-                                zerosBefore++;
-                        }
-                        //NON-ZEROS
-                        if ((matrixes[i])[j] != 0)
-                        {
-                            //load buffer
-                            for (int k = 0; k < tempBuffer.Count; k++)
-                            {
-                                memoryHandler.CbCr_AC_coeffs.Add(tempBuffer[k]);
-                            }
-                            tempBuffer.Clear();
-                            //
-                            int current_ac = (matrixes[i])[j];
-                            byte ac_binary_len = (byte)binaryLen((ulong)Math.Abs(current_ac));
-                            if (current_ac < 0)
-                                current_ac = (byte)((int)Math.Pow(2, ac_binary_len) - (int)Math.Abs(current_ac) - 1);
-                            byte ac_to_order = (byte)((zerosBefore << 4) + ((byte)0x0F & ac_binary_len));
-                            memoryHandler.CbCr_AC_coeffs.Add(new CoeffValue(current_ac, ac_binary_len, ac_to_order));
-                            coeffs_written += zerosBefore + 1;
-                            zerosBefore = 0;
-                        }
-                    }
-                    if (coeffs_written != 63)
-                        memoryHandler.CbCr_AC_coeffs.Add(new CoeffValue(0, 0, AC_MATRIX_STOP_HEX));
-                }
-                else //Y
-                {
-                    byte zerosBefore = 0;
-                    int coeffs_written = 0;
-                    List<CoeffValue> tempBuffer = new List<CoeffValue>();
-                    for (int j = 1; j < (matrixes[i]).Count; j++)
-                    {
-                        if ((matrixes[i])[j] == 0)
-                        {
-                            if (zerosBefore == 0x0F)
-                            {
-                                tempBuffer.Add(new CoeffValue(0, 0, 0xF0));
-                                zerosBefore = 1;
-                            }
-                            else
-                                zerosBefore++;
-                        }
-                        //NON-ZEROS
-                        if ((matrixes[i])[j] != 0)
-                        {
-                            //load buffer
-                            for (int k = 0; k < tempBuffer.Count; k++)
-                            {
-                                memoryHandler.Y_AC_coeffs.Add(tempBuffer[k]);
-                            }
-                            tempBuffer.Clear();
-                            //
-                            int current_ac = (matrixes[i])[j];
-                            byte ac_binary_len = (byte)binaryLen((ulong)Math.Abs(current_ac));
-                            if (current_ac < 0)
-                                current_ac = (byte)((int)Math.Pow(2, ac_binary_len) - (int)Math.Abs(current_ac) - 1);
-                            byte ac_to_order = (byte)((zerosBefore << 4) + ((byte)0x0F & ac_binary_len));
-                            memoryHandler.Y_AC_coeffs.Add(new CoeffValue(current_ac, ac_binary_len, ac_to_order));
-                            coeffs_written += zerosBefore + 1;
-                            zerosBefore = 0;
-                        }
-                    }
-                    if (coeffs_written != 63)
-                        memoryHandler.Y_AC_coeffs.Add(new CoeffValue(0, 0, AC_MATRIX_STOP_HEX));
-                }
-            }
-        }
-
-        private void make_codeLensAmount()
-        {
-            /*
-            * counting amount of codes of certain len
-            */
-            //Y DC
-            for (int i = 0; i < memoryHandler.CodesTable.Y_DC_Table.Count; i++) //run through codes
-            {
-                memoryHandler.Y_DC_Amounts_of_code_lens[binaryLenHuffCodes(memoryHandler.CodesTable.Y_DC_Table[i].code) - 1]++;
-                //memoryHandler.Y_DC_Amounts_of_code_lens[binaryLen(memoryHandler.CodesTable.Y_DC_Table[i].code) - 1]++;
-            }
-            //Y AC
-            for (int i = 0; i < memoryHandler.CodesTable.Y_AC_Table.Count; i++) //run through codes
-            {
-                memoryHandler.Y_AC_Amounts_of_code_lens[binaryLenHuffCodes(memoryHandler.CodesTable.Y_AC_Table[i].code) - 1]++;
-                //memoryHandler.Y_AC_Amounts_of_code_lens[binaryLen(memoryHandler.CodesTable.Y_AC_Table[i].code) - 1]++;
-            }
-            //CbCr DC
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_DC_Table.Count; i++) //run through codes
-            {
-                memoryHandler.CbCr_DC_Amounts_of_code_lens[binaryLenHuffCodes(memoryHandler.CodesTable.CbCr_DC_Table[i].code) - 1]++;
-               //memoryHandler.CbCr_DC_Amounts_of_code_lens[binaryLen(memoryHandler.CodesTable.CbCr_DC_Table[i].code) - 1]++;
-            }
-            //CbCr AC
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_AC_Table.Count; i++) //run through codes
-            {
-                memoryHandler.CbCr_AC_Amounts_of_code_lens[binaryLenHuffCodes(memoryHandler.CodesTable.CbCr_AC_Table[i].code) - 1]++;
-                //memoryHandler.CbCr_AC_Amounts_of_code_lens[binaryLen(memoryHandler.CodesTable.CbCr_AC_Table[i].code) - 1]++;
-            }
-        }
-
-        private void bubbleSortTables()
-        {
-            bubbleSort(memoryHandler.CodesTable.Y_DC_Table);
-            bubbleSort(memoryHandler.CodesTable.Y_AC_Table);
-            bubbleSort(memoryHandler.CodesTable.CbCr_DC_Table);
-            bubbleSort(memoryHandler.CodesTable.CbCr_AC_Table);
-        }
-
-        private void orderTables()
-        {
-            orderByValues(memoryHandler.Y_DC_coeffs, memoryHandler.CodesTable.Y_DC_Table, memoryHandler.JpegCodes.Y_DC_Table);
-            orderByValues(memoryHandler.Y_AC_coeffs, memoryHandler.CodesTable.Y_AC_Table, memoryHandler.JpegCodes.Y_AC_Table);
-            orderByValues(memoryHandler.CbCr_DC_coeffs, memoryHandler.CodesTable.CbCr_DC_Table, memoryHandler.JpegCodes.CbCr_DC_Table);
-            orderByValues(memoryHandler.CbCr_AC_coeffs, memoryHandler.CodesTable.CbCr_AC_Table, memoryHandler.JpegCodes.CbCr_AC_Table);
-        }
-
-
-        private byte[] packFFC4Headers()
-        {
-            /*
-            * Pack back
-            */
-            //Forming FFC4 blocks
-            //================================================================================= Y DC
-            byte[] headerFFC4_YDc = new byte[19 + memoryHandler.CodesTable.Y_DC_Table.Count];
-            //length 2b
-            if (19 + memoryHandler.CodesTable.Y_DC_Table.Count < 255)
-            {
-                headerFFC4_YDc[0] = (byte)0x00;
-                headerFFC4_YDc[1] = (byte)(19 + memoryHandler.CodesTable.Y_DC_Table.Count);
+                //recalc final capacity
+                finalMsgSize = cvzSize + zeros_in_key/8;
+                label_final_msg_size.Text = finalMsgSize + " символов";
+                label_final_msg_size.Refresh();
             }
             else
             {
-                int diByteLen = 19 + memoryHandler.CodesTable.Y_DC_Table.Count;
-                headerFFC4_YDc[0] = (byte)(diByteLen >> 8);
-                headerFFC4_YDc[1] = (byte)(diByteLen & 0x00FF);
+                groupBox_input_key.Enabled = false;
+                finalMsgSize = cvzSize;
+                label_final_msg_size.Text = finalMsgSize + " символов";
+                label_final_msg_size.Refresh();
             }
-            //type 1b
-            headerFFC4_YDc[2] = 0x00;
-            //code lens 16b
-            for (int i = 0; i < 16; i++)
-                headerFFC4_YDc[i + 3] = (byte)memoryHandler.Y_DC_Amounts_of_code_lens[i];
-            //values Nb
-            for (int i = 0; i < memoryHandler.CodesTable.Y_DC_Table.Count; i++)
-                headerFFC4_YDc[i + 19] = memoryHandler.CodesTable.Y_DC_Table[i].value;
-
-            //=============================================================================== Y AC
-            byte[] headerFFC4_YAc = new byte[19 + memoryHandler.CodesTable.Y_AC_Table.Count];
-            //length 2b
-            if (19 + memoryHandler.CodesTable.Y_AC_Table.Count < 255)
+            //:::::::REVEAL TAB
+            if (checkBox_stegano_use_key.Checked)
             {
-                headerFFC4_YAc[0] = (byte)0x00;
-                headerFFC4_YAc[1] = (byte)(19 + memoryHandler.CodesTable.Y_AC_Table.Count);
-            }
-            else
-            {
-                int diByteLen = 19 + memoryHandler.CodesTable.Y_AC_Table.Count;
-                headerFFC4_YAc[0] = (byte)(diByteLen >> 8);
-                headerFFC4_YAc[1] = (byte)(diByteLen & 0x00FF);
-            }
-            //type 1b
-            headerFFC4_YAc[2] = 0x10;
-            //code lens 16b
-            for (int i = 0; i < 16; i++)
-                headerFFC4_YAc[i + 3] = (byte)memoryHandler.Y_AC_Amounts_of_code_lens[i];
-            //values Nb
-            for (int i = 0; i < memoryHandler.CodesTable.Y_AC_Table.Count; i++)
-                headerFFC4_YAc[i + 19] = memoryHandler.CodesTable.Y_AC_Table[i].value;
-
-            //============================================================================= CbCr DC
-            byte[] headerFFC4_CbCrDc = new byte[19 + memoryHandler.CodesTable.CbCr_DC_Table.Count];
-            //length 2b
-            if (19 + memoryHandler.CodesTable.CbCr_DC_Table.Count < 255)
-            {
-                headerFFC4_CbCrDc[0] = (byte)0x00;
-                headerFFC4_CbCrDc[1] = (byte)(19 + memoryHandler.CodesTable.CbCr_DC_Table.Count);
-            }
-            else
-            {
-                int diByteLen = 19 + memoryHandler.CodesTable.CbCr_DC_Table.Count;
-                headerFFC4_CbCrDc[0] = (byte)(diByteLen >> 8);
-                headerFFC4_CbCrDc[1] = (byte)(diByteLen & 0x00FF);
-            }
-            //type 1b
-            headerFFC4_CbCrDc[2] = 0x01;
-            //code lens 16b
-            for (int i = 0; i < 16; i++)
-                headerFFC4_CbCrDc[i + 3] = (byte)memoryHandler.CbCr_DC_Amounts_of_code_lens[i];
-            //values Nb
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_DC_Table.Count; i++)
-                headerFFC4_CbCrDc[i + 19] = memoryHandler.CodesTable.CbCr_DC_Table[i].value;
-            //============================================================================== CbCr AC
-            byte[] headerFFC4_CbCrAc = new byte[19 + memoryHandler.CodesTable.CbCr_AC_Table.Count];
-            //length 2b
-            if (19 + memoryHandler.CodesTable.CbCr_AC_Table.Count < 255)
-            {
-                headerFFC4_CbCrAc[0] = (byte)0x00;
-                headerFFC4_CbCrAc[1] = (byte)(19 + memoryHandler.CodesTable.CbCr_AC_Table.Count);
-            }
-            else
-            {
-                int diByteLen = 19 + memoryHandler.CodesTable.CbCr_AC_Table.Count;
-                headerFFC4_CbCrAc[0] = (byte)(diByteLen >> 8);
-                headerFFC4_CbCrAc[1] = (byte)(diByteLen & 0x00FF);
-            }
-            //type 1b
-            headerFFC4_CbCrAc[2] = 0x11;
-            //code lens 16b
-            for (int i = 0; i < 16; i++)
-                headerFFC4_CbCrAc[i + 3] = (byte)memoryHandler.CbCr_AC_Amounts_of_code_lens[i];
-            //values Nb
-            for (int i = 0; i < memoryHandler.CodesTable.CbCr_AC_Table.Count; i++)
-                headerFFC4_CbCrAc[i + 19] = memoryHandler.CodesTable.CbCr_AC_Table[i].value;
-            //United FFC4 blocks
-            List<byte> FFC4Union = new List<byte>();
-
-            FFC4Union.Add(0xFF);
-            FFC4Union.Add(0xC4);
-            FFC4Union.AddRange(headerFFC4_YDc);
-            FFC4Union.Add(0xFF);
-            FFC4Union.Add(0xC4);
-            FFC4Union.AddRange(headerFFC4_YAc);
-            FFC4Union.Add(0xFF);
-            FFC4Union.Add(0xC4);
-            FFC4Union.AddRange(headerFFC4_CbCrDc);
-            FFC4Union.Add(0xFF);
-            FFC4Union.Add(0xC4);
-            FFC4Union.AddRange(headerFFC4_CbCrAc);
-            return FFC4Union.ToArray();
-        }
-
-        private byte[] packFFDAHeader()
-        {
-            //FFDA block=================================================
-            List<byte> headerFFDA = new List<byte>();
-            headerFFDA.Add(0xFF);
-            headerFFDA.Add(0xDA);
-            if (memoryHandler.channels == 1)
-            {
-                headerFFDA.Add(0x00);
-                headerFFDA.Add(0x08);
-                headerFFDA.Add(0x01);
-                headerFFDA.Add(0x01);
-                headerFFDA.Add(0x00); //?????
-            }
-            else if (memoryHandler.channels == 2)
-            {
-                headerFFDA.Add(0x00);
-                headerFFDA.Add(0x0A);
-                headerFFDA.Add(0x02);
-                headerFFDA.Add(0x01); 
-                headerFFDA.Add(0x00); //?????
-                headerFFDA.Add(0x02);
-                headerFFDA.Add(0x11); //?????
-            }
-            else if (memoryHandler.channels == 3)
-            {
-                headerFFDA.Add(0x00);
-                headerFFDA.Add(0x0C);
-                headerFFDA.Add(0x03);
-                headerFFDA.Add(0x01);
-                headerFFDA.Add(0x00);
-                headerFFDA.Add(0x02);
-                headerFFDA.Add(0x11);
-                headerFFDA.Add(0x03);
-                headerFFDA.Add(0x11);
-            }
-
-            headerFFDA.Add(memoryHandler.serviceFFDA[0]);
-            headerFFDA.Add(memoryHandler.serviceFFDA[1]);
-            headerFFDA.Add(memoryHandler.serviceFFDA[2]);
-            return headerFFDA.ToArray();
-        }
-
-        private byte[] packFFDAData()
-        {
-            //FFDA DATA===================================================
-
-            //million super counters (very impotrant please do not delete)
-            int Pointer_Y_DC = 0;
-            int Pointer_Y_AC = 0;
-            int Pointer_Y_Coeff = 0;
-            int Pointer_CbCr_DC = 0;
-            int Pointer_CbCr_AC = 0;
-            int Pointer_CbCr_Coeff = 0;
-
-            List<byte> data = new List<byte>();
-            BitWriter BinaryWriter = new BitWriter(data);
-            using (StreamWriter sw = File.AppendText("garbageBin.log"))
-            {
-                for (int i = 0; i < memoryHandler.matrixes_amount; i++)
+                groupBox_output_key.Enabled = true;
+                if (radioButton_output_key_file.Checked)
                 {
-                    if ((i + 1) % 5 == 0 || (i + 1) % 6 == 0) //Cb Cr
+                    textBox_output_key.ReadOnly = true;
+                    button_locate_output_key.Enabled = true;
+                }
+                else if (radioButton_output_key_text.Checked)
+                {
+                    textBox_output_key.ReadOnly = false;
+                    button_locate_output_key.Enabled = false;
+                }
+            }
+            else
+                groupBox_output_key.Enabled = false;
+        }
+
+        private void button_locate_input_key_Click(object sender, EventArgs e)
+        {
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Key source (*.txt)|*.txt";
+
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                using (var file = openFileDialog1.OpenFile())
+                {
+                    BinaryReader binaryReader = new BinaryReader(file);
+                    if (file != null)
                     {
-                        sw.WriteLine(":::::::::::::::::Writing CbCr. Matrix " + i);
-                        sw.WriteLine(":::::::DC:");
-                        sw.WriteLine("Writing code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.CbCr_DC_Table[Pointer_CbCr_DC].code, memoryHandler.JpegCodes.CbCr_DC_Table[Pointer_CbCr_DC].code_length_bits));
-                        BinaryWriter.Write(memoryHandler.JpegCodes.CbCr_DC_Table[Pointer_CbCr_DC].code, memoryHandler.JpegCodes.CbCr_DC_Table[Pointer_CbCr_DC].code_length_bits);
-                        PrintGarbageBin(data, sw);
-                        sw.WriteLine("");
-                        sw.WriteLine("Then coeff: (" + memoryHandler.CbCr_DC_coeffs[Pointer_CbCr_DC].value + ")--> " +
-                                            ToBinaryString(memoryHandler.CbCr_DC_coeffs[Pointer_CbCr_DC].value, memoryHandler.CbCr_DC_coeffs[Pointer_CbCr_DC].value_length_bits));
-                        BinaryWriter.Write((ulong)memoryHandler.CbCr_DC_coeffs[Pointer_CbCr_DC].value, memoryHandler.CbCr_DC_coeffs[Pointer_CbCr_DC].value_length_bits);
-                        PrintGarbageBin(data, sw);
-                        sw.WriteLine("");
-                        Pointer_CbCr_DC++;
-                        int writtenCoeffs = 1;
-                        sw.WriteLine(":::::::AC:");
-                        while (memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].value != 0x00)
-                        {
-                            sw.WriteLine("=====[ AC-" + writtenCoeffs + "]====");
-                            sw.WriteLine("Writing code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code, memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code_length_bits));
-                            BinaryWriter.Write(memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code, memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            sw.WriteLine("Then coeff: (" + memoryHandler.CbCr_AC_coeffs[Pointer_CbCr_AC].value + ")--> " +
-                                            ToBinaryString(memoryHandler.CbCr_AC_coeffs[Pointer_CbCr_AC].value, memoryHandler.CbCr_AC_coeffs[Pointer_CbCr_AC].value_length_bits));
-                            BinaryWriter.Write((ulong)memoryHandler.CbCr_AC_coeffs[Pointer_CbCr_AC].value, memoryHandler.CbCr_AC_coeffs[Pointer_CbCr_AC].value_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            //count written coeffs with zeros
-                            int zeros = memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].value >> 4;
-                            writtenCoeffs += zeros + 1;
-                            Pointer_CbCr_AC++;
-                            if (writtenCoeffs == 64)
-                                break;
-                        }
-                        if (writtenCoeffs != 64)
-                        {
-                            //write stop code
-                            sw.WriteLine("Writing STOP-code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code, memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code_length_bits));
-                            BinaryWriter.Write(memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code, memoryHandler.JpegCodes.CbCr_AC_Table[Pointer_CbCr_AC].code_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            Pointer_CbCr_AC++;
-                        }
-                    }
-                    else //Y
-                    {
-                        sw.WriteLine(":::::::::::::::::Writing Y. Matrix " + i);
-                        sw.WriteLine(":::::::DC:");
-                        sw.WriteLine("Writing code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.Y_DC_Table[Pointer_Y_DC].code, memoryHandler.JpegCodes.Y_DC_Table[Pointer_Y_DC].code_length_bits));
-                        BinaryWriter.Write(memoryHandler.JpegCodes.Y_DC_Table[Pointer_Y_DC].code, memoryHandler.JpegCodes.Y_DC_Table[Pointer_Y_DC].code_length_bits);
-                        PrintGarbageBin(data, sw);
-                        sw.WriteLine("");
-                        sw.WriteLine("Then coeff: (" + memoryHandler.Y_DC_coeffs[Pointer_Y_DC].value + ")--> " +
-                                            ToBinaryString(memoryHandler.Y_DC_coeffs[Pointer_Y_DC].value, memoryHandler.Y_DC_coeffs[Pointer_Y_DC].value_length_bits));
-                        BinaryWriter.Write((ulong)memoryHandler.Y_DC_coeffs[Pointer_Y_DC].value, memoryHandler.Y_DC_coeffs[Pointer_Y_DC].value_length_bits);
-                        PrintGarbageBin(data, sw);
-                        sw.WriteLine("");
-                        Pointer_Y_DC++;
-                        int writtenCoeffs = 1;
-                        sw.WriteLine(":::::::AC:");
-                        while (memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].value != 0x00)
-                        {
-                            sw.WriteLine("=====[ AC-" + writtenCoeffs + "]====");
-                            sw.WriteLine("Writing code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code, memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code_length_bits));
-                            BinaryWriter.Write(memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code, memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            sw.WriteLine("Then coeff: (" + memoryHandler.Y_AC_coeffs[Pointer_Y_AC].value + ")--> " +
-                                            ToBinaryString(memoryHandler.Y_AC_coeffs[Pointer_Y_AC].value, memoryHandler.Y_AC_coeffs[Pointer_Y_AC].value_length_bits));
-                            BinaryWriter.Write((ulong)memoryHandler.Y_AC_coeffs[Pointer_Y_AC].value, memoryHandler.Y_AC_coeffs[Pointer_Y_AC].value_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            //count written coeffs with zeros
-                            int zeros = memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].value >> 4;
-                            writtenCoeffs += zeros + 1;
-                            Pointer_Y_AC++;
-                            if (writtenCoeffs == 64)
-                                break;
-                        }
-                        if (writtenCoeffs != 64)
-                        {
-                            //write stop code
-                            sw.WriteLine("Writing STOP-code: " +
-                                            ToBinaryString((int)memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code, memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code_length_bits));
-                            BinaryWriter.Write(memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code, memoryHandler.JpegCodes.Y_AC_Table[Pointer_Y_AC].code_length_bits);
-                            PrintGarbageBin(data, sw);
-                            sw.WriteLine("");
-                            Pointer_Y_AC++;
-                        }
+                        input_key = binaryReader.ReadBytes((int)binaryReader.BaseStream.Length);
+                        textBox_input_key_path.Text = openFileDialog1.FileName;
+                        textBox_input_key_path.Refresh();
+                        file.Dispose();
+                        file.Close();
                     }
                 }
-                sw.WriteLine("TOTAL::::::::::::::::");
-                PrintGarbageBin(data, sw);
             }
-
-            //print stream
-            Console.WriteLine("WRITTEN BINARY STREAM:::::::");
-            for (int i=0; i < data.Count; i++)
-            {
-                Console.Write(ToBinaryString(data[i]));
-                if (i % 8 == 0 && i != 0)
-                    Console.WriteLine("");
-            }
-            Console.WriteLine("");
-            Console.WriteLine("WRITTEN BINARY STREAM END:::::::");
-
-            return data.ToArray();
+            label_key_unique_symbols.Text = input_key.Length.ToString() + " байт";
+            label_key_unique_symbols.Refresh();
         }
 
-        private void PrintGarbageBin(List<byte> target, StreamWriter sw)
+        private void button_locate_output_key_Click(object sender, EventArgs e)
         {
-            sw.WriteLine("BINARY STREAM:::::::");
-            for (int i = 0; i < target.Count; i++)
-            {
-                sw.Write(ToBinaryString(target[i]));
-                if (i % 8 == 0 && i != 0)
-                    sw.WriteLine("");
-            }
-            sw.WriteLine("");
-            sw.WriteLine("BINARY STREAM END:::::::");
-        }
+            OpenFileDialog openFileDialog1 = new OpenFileDialog();
+            openFileDialog1.Filter = "Key source (*.txt)|*.txt";
 
-        class BitWriter
-        {
-            private List<byte> dataBlock = null;
-            private int magic_counter = 0;
-            public BitWriter(List<byte> dataBlock_)
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                this.dataBlock = dataBlock_;
-            }
-            public void Write(ulong value, int value_len_bits)
-            {
-                if (magic_counter % 8 == 0)
-                    dataBlock.Add(0);
-                int freeBitsInLastByte = 8 - (magic_counter % 8);
-
-                byte temp = dataBlock[magic_counter / 8];
-                editByte(ref temp, value, (int)(magic_counter % 8), 0, value_len_bits);
-                dataBlock[magic_counter / 8] = temp;
-
-                if (freeBitsInLastByte < value_len_bits)
+                using (var file = openFileDialog1.OpenFile())
                 {
-                    dataBlock.Add(0);
-                    //
-                    temp = dataBlock[(magic_counter / 8) + 1];
-                    editByte(ref temp, value, 0, 8 - (int)(magic_counter % 8), value_len_bits);
-                    //
-                    dataBlock[(magic_counter / 8) + 1] = temp;
-                }
-                if (freeBitsInLastByte + 8 < value_len_bits)
-                {
-                    dataBlock.Add(0);
-                    //
-                    temp = dataBlock[(magic_counter / 8) + 2];
-                    editByte(ref temp, value, 0, 16 - (int)(magic_counter % 8), value_len_bits);
-                    //
-                    dataBlock[(magic_counter / 8) + 2] = temp;
-                }
-                magic_counter += value_len_bits;
-            }
-            private void editByte(ref byte targetToEdit, ulong value, int offsetByte, int offsetValue, int valueLen)
-            {
-                ulong temp = value << (64 - valueLen + offsetValue);
-                temp >>= 56 + offsetByte;
-                targetToEdit += (byte)temp;
-            }
-        }
-
-        private int getBit(int code, int pointer)
-        {
-            int pointerBit = 0, temp = 0;
-            pointerBit = (int)Math.Pow(2, pointer);
-            temp = code ^ pointerBit;
-            if (temp < code)
-                return 1;
-            else
-                return 0;
-        }
-
-        private int binaryLen(ulong msg)
-        {
-            int i;
-            for (i = 0; msg >= (ulong)Math.Pow(2, i); i++) { }
-            return i;
-        }
-
-        private int binaryLenHuffCodes(ulong msg)
-        {
-            int i;
-            for (i = 0; msg >= (ulong)Math.Pow(2, i); i++) { }
-            return --i;
-        }
-
-        private void bubbleSort(List<HuffmanCode> Y_DC_Table)
-        {
-            HuffmanCode temp;
-            for (int j = 0; j <= Y_DC_Table.Count - 2; j++)
-            {
-                for (int i = 0; i <= Y_DC_Table.Count - 2; i++)
-                {
-                    if (Y_DC_Table[i].code > Y_DC_Table[i + 1].code)
+                    BinaryReader binaryReader = new BinaryReader(file);
+                    if (file != null)
                     {
-                        temp = Y_DC_Table[i + 1];
-                        Y_DC_Table[i + 1] = Y_DC_Table[i];
-                        Y_DC_Table[i] = temp;
+                        output_key = binaryReader.ReadBytes((int)binaryReader.BaseStream.Length);
+                        textBox_output_key_path.Text = openFileDialog1.FileName;
+                        textBox_output_key_path.Refresh();
+                        file.Dispose();
+                        file.Close();
                     }
                 }
             }
         }
 
-        private void orderByValues(List<CoeffValue> coefs, List<HuffmanCode> codes, List<HuffmanCode> target)
+        private void button_settings_default_Click(object sender, EventArgs e)
         {
-            int AC_MATRIX_STOP_HEX = 0x7FFF8080;
-            for (int i = 0; i < coefs.Count; i++)
-            {
-                int codesInd = -1;
-                //find corresponding index from codes
-                for (int j = 0; j < codes.Count; j++)
-                {
-                    if ((coefs[i].value_to_order == codes[j].value) || (coefs[i].value_to_order == AC_MATRIX_STOP_HEX && codes[j].value == 0x00))
-                    {
-                        codesInd = j;
-                        break;
-                    }
-                }
-                if (codesInd == -1)
-                    return; //GENERATE ERROR!!!!!!!!
-                target.Add(new HuffmanCode(codes[codesInd].code, codes[codesInd].code_length_bits, codes[codesInd].value, codes[codesInd].value_length_bits, codes[codesInd].frequency));
-            }
+            checkBox_use_Y.Checked = true;
+            checkBox_use_Cb.Checked = true;
+            checkBox_use_Cr.Checked = true;
+            textBox_setting_N.Text = "100";
+            textBox_C1_x.Text = "6";
+            textBox_C1_y.Text = "3";
+            textBox_C2_x.Text = "3";
+            textBox_C2_y.Text = "5";
         }
-
-        //========= memory handlers ===========
-        HuffmanMemoryHandler huffmanMemoryHandler = null;
-        JpegMemoryHandler memoryHandler = null;
-    }
-
-    public class CoeffValue
-    {
-        public CoeffValue(int value_, int valueLen_, int value_to_order_)
-        {
-            value = value_;
-            value_length_bits = valueLen_;
-            value_to_order = value_to_order_;
-        }
-
-        public int value { get; set; }
-        public int value_length_bits { get; set; }
-        public int value_to_order { get; set; }
-    }
-
-    public class HuffmanCode
-    {
-        public HuffmanCode(ulong code_, int codeLenBits_, byte value_, int valueLenBits_, int freq_)
-        {
-            this.code = code_;
-            this.code_length_bits = codeLenBits_;
-            this.value = value_;
-            this.value_length_bits = valueLenBits_;
-            this.frequency = freq_;
-        }
-
-        public ulong code { get; set; }
-        public int code_length_bits { get; set; }
-        public byte value { get; set; }
-        public int value_length_bits { get; set; }
-        public int frequency { get; set; }
-    }
-
-    public class JpegCodesTable
-    {
-        public JpegCodesTable() { }
-        public unsafe void Init(HuffmanMemoryHandler handler_)
-        {
-            //init Y_DC_Table
-            for (int i = 0; i < handler_.codesLenInt_YDc; i++)
-            {
-                HuffmanCode code = new HuffmanCode(
-                                handler_.codesArr_YDc[i],
-                                binaryLenHuffCodes(handler_.codesArr_YDc[i]),
-                                //binaryLen(handler_.codesArr_YDc[i]),
-                                handler_.valuesArr_YDc[i],
-                                binaryLen(handler_.valuesArr_YDc[i]),
-                                handler_.freqsArr_YDc[i]);
-                Y_DC_Table.Add(code);
-            }
-            //if (Y_DC_Table.Count == 2) //BIG GIANT SUPERIOR COSTIL (do not do like this pls)
-            //{
-            //    Y_DC_Table[1].code = 3;
-            //    Y_DC_Table[1].code_length_bits = 1;
-            //    Y_DC_Table[0].code = 6;
-            //    Y_DC_Table[0].code_length_bits = 2;
-            //}
-            //init Y_AC_Table
-            for (int i = 0; i < handler_.codesLenInt_YAc; i++)
-            {
-                HuffmanCode code = new HuffmanCode(
-                                handler_.codesArr_YAc[i],
-                                binaryLenHuffCodes(handler_.codesArr_YAc[i]),
-                                //binaryLen(handler_.codesArr_YAc[i]),
-                                handler_.valuesArr_YAc[i],
-                                binaryLen(handler_.valuesArr_YAc[i]),
-                                handler_.freqsArr_YAc[i]);
-                Y_AC_Table.Add(code);
-            }
-            //if (Y_AC_Table.Count == 2) //BIG GIANT SUPERIOR COSTIL (do not do like this pls)
-            //{
-            //    Y_AC_Table[1].code = 3;
-            //    Y_AC_Table[1].code_length_bits = 1;
-            //    Y_AC_Table[0].code = 6;
-            //    Y_AC_Table[0].code_length_bits = 2;
-            //}
-            //init CbCr_DC_Table
-            for (int i = 0; i < handler_.codesLenInt_CbCrDc; i++)
-            {
-                HuffmanCode code = new HuffmanCode(
-                                handler_.codesArr_CbCrDc[i],
-                                binaryLenHuffCodes(handler_.codesArr_CbCrDc[i]),
-                                //binaryLen(handler_.codesArr_CbCrDc[i]),
-                                handler_.valuesArr_CbCrDc[i],
-                                binaryLen(handler_.valuesArr_CbCrDc[i]),
-                                handler_.freqsArr_CbCrDc[i]);
-                CbCr_DC_Table.Add(code);
-            }
-            //if (CbCr_DC_Table.Count == 2) //BIG GIANT SUPERIOR COSTIL (do not do like this pls)
-            //{
-            //    CbCr_DC_Table[1].code = 3;
-            //    CbCr_DC_Table[1].code_length_bits = 1;
-            //    CbCr_DC_Table[0].code = 6;
-            //    CbCr_DC_Table[0].code_length_bits = 2;
-            //}
-            //init CbCr_AC_Table
-            for (int i = 0; i < handler_.codesLenInt_CbCrAc; i++)
-            {
-                HuffmanCode code = new HuffmanCode(
-                                handler_.codesArr_CbCrAc[i],
-                                binaryLenHuffCodes(handler_.codesArr_CbCrAc[i]),
-                                //binaryLen(handler_.codesArr_CbCrAc[i]),
-                                handler_.valuesArr_CbCrAc[i],
-                                binaryLen(handler_.valuesArr_CbCrAc[i]),
-                                handler_.freqsArr_CbCrAc[i]);
-                CbCr_AC_Table.Add(code);
-            }
-            //if (CbCr_AC_Table.Count == 2) //BIG GIANT SUPERIOR COSTIL (do not do like this pls)
-            //{
-            //    CbCr_AC_Table[1].code = 3;
-            //    CbCr_AC_Table[1].code_length_bits = 1;
-            //    CbCr_AC_Table[0].code = 6;
-            //    CbCr_AC_Table[0].code_length_bits = 2;
-            //}
-        }
-
-        private int binaryLen(ulong msg)
-        {
-            int i;
-            for (i = 0; msg >= (ulong)Math.Pow(2, i); i++) { }
-            return i;
-        }
-
-        private int binaryLenHuffCodes(ulong msg)
-        {
-            int i;
-            for (i = 0; msg >= (ulong)Math.Pow(2, i); i++) { }
-            return --i;
-        }
-
-        public List<ulong[]> getCodes()
-        {
-            List<ulong[]> codesTable = new List<ulong[]>();
-
-            List<ulong> codesYDC = new List<ulong>();
-            for (int i = 0; i < Y_DC_Table.Count; i++)
-                codesYDC.Add(Y_DC_Table[i].code);
-            List<ulong> codesYAC = new List<ulong>();
-            for (int i = 0; i < Y_AC_Table.Count; i++)
-                codesYAC.Add(Y_AC_Table[i].code);
-            List<ulong> codesCbCrDC = new List<ulong>();
-            for (int i = 0; i < CbCr_DC_Table.Count; i++)
-                codesCbCrDC.Add(CbCr_DC_Table[i].code);
-            List<ulong> codesCbCrAC = new List<ulong>();
-            for (int i = 0; i < CbCr_AC_Table.Count; i++)
-                codesCbCrAC.Add(CbCr_AC_Table[i].code);
-
-            codesTable.Add(codesYDC.ToArray());
-            codesTable.Add(codesYAC.ToArray());
-            codesTable.Add(codesCbCrDC.ToArray());
-            codesTable.Add(codesCbCrAC.ToArray());
-
-            return codesTable;
-        }
-
-        public void updateCodes(List<ulong[]> updatedTable)
-        {
-            for (int i = 0; i < Y_DC_Table.Count; i++)
-                Y_DC_Table[i].code = (updatedTable[0])[i];
-            for (int i = 0; i < Y_AC_Table.Count; i++)
-                Y_AC_Table[i].code = (updatedTable[1])[i];
-            for (int i = 0; i < CbCr_DC_Table.Count; i++)
-                CbCr_DC_Table[i].code = (updatedTable[2])[i];
-            for (int i = 0; i < CbCr_AC_Table.Count; i++)
-                CbCr_AC_Table[i].code = (updatedTable[3])[i];
-        }
-
-        public List<HuffmanCode> Y_DC_Table = new List<HuffmanCode>();
-        public List<HuffmanCode> Y_AC_Table = new List<HuffmanCode>();
-        public List<HuffmanCode> CbCr_DC_Table = new List<HuffmanCode>();
-        public List<HuffmanCode> CbCr_AC_Table = new List<HuffmanCode>();
-    }
-
-    public class JpegMemoryHandler
-    {
-        public JpegMemoryHandler() 
-        {
-            Array.Clear(Y_DC_Amounts_of_code_lens, 0, Y_DC_Amounts_of_code_lens.Length);
-            Array.Clear(Y_AC_Amounts_of_code_lens, 0, Y_AC_Amounts_of_code_lens.Length);
-            Array.Clear(CbCr_DC_Amounts_of_code_lens, 0, CbCr_DC_Amounts_of_code_lens.Length);
-            Array.Clear(CbCr_AC_Amounts_of_code_lens, 0, CbCr_AC_Amounts_of_code_lens.Length);
-        }
-
-        //========================= DATA ==========================
-        //picture data
-        public int matrixes_amount = 0;
-        public List<byte> serviceFFDA;
-        public int channels = 3;
-        //structured input for huffman
-        public List<int> Y_DC_CodeLens = new List<int>();
-        public List<int> Y_AC_CodeLens = new List<int>();
-        public List<int> CbCr_DC_CodeLens = new List<int>();
-        public List<int> CbCr_AC_CodeLens = new List<int>();
-        //coeffs (basically squished matrixes to coeffs arrays) <--------------------HEADER
-        public List<CoeffValue> Y_DC_coeffs = new List<CoeffValue>();
-        public List<CoeffValue> Y_AC_coeffs = new List<CoeffValue>();
-        public List<CoeffValue> CbCr_DC_coeffs = new List<CoeffValue>();
-        public List<CoeffValue> CbCr_AC_coeffs = new List<CoeffValue>();
-        //output from huffman
-        public JpegCodesTable CodesTable = new JpegCodesTable();
-        //ordered and appended by matrix values table of huffman codes <-------------- DATA
-        public JpegCodesTable JpegCodes = new JpegCodesTable(); //DO NOT INIT!!!!!
-        //arrays of 16 vals of code lens of certain len <--------------------HEADER
-        public int[] Y_DC_Amounts_of_code_lens = new int[16];
-        public int[] Y_AC_Amounts_of_code_lens = new int[16];
-        public int[] CbCr_DC_Amounts_of_code_lens = new int[16];
-        public int[] CbCr_AC_Amounts_of_code_lens = new int[16];
-    }
-    public class HuffmanMemoryHandler
-    {
-        public HuffmanMemoryHandler() { }
-
-        public unsafe void init_input(List<int> Y_DC_CodeLens,
-                                      List<int> Y_AC_CodeLens,
-                                      List<int> CbCr_DC_CodeLens,
-                                      List<int> CbCr_AC_CodeLens)
-        {
-            this.OPtr_YDc_codelen = Marshal.AllocHGlobal(Y_DC_CodeLens.Count * sizeof(byte));
-            this.pYDc_codelen = (byte*)this.OPtr_YDc_codelen;
-            this.OPtr_YDc_codelen_Length = Y_DC_CodeLens.Count;
-            for (int i = 0; i < Y_DC_CodeLens.Count; i++)
-            {
-                this.pYDc_codelen[i] = (byte)Y_DC_CodeLens[i];
-            }
-            this.OPtr_YAc_codelen = Marshal.AllocHGlobal(Y_AC_CodeLens.Count * sizeof(byte));
-            this.pYAc_codelen = (byte*)this.OPtr_YAc_codelen;
-            this.OPtr_YAc_codelen_Length = Y_AC_CodeLens.Count;
-            for (int i = 0; i < Y_AC_CodeLens.Count; i++)
-            {
-                this.pYAc_codelen[i] = (byte)Y_AC_CodeLens[i];
-            }
-            this.OPtr_CbCrDc_codelen = Marshal.AllocHGlobal(CbCr_DC_CodeLens.Count * sizeof(byte));
-            this.pCbCrDc_codelen = (byte*)this.OPtr_CbCrDc_codelen;
-            this.OPtr_CbCrDc_codelen_Length = CbCr_DC_CodeLens.Count;
-            for (int i = 0; i < CbCr_DC_CodeLens.Count; i++)
-            {
-                this.pCbCrDc_codelen[i] = (byte)CbCr_DC_CodeLens[i];
-            }
-            this.OPtr_CbCrAc_codelen = Marshal.AllocHGlobal(CbCr_AC_CodeLens.Count * sizeof(byte));
-            this.pCbCrAc_codelen = (byte*)this.OPtr_CbCrAc_codelen;
-            this.OPtr_CbCrAc_codelen_Length = CbCr_AC_CodeLens.Count;
-            for (int i = 0; i < CbCr_AC_CodeLens.Count; i++)
-            {
-                this.pCbCrAc_codelen[i] = (byte)CbCr_AC_CodeLens[i];
-            }
-        }
-        public unsafe void init_output()
-        {
-            // POINTERS ASSIGN
-            //Y DC
-            this.codesArr_YDc = (ulong*)Marshal.ReadInt32(codes_YDc);
-            this.codesLenInt_YDc = Marshal.ReadInt32(codesLen_YDc);
-            this.valuesArr_YDc = (byte*)Marshal.ReadInt32(values_YDc);
-            this.valuesLenInt_YDc = Marshal.ReadInt32(valuesLen_YDc);
-            this.freqsArr_YDc = (int*)Marshal.ReadInt32(freqs_YDc);
-            this.freqsLenInt_YDc = Marshal.ReadInt32(freqsLen_YDc);
-            //Y AC
-            this.codesArr_YAc = (ulong*)Marshal.ReadInt32(codes_YAc);
-            this.codesLenInt_YAc = Marshal.ReadInt32(codesLen_YAc);
-            this.valuesArr_YAc = (byte*)Marshal.ReadInt32(values_YAc);
-            this.valuesLenInt_YAc = Marshal.ReadInt32(valuesLen_YAc);
-            this.freqsArr_YAc = (int*)Marshal.ReadInt32(freqs_YAc);
-            this.freqsLenInt_YAc = Marshal.ReadInt32(freqsLen_YAc);
-            //CbCr DC
-            this.codesArr_CbCrDc = (ulong*)Marshal.ReadInt32(codes_CbCrDc);
-            this.codesLenInt_CbCrDc = Marshal.ReadInt32(codesLen_CbCrDc);
-            this.valuesArr_CbCrDc = (byte*)Marshal.ReadInt32(values_CbCrDc);
-            this.valuesLenInt_CbCrDc = Marshal.ReadInt32(valuesLen_CbCrDc);
-            this.freqsArr_CbCrDc = (int*)Marshal.ReadInt32(freqs_CbCrDc);
-            this.freqsLenInt_CbCrDc = Marshal.ReadInt32(freqsLen_CbCrDc);
-            //CbCr AC
-            this.codesArr_CbCrAc = (ulong*)Marshal.ReadInt32(codes_CbCrAc);
-            this.codesLenInt_CbCrAc = Marshal.ReadInt32(codesLen_CbCrAc);
-            this.valuesArr_CbCrAc = (byte*)Marshal.ReadInt32(values_CbCrAc);
-            this.valuesLenInt_CbCrAc = Marshal.ReadInt32(valuesLen_CbCrAc);
-            this.freqsArr_CbCrAc = (int*)Marshal.ReadInt32(freqs_CbCrAc);
-            this.freqsLenInt_CbCrAc = Marshal.ReadInt32(freqsLen_CbCrAc);
-        }
-
-        public unsafe void FreeInputStreams()
-        {
-            //free source streams
-            //FREEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEEE
-            Marshal.FreeHGlobal(OPtr_YDc_codelen);
-            Marshal.FreeHGlobal(OPtr_YAc_codelen);
-            Marshal.FreeHGlobal(OPtr_CbCrDc_codelen);
-            Marshal.FreeHGlobal(OPtr_CbCrAc_codelen);
-            pYDc_codelen = null;
-            pYAc_codelen = null;
-            pCbCrDc_codelen = null;
-            pCbCrAc_codelen = null;
-            OPtr_YDc_codelen_Length = 0;
-            OPtr_YAc_codelen_Length = 0;
-            OPtr_CbCrDc_codelen_Length = 0;
-            OPtr_CbCrAc_codelen_Length = 0;
-        }
-
-        //========== HUFFMAN INPUT ==============
-        public IntPtr OPtr_YDc_codelen = IntPtr.Zero;
-        public IntPtr OPtr_YAc_codelen = IntPtr.Zero;
-        public IntPtr OPtr_CbCrDc_codelen = IntPtr.Zero;
-        public IntPtr OPtr_CbCrAc_codelen = IntPtr.Zero;
-        public unsafe byte* pYDc_codelen { get; set; }
-        public unsafe byte* pYAc_codelen { get; set; }
-        public unsafe byte* pCbCrDc_codelen { get; set; }
-        public unsafe byte* pCbCrAc_codelen { get; set; }
-
-        public int OPtr_YDc_codelen_Length = 0;
-        public int OPtr_YAc_codelen_Length = 0;
-        public int OPtr_CbCrDc_codelen_Length = 0;
-        public int OPtr_CbCrAc_codelen_Length = 0;
-
-
-        //========== HUFFMAN OUTPUT =============
-        //Y DC
-        public IntPtr codes_YDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[uint64_t]
-        public IntPtr codesLen_YDc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr values_YDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[char]
-        public IntPtr valuesLen_YDc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr freqs_YDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[int]
-        public IntPtr freqsLen_YDc = Marshal.AllocHGlobal(sizeof(int));
-        //Y AC
-        public IntPtr codes_YAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[uint64_t]
-        public IntPtr codesLen_YAc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr values_YAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[char]
-        public IntPtr valuesLen_YAc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr freqs_YAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[int]
-        public IntPtr freqsLen_YAc = Marshal.AllocHGlobal(sizeof(int));
-        //CbCr DC
-        public IntPtr codes_CbCrDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[uint64_t]
-        public IntPtr codesLen_CbCrDc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr values_CbCrDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[char]
-        public IntPtr valuesLen_CbCrDc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr freqs_CbCrDc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[int]
-        public IntPtr freqsLen_CbCrDc = Marshal.AllocHGlobal(sizeof(int));
-        //CbCr AC
-        public IntPtr codes_CbCrAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[uint64_t]
-        public IntPtr codesLen_CbCrAc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr values_CbCrAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[char]
-        public IntPtr valuesLen_CbCrAc = Marshal.AllocHGlobal(sizeof(int));
-        public IntPtr freqs_CbCrAc = Marshal.AllocHGlobal(sizeof(int)); //this is address of array[int]
-        public IntPtr freqsLen_CbCrAc = Marshal.AllocHGlobal(sizeof(int));
-        //Y DC
-        public int codesLenInt_YDc { get; set; }
-        public int valuesLenInt_YDc { get; set; }
-        public unsafe ulong* codesArr_YDc { get; set; }
-        public unsafe byte* valuesArr_YDc { get; set; }
-        public unsafe int* freqsArr_YDc { get; set; }
-        public unsafe int freqsLenInt_YDc { get; set; }
-
-        //Y AC
-        public int codesLenInt_YAc { get; set; }
-        public int valuesLenInt_YAc { get; set; }
-        public unsafe ulong* codesArr_YAc { get; set; }
-        public unsafe byte* valuesArr_YAc { get; set; }
-        public unsafe int* freqsArr_YAc { get; set; }
-        public unsafe int freqsLenInt_YAc { get; set; }
-
-        //CbCr DC
-        public int codesLenInt_CbCrDc { get; set; }
-        public int valuesLenInt_CbCrDc { get; set; }
-        public unsafe ulong* codesArr_CbCrDc { get; set; }
-        public unsafe byte* valuesArr_CbCrDc { get; set; }
-        public unsafe int* freqsArr_CbCrDc { get; set; }
-        public unsafe int freqsLenInt_CbCrDc { get; set; }
-
-        //CbCr AC
-        public int codesLenInt_CbCrAc { get; set; }
-        public int valuesLenInt_CbCrAc { get; set; }
-        public unsafe ulong* codesArr_CbCrAc { get; set; }
-        public unsafe byte* valuesArr_CbCrAc { get; set; }
-        public unsafe int* freqsArr_CbCrAc { get; set; }
-        public unsafe int freqsLenInt_CbCrAc { get; set; }
     }
 }

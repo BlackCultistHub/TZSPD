@@ -33,6 +33,7 @@
             this.справкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.параметрыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.параметрыToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
+            this.логБазыДанныхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -45,7 +46,6 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
-            this.логБазыДанныхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -83,9 +83,16 @@
             // параметрыToolStripMenuItem1
             // 
             this.параметрыToolStripMenuItem1.Name = "параметрыToolStripMenuItem1";
-            this.параметрыToolStripMenuItem1.Size = new System.Drawing.Size(180, 22);
+            this.параметрыToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
             this.параметрыToolStripMenuItem1.Text = "Параметры";
             this.параметрыToolStripMenuItem1.Click += new System.EventHandler(this.параметрыToolStripMenuItem1_Click);
+            // 
+            // логБазыДанныхToolStripMenuItem
+            // 
+            this.логБазыДанныхToolStripMenuItem.Name = "логБазыДанныхToolStripMenuItem";
+            this.логБазыДанныхToolStripMenuItem.Size = new System.Drawing.Size(113, 20);
+            this.логБазыДанныхToolStripMenuItem.Text = "Лог базы данных";
+            this.логБазыДанныхToolStripMenuItem.Click += new System.EventHandler(this.логБазыДанныхToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
@@ -179,7 +186,7 @@
             this.button5.Name = "button5";
             this.button5.Size = new System.Drawing.Size(130, 92);
             this.button5.TabIndex = 3;
-            this.button5.Text = "JPEG - Сокрытие в частотных матрицах {W.I.P}";
+            this.button5.Text = "JPEG - Сокрытие в частотных матрицах";
             this.button5.UseVisualStyleBackColor = true;
             this.button5.Click += new System.EventHandler(this.button5_Click);
             // 
@@ -225,13 +232,6 @@
             this.label1.Size = new System.Drawing.Size(89, 13);
             this.label1.TabIndex = 17;
             this.label1.Text = "Глобальный лог";
-            // 
-            // логБазыДанныхToolStripMenuItem
-            // 
-            this.логБазыДанныхToolStripMenuItem.Name = "логБазыДанныхToolStripMenuItem";
-            this.логБазыДанныхToolStripMenuItem.Size = new System.Drawing.Size(113, 20);
-            this.логБазыДанныхToolStripMenuItem.Text = "Лог базы данных";
-            this.логБазыДанныхToolStripMenuItem.Click += new System.EventHandler(this.логБазыДанныхToolStripMenuItem_Click);
             // 
             // Form_start
             // 
