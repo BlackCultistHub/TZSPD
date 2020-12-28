@@ -84,7 +84,7 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                logBox.Refresh();
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
 
@@ -163,7 +163,7 @@ namespace Lab1
         private void button1_Click(object sender, EventArgs e) // CONTAINER
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
+            openFileDialog1.Filter = "JPG image (*.jpg)|*.jpg|PNG image (*.png)|*.png|BMP image (*.bmp)|*.bmp|TIFF image (*.tiff)|*.tiff";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -240,7 +240,7 @@ namespace Lab1
         private void button2_Click(object sender, EventArgs e)
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Message source (*.txt)|*.txt";
+            openFileDialog1.Filter = "Hide file (*.*)|*.*";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -257,7 +257,7 @@ namespace Lab1
                     }
                 }
             }
-            label_message_size.Text = (cvz.Length/2).ToString()+" символов";
+            label_message_size.Text = cvz.Length.ToString()+" байт";
             cvzSize = cvz.Length/2;
             label_message_size.Refresh();
         }
@@ -265,7 +265,7 @@ namespace Lab1
         private void button3_Click(object sender, EventArgs e) //STEGANO
         {
             OpenFileDialog openFileDialog1 = new OpenFileDialog();
-            openFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
+            openFileDialog1.Filter = "JPG image (*.jpg)|*.jpg|PNG image (*.png)|*.png|BMP image (*.bmp)|*.bmp|TIFF image (*.tiff)|*.tiff";
 
             if (openFileDialog1.ShowDialog() == DialogResult.OK)
             {
@@ -328,24 +328,14 @@ namespace Lab1
         {
             SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
-            saveFileDialog1.FileName = "CVZ.txt";
-            saveFileDialog1.Filter = "Recieved message (*.txt)|*.txt";
+            saveFileDialog1.FileName = "CVZ";
+            saveFileDialog1.Filter = "Revealed file (*.*)|*.*";
             saveFileDialog1.FilterIndex = 2;
             saveFileDialog1.RestoreDirectory = true;
 
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
             {
-                StreamWriter file = new StreamWriter(saveFileDialog1.OpenFile());
-                if (file != null)
-                {
-                    UnicodeEncoding uniEncoding = new UnicodeEncoding();
-                    foreach (string line in textBox_output.Lines)
-                    {
-                        file.WriteLine(line + Environment.NewLine);
-                    }
-                    file.Dispose();
-                    file.Close();
-                }
+                File.WriteAllBytes(saveFileDialog1.FileName, out_cvz);
             }
             textBox_output_path.Text = saveFileDialog1.FileName;
             textBox_output_path.Refresh();
@@ -355,19 +345,38 @@ namespace Lab1
         {
             try
             {
-
+                var format = System.Drawing.Imaging.ImageFormat.Jpeg;
+                string formatS = "";
                 //DEFINE SAVE PARAMS
                 SaveFileDialog saveFileDialog1 = new SaveFileDialog();
 
                 string savePath = "";
 
-                saveFileDialog1.FileName = "SteganoContainer.jpg";
-                saveFileDialog1.Filter = "Jpg image (*.jpg)|*.jpg";
+                saveFileDialog1.FileName = "SteganoContainer";
+                saveFileDialog1.Filter = "JPG image (*.jpg)|*.jpg|PNG image (*.png)|*.png|BMP image (*.bmp)|*.bmp|TIFF image (*.tiff)|*.tiff";
                 saveFileDialog1.FilterIndex = 2;
                 saveFileDialog1.RestoreDirectory = true;
 
                 if (saveFileDialog1.ShowDialog() == DialogResult.OK)
                 {
+                    formatS = saveFileDialog1.FileName;
+                    formatS = Path.GetExtension(formatS);
+                    switch (formatS)
+                    {
+                        case ".png":
+                            format = System.Drawing.Imaging.ImageFormat.Png;
+                            break;
+                        case ".tiff":
+                            format = System.Drawing.Imaging.ImageFormat.Tiff;
+                            break;
+                        case ".bmp":
+                            format = System.Drawing.Imaging.ImageFormat.Bmp;
+                            break;
+                        default:
+                            break;
+                    }
+
+
                     savePath = saveFileDialog1.FileName;
                 }
                 //get cvz
@@ -639,7 +648,6 @@ namespace Lab1
                 statusStrip1.Refresh();
 
                 //ENCODER SETTING
-                var format = System.Drawing.Imaging.ImageFormat.Jpeg;
                 var quality = 100L;
 
                 System.Drawing.Imaging.ImageCodecInfo formatEncoder = GetEncoder(format);
@@ -662,7 +670,7 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                logBox.Refresh();
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
 
@@ -786,6 +794,9 @@ namespace Lab1
                 }
                 expectedSize >>= 1;
 
+                if (expectedSize == 0)
+                    throw new Exception("Считанная длина 0. Возможно контейнер пуст или повреждён?");
+
                 //extract message
                 toolStripStatusLabel_status.Text = "Экспорт сообщения...";
                 statusStrip1.Refresh();
@@ -891,8 +902,10 @@ namespace Lab1
 
                 //shrink to char
                 textBox_output.Text = "";
-                for (int i = 0; i < message_raw.Count; i += 2)
+                for (int i = 0; i < message_raw.Count; i += 2) 
                 {
+                    if (i == 200)//FIRST 100 chars
+                        break;
                     char tempChar;
                     tempChar = (char)message_raw[i];
                     tempChar <<= 8;
@@ -910,7 +923,7 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                logBox.Refresh();
+                Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
 

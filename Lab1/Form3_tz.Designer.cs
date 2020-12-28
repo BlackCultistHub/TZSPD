@@ -1046,7 +1046,7 @@
             this.Controls.Add(this.menuStrip1);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form3_tz";
-            this.Text = "JPG/JPEG";
+            this.Text = "Частотные матрицы";
             this.menuStrip1.ResumeLayout(false);
             this.menuStrip1.PerformLayout();
             this.groupBox4.ResumeLayout(false);
