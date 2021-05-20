@@ -95,54 +95,45 @@ namespace Lab1
             {
                 errorProvider1.SetError(numb_a, "Field must be number!");
                 var logLine = DateTime.Now.ToString() + ": В поле A не число.";
-                var lineNoTime = "В поле A не число.";
+                var lineNoTime = "LAB2: В поле A не число.";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле A не число.");
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 f_ok = false;
             }
             if (!IsDigitsOnly(numb_b.Text))
             {
                 errorProvider1.SetError(numb_b, "Field must be number!");
                 var logLine = DateTime.Now.ToString() + ": В поле B не число.";
-                var lineNoTime = "В поле B не число.";
+                var lineNoTime = "LAB2: В поле B не число.";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле B не число.");
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 f_ok = false;
             }
             if (!IsDigitsOnly(numb_n.Text))
             {
                 errorProvider1.SetError(numb_n, "Field must be number!");
                 var logLine = DateTime.Now.ToString() + ": В поле N не число.";
-                var lineNoTime = "В поле N не число.";
+                var lineNoTime = "LAB2: В поле N не число.";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: В поле N не число.");
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 f_ok = false;
             }
             if (!f_ok)

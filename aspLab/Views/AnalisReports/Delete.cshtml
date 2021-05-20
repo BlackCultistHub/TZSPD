@@ -1,0 +1,45 @@
+﻿@model aspLab.Models.AnalisReport
+
+@{
+    ViewData["Title"] = "Delete";
+}
+
+<h1>Удалить</h1>
+
+<h3>Вы уверены?</h3>
+<div>
+    <h4>AnalisReport</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.object_name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.object_name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.duration_h)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.duration_h)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.result)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.result)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.dateTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.dateTime)
+        </dd>
+    </dl>
+    
+    <form asp-action="Delete">
+        <input type="hidden" asp-for="id" />
+        <input type="submit" value="Удалить" class="btn btn-danger" /> |
+        <a asp-action="Index">Вернуться</a>
+    </form>
+</div>

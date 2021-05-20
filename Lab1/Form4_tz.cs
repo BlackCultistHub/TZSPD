@@ -40,6 +40,9 @@ namespace Lab1
         //LOG
         public List<string> log = new List<string>();
         public delegate void UpdateLogBoxDelegate();
+
+        //fake payload
+        string fakePayloadString = "Excepteur sint occaecat cupidatat non proident, consectetur adipiscing elit, qui dolorem eum fugiat, quo voluptas nulla pariatur. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Sed ut perspiciatis, quia voluptas sit, aspernatur aut odit aut fugit, sed quia consequuntur magni dolores eos, qui ratione voluptatem sequi nesciunt, neque porro quisquam est, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem! Lorem ipsum dolor sit amet, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat? Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat? Ut enim ad minim veniam, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, nisi ut aliquid ex ea commodi consequatur! Nemo enim ipsam voluptatem, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, qui dolorem eum fugiat, quo voluptas nulla pariatur? Quis autem vel eum iure reprehenderit, quis nostrum exercitationem ullam corporis suscipit laboriosam, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minima veniam, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Itaque earum rerum hic tenetur a sapiente delectus, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Lorem ipsum dolor sit amet, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, sunt in culpa qui officia deserunt mollit anim id est laborum. Nemo enim ipsam voluptatem, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo! Et harum quidem rerum facilis est et expedita distinctio, quis nostrum exercitationem ullam corporis suscipit laboriosam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat? Ut enim ad minima veniam, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga! Ut enim ad minima veniam, consectetur adipiscing elit, quae ab illo inventore veritatis et quasi architecto beatae vitae dicta sunt, explicabo. Temporibus autem quibusdam et aut officiis debitis aut rerum necessitatibus saepe eveniet, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Sed ut perspiciatis, unde omnis iste natus error sit voluptatem accusantium doloremque laudantium, totam rem aperiam eaque ipsa, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga. Lorem ipsum dolor sit amet, nam libero tempore, cum soluta nobis est eligendi optio, cumque nihil impedit, quo minus id, quod maxime placeat, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus? Itaque earum rerum hic tenetur a sapiente delectus, qui in ea voluptate velit esse, quam nihil molestiae consequatur, vel illum, obcaecati cupiditate non provident, similique sunt in culpa, qui officia deserunt mollitia animi, id est laborum et dolorum fuga? Itaque earum rerum hic tenetur a sapiente delectus, qui blanditiis praesentium voluptatum deleniti atque corrupti, quos dolores et quas molestias excepturi sint, facere possimus, omnis voluptas assumenda est, omnis dolor repellendus! Excepteur sint occaecat cupidatat non proident, qui in voluptate velit esse, quam nihil molestiae consequatur, vel illum, qui dolorem ipsum, quia dolor sit, amet, consectetur, adipisci velit, sed quia non numquam eius modi tempora incidunt, ut labore et dolore magnam aliquam quaerat voluptatem! Et harum quidem est voluptatum deleniti atque corrupt.";
         public void InvokeUpdateLogBox()
         {
             logBox.Text = "";
@@ -134,7 +137,6 @@ namespace Lab1
 
                 for (int i = 0; i < textBox_msg.Text.Length; i++)
                     keyTable.Add(rnd.Next(256, 512));  //ASCII guarantee
-                    //keyTable.Add(rnd.Next(450,710)); //RUSSIAN TEST
 
                 List<int> values = new List<int>();
 
@@ -150,6 +152,11 @@ namespace Lab1
                 int pkg_index = 0;
                 if (checkBox_fake_payload.Checked) //USE FAKE PAYLOAD
                 {
+                    //make fake payload file
+                    File.WriteAllText("fake_udp_payload", fakePayloadString);
+                    byte[] fakePayload = File.ReadAllBytes("fake_udp_payload");
+                    int fakePayload_pointer = 0;
+
                     int fakePort = 0;
                     if (!int.TryParse(textBox_fakePort.Text, out fakePort))
                         throw new Exception("Фейк-порт имеет неверный формат!");
@@ -165,7 +172,11 @@ namespace Lab1
                         Payload.Add((byte)(0xF0));
                         for (int j = 0; j < chain[i]; j++)
                         {
-                            Payload.Add((byte)rnd.Next(0, 255));
+                            if (fakePayload_pointer == fakePayload.Length)
+                                fakePayload_pointer = 0;
+                            //Payload.Add((byte)rnd.Next(0, 255));
+                            Payload.Add(fakePayload[fakePayload_pointer]);
+                            fakePayload_pointer++;
                         }
                         UDPpacket.PayloadData = Payload.ToArray();
                         //IP
@@ -181,6 +192,42 @@ namespace Lab1
                         //SEND
                         adaptor.SendPacket(EthernetPacket);
                         pkg_index++;
+                    }
+                    if (fakePayload_pointer != fakePayload.Length) //send file till end
+                    {
+
+                        while (fakePayload_pointer != fakePayload.Length)
+                        {
+                            //UDP
+                            var UDPpacket = new UdpPacket((ushort)fakePort, (ushort)fakePort);
+                            List<byte> Payload = new List<byte>();
+                            Payload.Add((byte)(0xF0));
+                            Payload.Add((byte)(0x3F));
+                            Payload.Add((byte)(0xF0));
+                            int fakeCodedSymbol = rnd.Next(256, 512) + rnd.Next(0, 255);
+                            for (int j = 0; j < fakeCodedSymbol; j++)
+                            {
+                                if (fakePayload_pointer == fakePayload.Length)
+                                    break;
+                                //Payload.Add((byte)rnd.Next(0, 255));
+                                Payload.Add(fakePayload[fakePayload_pointer]);
+                                fakePayload_pointer++;
+                            }
+                            UDPpacket.PayloadData = Payload.ToArray();
+                            //IP
+                            var IPpacket = new IPv4Packet(ipSourceAddress, ipDestinationAddress);
+                            IPpacket.TypeOfService = pkg_index;
+                            IPpacket.PayloadPacket = UDPpacket;
+                            //Ethernet
+                            var EthernetPacket = new EthernetPacket(sourceHW,
+                                    destinationHW,
+                                    EthernetType.IPv4);
+                            EthernetPacket.PayloadPacket = IPpacket;
+                            UDPpacket.Checksum = UDPpacket.CalculateUdpChecksum();
+                            //SEND
+                            adaptor.SendPacket(EthernetPacket);
+                            pkg_index++;
+                        }
                     }
                 }
                 else //USE RAW IP-PACKETS
@@ -212,6 +259,8 @@ namespace Lab1
                     }
                 }
 
+
+
                 packets_sent = pkg_index;
                 label_packets_sent.Text = pkg_index.ToString();
 
@@ -233,15 +282,12 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB4_TZSPD", "LAB4_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 //UNLOCK CONTROLS
                 textBox_reciever_ip.ReadOnly = false;
@@ -271,9 +317,16 @@ namespace Lab1
                 label_packets_recieved.Refresh();
                 //cut copies
                 recieve.cutCopyPackets();
+
+                //sort
+                bubbleSort(recieve.packetList);
+
                 //check packets
-                int[] checkTable = new int[recieve.packetList.Count];
-                for (int i = 0; i < recieve.packetList.Count; i++)
+                int charsInMessage = recieve.packetList[0].value;
+                int truePacketsLen = 1 + (charsInMessage * 2);
+
+                int[] checkTable = new int[truePacketsLen];
+                for (int i = 0; i < truePacketsLen; i++)
                 {
                     int index = recieve.packetList[i].index;
                     checkTable[index]++;
@@ -291,9 +344,6 @@ namespace Lab1
                     throw new Exception("Пакеты прибыли с потерями! Потеряно пакетов: " + losses);
                 }
 
-                //sort
-                bubbleSort(recieve.packetList);
-
                 //export table
                 List<int> keyTable = new List<int>();
                 int keyTableLen = recieve.packetList[0].value;
@@ -302,7 +352,7 @@ namespace Lab1
 
                 //export characters
                 List<int> chars = new List<int>();
-                for (int i = 1 + keyTableLen; i < recieve.packets_recieved; i++)
+                for (int i = 1 + keyTableLen; i < 1 + (keyTableLen*2); i++)
                     chars.Add(recieve.packetList[i].value);
 
                 //extract symbols
@@ -331,15 +381,12 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB4_TZSPD", "LAB4_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 recieve.Clear();
             }
@@ -643,15 +690,12 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB4_TZSPD", "LAB4_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
@@ -833,15 +877,12 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB4_TZSPD", "LAB4_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }
@@ -887,15 +928,12 @@ namespace Lab1
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB4_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB4_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB4_TZSPD", "LAB4_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
             }
         }

@@ -70,11 +70,14 @@
             this.errorProvider2 = new System.Windows.Forms.ErrorProvider(this.components);
             this.label16 = new System.Windows.Forms.Label();
             this.logBox = new System.Windows.Forms.TextBox();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -458,11 +461,28 @@
             this.logBox.Size = new System.Drawing.Size(284, 316);
             this.logBox.TabIndex = 21;
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 372);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(827, 22);
+            this.statusStrip1.TabIndex = 23;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
             // Form2
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(827, 375);
+            this.ClientSize = new System.Drawing.Size(827, 394);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label16);
             this.Controls.Add(this.logBox);
             this.Controls.Add(this.groupBox2);
@@ -480,6 +500,8 @@
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider2)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -527,5 +549,7 @@
         private System.Windows.Forms.ToolStripMenuItem загрузитьЛогToolStripMenuItem;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.TextBox logBox;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }

@@ -40,6 +40,8 @@
             this.logBox = new System.Windows.Forms.TextBox();
             this.button_hide = new System.Windows.Forms.Button();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.label_final_msg_size = new System.Windows.Forms.Label();
+            this.label16 = new System.Windows.Forms.Label();
             this.checkBox_use_key = new System.Windows.Forms.CheckBox();
             this.textBox_cvz = new System.Windows.Forms.TextBox();
             this.groupBox_cvz_input_method = new System.Windows.Forms.GroupBox();
@@ -68,6 +70,7 @@
             this.statusStrip1 = new System.Windows.Forms.StatusStrip();
             this.toolStripStatusLabel_status = new System.Windows.Forms.ToolStripStatusLabel();
             this.toolStripProgressBar_work_progress = new System.Windows.Forms.ToolStripProgressBar();
+            this.label_statusProgressBar_text_new = new System.Windows.Forms.ToolStripStatusLabel();
             this.groupBox_input_key = new System.Windows.Forms.GroupBox();
             this.label_key_unique_symbols = new System.Windows.Forms.Label();
             this.button_locate_input_key = new System.Windows.Forms.Button();
@@ -89,6 +92,19 @@
             this.timer_UI_update = new System.Windows.Forms.Timer(this.components);
             this.tabControl1 = new System.Windows.Forms.TabControl();
             this.tabPage_hide = new System.Windows.Forms.TabPage();
+            this.groupBox7 = new System.Windows.Forms.GroupBox();
+            this.label_PSNR_B = new System.Windows.Forms.Label();
+            this.label23 = new System.Windows.Forms.Label();
+            this.label_PSNR_G = new System.Windows.Forms.Label();
+            this.label25 = new System.Windows.Forms.Label();
+            this.label_PSNR_R = new System.Windows.Forms.Label();
+            this.label27 = new System.Windows.Forms.Label();
+            this.label_PSNR_Cr = new System.Windows.Forms.Label();
+            this.label21 = new System.Windows.Forms.Label();
+            this.label_PSNR_Cb = new System.Windows.Forms.Label();
+            this.label19 = new System.Windows.Forms.Label();
+            this.label_PSNR_Y = new System.Windows.Forms.Label();
+            this.label17 = new System.Windows.Forms.Label();
             this.tabPage_reveal = new System.Windows.Forms.TabPage();
             this.tabPage_settings = new System.Windows.Forms.TabPage();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
@@ -115,9 +131,7 @@
             this.label6 = new System.Windows.Forms.Label();
             this.textBox_setting_N = new System.Windows.Forms.TextBox();
             this.label5 = new System.Windows.Forms.Label();
-            this.label_statusProgressBar_text_new = new System.Windows.Forms.ToolStripStatusLabel();
-            this.label16 = new System.Windows.Forms.Label();
-            this.label_final_msg_size = new System.Windows.Forms.Label();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.groupBox4.SuspendLayout();
             this.groupBox_cvz_input_method.SuspendLayout();
@@ -133,6 +147,7 @@
             this.groupBox_ouput.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage_hide.SuspendLayout();
+            this.groupBox7.SuspendLayout();
             this.tabPage_reveal.SuspendLayout();
             this.tabPage_settings.SuspendLayout();
             this.groupBox2.SuspendLayout();
@@ -195,7 +210,7 @@
             // label14
             // 
             this.label14.AutoSize = true;
-            this.label14.Location = new System.Drawing.Point(5, 479);
+            this.label14.Location = new System.Drawing.Point(12, 505);
             this.label14.Margin = new System.Windows.Forms.Padding(2, 0, 2, 0);
             this.label14.Name = "label14";
             this.label14.Size = new System.Drawing.Size(65, 13);
@@ -204,21 +219,21 @@
             // 
             // logBox
             // 
-            this.logBox.Location = new System.Drawing.Point(11, 495);
+            this.logBox.Location = new System.Drawing.Point(11, 520);
             this.logBox.Margin = new System.Windows.Forms.Padding(2);
             this.logBox.Multiline = true;
             this.logBox.Name = "logBox";
             this.logBox.ReadOnly = true;
             this.logBox.ScrollBars = System.Windows.Forms.ScrollBars.Vertical;
-            this.logBox.Size = new System.Drawing.Size(418, 113);
+            this.logBox.Size = new System.Drawing.Size(418, 88);
             this.logBox.TabIndex = 23;
             // 
             // button_hide
             // 
             this.button_hide.Enabled = false;
-            this.button_hide.Location = new System.Drawing.Point(7, 375);
+            this.button_hide.Location = new System.Drawing.Point(258, 375);
             this.button_hide.Name = "button_hide";
-            this.button_hide.Size = new System.Drawing.Size(398, 40);
+            this.button_hide.Size = new System.Drawing.Size(147, 70);
             this.button_hide.TabIndex = 28;
             this.button_hide.Text = "Закодировать";
             this.button_hide.UseVisualStyleBackColor = true;
@@ -241,6 +256,24 @@
             this.groupBox4.TabIndex = 27;
             this.groupBox4.TabStop = false;
             this.groupBox4.Text = "ЦВЗ";
+            // 
+            // label_final_msg_size
+            // 
+            this.label_final_msg_size.AutoSize = true;
+            this.label_final_msg_size.Location = new System.Drawing.Point(113, 126);
+            this.label_final_msg_size.Name = "label_final_msg_size";
+            this.label_final_msg_size.Size = new System.Drawing.Size(66, 13);
+            this.label_final_msg_size.TabIndex = 9;
+            this.label_final_msg_size.Text = "0 символов";
+            // 
+            // label16
+            // 
+            this.label16.AutoSize = true;
+            this.label16.Location = new System.Drawing.Point(6, 126);
+            this.label16.Name = "label16";
+            this.label16.Size = new System.Drawing.Size(101, 13);
+            this.label16.TabIndex = 8;
+            this.label16.Text = "Итоговый размер:";
             // 
             // checkBox_use_key
             // 
@@ -495,7 +528,8 @@
             this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.toolStripStatusLabel_status,
             this.toolStripProgressBar_work_progress,
-            this.label_statusProgressBar_text_new});
+            this.label_statusProgressBar_text_new,
+            this.toolStripStatusLabel1});
             this.statusStrip1.Location = new System.Drawing.Point(0, 619);
             this.statusStrip1.Name = "statusStrip1";
             this.statusStrip1.Size = new System.Drawing.Size(441, 22);
@@ -513,6 +547,13 @@
             this.toolStripProgressBar_work_progress.Name = "toolStripProgressBar_work_progress";
             this.toolStripProgressBar_work_progress.Size = new System.Drawing.Size(100, 16);
             this.toolStripProgressBar_work_progress.Visible = false;
+            // 
+            // label_statusProgressBar_text_new
+            // 
+            this.label_statusProgressBar_text_new.Name = "label_statusProgressBar_text_new";
+            this.label_statusProgressBar_text_new.Size = new System.Drawing.Size(42, 17);
+            this.label_statusProgressBar_text_new.Text = "0/1000";
+            this.label_statusProgressBar_text_new.Visible = false;
             // 
             // groupBox_input_key
             // 
@@ -717,11 +758,12 @@
             this.tabControl1.Location = new System.Drawing.Point(11, 28);
             this.tabControl1.Name = "tabControl1";
             this.tabControl1.SelectedIndex = 0;
-            this.tabControl1.Size = new System.Drawing.Size(418, 448);
+            this.tabControl1.Size = new System.Drawing.Size(418, 474);
             this.tabControl1.TabIndex = 28;
             // 
             // tabPage_hide
             // 
+            this.tabPage_hide.Controls.Add(this.groupBox7);
             this.tabPage_hide.Controls.Add(this.groupBox_input_key);
             this.tabPage_hide.Controls.Add(this.groupBox3);
             this.tabPage_hide.Controls.Add(this.button_hide);
@@ -729,10 +771,139 @@
             this.tabPage_hide.Location = new System.Drawing.Point(4, 22);
             this.tabPage_hide.Name = "tabPage_hide";
             this.tabPage_hide.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_hide.Size = new System.Drawing.Size(410, 422);
+            this.tabPage_hide.Size = new System.Drawing.Size(410, 448);
             this.tabPage_hide.TabIndex = 0;
             this.tabPage_hide.Text = "Закодировать";
             this.tabPage_hide.UseVisualStyleBackColor = true;
+            // 
+            // groupBox7
+            // 
+            this.groupBox7.Controls.Add(this.label_PSNR_B);
+            this.groupBox7.Controls.Add(this.label23);
+            this.groupBox7.Controls.Add(this.label_PSNR_G);
+            this.groupBox7.Controls.Add(this.label25);
+            this.groupBox7.Controls.Add(this.label_PSNR_R);
+            this.groupBox7.Controls.Add(this.label27);
+            this.groupBox7.Controls.Add(this.label_PSNR_Cr);
+            this.groupBox7.Controls.Add(this.label21);
+            this.groupBox7.Controls.Add(this.label_PSNR_Cb);
+            this.groupBox7.Controls.Add(this.label19);
+            this.groupBox7.Controls.Add(this.label_PSNR_Y);
+            this.groupBox7.Controls.Add(this.label17);
+            this.groupBox7.Location = new System.Drawing.Point(8, 375);
+            this.groupBox7.Name = "groupBox7";
+            this.groupBox7.Size = new System.Drawing.Size(244, 70);
+            this.groupBox7.TabIndex = 30;
+            this.groupBox7.TabStop = false;
+            this.groupBox7.Text = "Оценка встраивания";
+            // 
+            // label_PSNR_B
+            // 
+            this.label_PSNR_B.AutoSize = true;
+            this.label_PSNR_B.Location = new System.Drawing.Point(193, 51);
+            this.label_PSNR_B.Name = "label_PSNR_B";
+            this.label_PSNR_B.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_B.TabIndex = 17;
+            this.label_PSNR_B.Text = "? Дб";
+            // 
+            // label23
+            // 
+            this.label23.AutoSize = true;
+            this.label23.Location = new System.Drawing.Point(130, 51);
+            this.label23.Name = "label23";
+            this.label23.Size = new System.Drawing.Size(65, 13);
+            this.label23.TabIndex = 16;
+            this.label23.Text = "PSNR (B) = ";
+            // 
+            // label_PSNR_G
+            // 
+            this.label_PSNR_G.AutoSize = true;
+            this.label_PSNR_G.Location = new System.Drawing.Point(193, 35);
+            this.label_PSNR_G.Name = "label_PSNR_G";
+            this.label_PSNR_G.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_G.TabIndex = 15;
+            this.label_PSNR_G.Text = "? Дб";
+            // 
+            // label25
+            // 
+            this.label25.AutoSize = true;
+            this.label25.Location = new System.Drawing.Point(130, 35);
+            this.label25.Name = "label25";
+            this.label25.Size = new System.Drawing.Size(66, 13);
+            this.label25.TabIndex = 14;
+            this.label25.Text = "PSNR (G) = ";
+            // 
+            // label_PSNR_R
+            // 
+            this.label_PSNR_R.AutoSize = true;
+            this.label_PSNR_R.Location = new System.Drawing.Point(192, 18);
+            this.label_PSNR_R.Name = "label_PSNR_R";
+            this.label_PSNR_R.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_R.TabIndex = 13;
+            this.label_PSNR_R.Text = "? Дб";
+            // 
+            // label27
+            // 
+            this.label27.AutoSize = true;
+            this.label27.Location = new System.Drawing.Point(130, 18);
+            this.label27.Name = "label27";
+            this.label27.Size = new System.Drawing.Size(66, 13);
+            this.label27.TabIndex = 12;
+            this.label27.Text = "PSNR (R) = ";
+            // 
+            // label_PSNR_Cr
+            // 
+            this.label_PSNR_Cr.AutoSize = true;
+            this.label_PSNR_Cr.Location = new System.Drawing.Point(71, 51);
+            this.label_PSNR_Cr.Name = "label_PSNR_Cr";
+            this.label_PSNR_Cr.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_Cr.TabIndex = 11;
+            this.label_PSNR_Cr.Text = "? Дб";
+            // 
+            // label21
+            // 
+            this.label21.AutoSize = true;
+            this.label21.Location = new System.Drawing.Point(8, 51);
+            this.label21.Name = "label21";
+            this.label21.Size = new System.Drawing.Size(68, 13);
+            this.label21.TabIndex = 10;
+            this.label21.Text = "PSNR (Cr) = ";
+            // 
+            // label_PSNR_Cb
+            // 
+            this.label_PSNR_Cb.AutoSize = true;
+            this.label_PSNR_Cb.Location = new System.Drawing.Point(76, 35);
+            this.label_PSNR_Cb.Name = "label_PSNR_Cb";
+            this.label_PSNR_Cb.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_Cb.TabIndex = 9;
+            this.label_PSNR_Cb.Text = "? Дб";
+            // 
+            // label19
+            // 
+            this.label19.AutoSize = true;
+            this.label19.Location = new System.Drawing.Point(8, 35);
+            this.label19.Name = "label19";
+            this.label19.Size = new System.Drawing.Size(71, 13);
+            this.label19.TabIndex = 8;
+            this.label19.Text = "PSNR (Cb) = ";
+            // 
+            // label_PSNR_Y
+            // 
+            this.label_PSNR_Y.AutoSize = true;
+            this.label_PSNR_Y.Location = new System.Drawing.Point(70, 18);
+            this.label_PSNR_Y.Name = "label_PSNR_Y";
+            this.label_PSNR_Y.Size = new System.Drawing.Size(31, 13);
+            this.label_PSNR_Y.TabIndex = 7;
+            this.label_PSNR_Y.Text = "? Дб";
+            // 
+            // label17
+            // 
+            this.label17.AutoSize = true;
+            this.label17.Location = new System.Drawing.Point(8, 18);
+            this.label17.Name = "label17";
+            this.label17.Size = new System.Drawing.Size(65, 13);
+            this.label17.TabIndex = 6;
+            this.label17.Text = "PSNR (Y) = ";
             // 
             // tabPage_reveal
             // 
@@ -743,7 +914,7 @@
             this.tabPage_reveal.Location = new System.Drawing.Point(4, 22);
             this.tabPage_reveal.Name = "tabPage_reveal";
             this.tabPage_reveal.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_reveal.Size = new System.Drawing.Size(410, 422);
+            this.tabPage_reveal.Size = new System.Drawing.Size(410, 448);
             this.tabPage_reveal.TabIndex = 1;
             this.tabPage_reveal.Text = "Раскодировать";
             this.tabPage_reveal.UseVisualStyleBackColor = true;
@@ -757,7 +928,7 @@
             this.tabPage_settings.Location = new System.Drawing.Point(4, 22);
             this.tabPage_settings.Name = "tabPage_settings";
             this.tabPage_settings.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage_settings.Size = new System.Drawing.Size(410, 422);
+            this.tabPage_settings.Size = new System.Drawing.Size(410, 448);
             this.tabPage_settings.TabIndex = 2;
             this.tabPage_settings.Text = "Настройки";
             this.tabPage_settings.UseVisualStyleBackColor = true;
@@ -1009,30 +1180,11 @@
             this.label5.TabIndex = 0;
             this.label5.Text = "Коэффициент\r\nраспознавания";
             // 
-            // label_statusProgressBar_text_new
+            // toolStripStatusLabel1
             // 
-            this.label_statusProgressBar_text_new.Name = "label_statusProgressBar_text_new";
-            this.label_statusProgressBar_text_new.Size = new System.Drawing.Size(42, 17);
-            this.label_statusProgressBar_text_new.Text = "0/1000";
-            this.label_statusProgressBar_text_new.Visible = false;
-            // 
-            // label16
-            // 
-            this.label16.AutoSize = true;
-            this.label16.Location = new System.Drawing.Point(6, 126);
-            this.label16.Name = "label16";
-            this.label16.Size = new System.Drawing.Size(101, 13);
-            this.label16.TabIndex = 8;
-            this.label16.Text = "Итоговый размер:";
-            // 
-            // label_final_msg_size
-            // 
-            this.label_final_msg_size.AutoSize = true;
-            this.label_final_msg_size.Location = new System.Drawing.Point(113, 126);
-            this.label_final_msg_size.Name = "label_final_msg_size";
-            this.label_final_msg_size.Size = new System.Drawing.Size(66, 13);
-            this.label_final_msg_size.TabIndex = 9;
-            this.label_final_msg_size.Text = "0 символов";
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // Form3_tz
             // 
@@ -1073,6 +1225,8 @@
             this.groupBox_ouput.PerformLayout();
             this.tabControl1.ResumeLayout(false);
             this.tabPage_hide.ResumeLayout(false);
+            this.groupBox7.ResumeLayout(false);
+            this.groupBox7.PerformLayout();
             this.tabPage_reveal.ResumeLayout(false);
             this.tabPage_settings.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
@@ -1177,5 +1331,19 @@
         private System.Windows.Forms.ToolStripStatusLabel label_statusProgressBar_text_new;
         private System.Windows.Forms.Label label16;
         private System.Windows.Forms.Label label_final_msg_size;
+        private System.Windows.Forms.GroupBox groupBox7;
+        private System.Windows.Forms.Label label_PSNR_Y;
+        private System.Windows.Forms.Label label17;
+        private System.Windows.Forms.Label label_PSNR_Cr;
+        private System.Windows.Forms.Label label21;
+        private System.Windows.Forms.Label label_PSNR_Cb;
+        private System.Windows.Forms.Label label19;
+        private System.Windows.Forms.Label label_PSNR_B;
+        private System.Windows.Forms.Label label23;
+        private System.Windows.Forms.Label label_PSNR_G;
+        private System.Windows.Forms.Label label25;
+        private System.Windows.Forms.Label label_PSNR_R;
+        private System.Windows.Forms.Label label27;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }

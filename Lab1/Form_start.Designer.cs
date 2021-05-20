@@ -32,8 +32,8 @@
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.справкаToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.параметрыToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.параметрыToolStripMenuItem1 = new System.Windows.Forms.ToolStripMenuItem();
             this.логБазыДанныхToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.парсерToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.button8 = new System.Windows.Forms.Button();
             this.button7 = new System.Windows.Forms.Button();
@@ -46,9 +46,26 @@
             this.button3 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
+            this.groupBox3 = new System.Windows.Forms.GroupBox();
+            this.lab4tz_logs = new System.Windows.Forms.Label();
+            this.lab3tz_logs = new System.Windows.Forms.Label();
+            this.lab2tz_logs = new System.Windows.Forms.Label();
+            this.lab1tz_logs = new System.Windows.Forms.Label();
+            this.lab3_logs = new System.Windows.Forms.Label();
+            this.lab2_logs = new System.Windows.Forms.Label();
+            this.lab1_logs = new System.Windows.Forms.Label();
+            this.label8 = new System.Windows.Forms.Label();
+            this.label7 = new System.Windows.Forms.Label();
+            this.label6 = new System.Windows.Forms.Label();
+            this.label5 = new System.Windows.Forms.Label();
+            this.label4 = new System.Windows.Forms.Label();
+            this.label3 = new System.Windows.Forms.Label();
+            this.label2 = new System.Windows.Forms.Label();
+            this.сменитьПарольToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
+            this.groupBox3.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -57,11 +74,12 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.справкаToolStripMenuItem,
             this.параметрыToolStripMenuItem,
-            this.логБазыДанныхToolStripMenuItem});
+            this.логБазыДанныхToolStripMenuItem,
+            this.парсерToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Padding = new System.Windows.Forms.Padding(4, 2, 0, 2);
-            this.menuStrip1.Size = new System.Drawing.Size(647, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(791, 24);
             this.menuStrip1.TabIndex = 13;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -75,17 +93,10 @@
             // параметрыToolStripMenuItem
             // 
             this.параметрыToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.параметрыToolStripMenuItem1});
+            this.сменитьПарольToolStripMenuItem});
             this.параметрыToolStripMenuItem.Name = "параметрыToolStripMenuItem";
             this.параметрыToolStripMenuItem.Size = new System.Drawing.Size(48, 20);
             this.параметрыToolStripMenuItem.Text = "Файл";
-            // 
-            // параметрыToolStripMenuItem1
-            // 
-            this.параметрыToolStripMenuItem1.Name = "параметрыToolStripMenuItem1";
-            this.параметрыToolStripMenuItem1.Size = new System.Drawing.Size(138, 22);
-            this.параметрыToolStripMenuItem1.Text = "Параметры";
-            this.параметрыToolStripMenuItem1.Click += new System.EventHandler(this.параметрыToolStripMenuItem1_Click);
             // 
             // логБазыДанныхToolStripMenuItem
             // 
@@ -93,6 +104,13 @@
             this.логБазыДанныхToolStripMenuItem.Size = new System.Drawing.Size(113, 20);
             this.логБазыДанныхToolStripMenuItem.Text = "Лог базы данных";
             this.логБазыДанныхToolStripMenuItem.Click += new System.EventHandler(this.логБазыДанныхToolStripMenuItem_Click);
+            // 
+            // парсерToolStripMenuItem
+            // 
+            this.парсерToolStripMenuItem.Name = "парсерToolStripMenuItem";
+            this.парсерToolStripMenuItem.Size = new System.Drawing.Size(60, 20);
+            this.парсерToolStripMenuItem.Text = "Парсер";
+            this.парсерToolStripMenuItem.Click += new System.EventHandler(this.парсерToolStripMenuItem_Click);
             // 
             // groupBox1
             // 
@@ -233,11 +251,168 @@
             this.label1.TabIndex = 17;
             this.label1.Text = "Глобальный лог";
             // 
+            // groupBox3
+            // 
+            this.groupBox3.Controls.Add(this.lab4tz_logs);
+            this.groupBox3.Controls.Add(this.lab3tz_logs);
+            this.groupBox3.Controls.Add(this.lab2tz_logs);
+            this.groupBox3.Controls.Add(this.lab1tz_logs);
+            this.groupBox3.Controls.Add(this.lab3_logs);
+            this.groupBox3.Controls.Add(this.lab2_logs);
+            this.groupBox3.Controls.Add(this.lab1_logs);
+            this.groupBox3.Controls.Add(this.label8);
+            this.groupBox3.Controls.Add(this.label7);
+            this.groupBox3.Controls.Add(this.label6);
+            this.groupBox3.Controls.Add(this.label5);
+            this.groupBox3.Controls.Add(this.label4);
+            this.groupBox3.Controls.Add(this.label3);
+            this.groupBox3.Controls.Add(this.label2);
+            this.groupBox3.Location = new System.Drawing.Point(646, 52);
+            this.groupBox3.Name = "groupBox3";
+            this.groupBox3.Size = new System.Drawing.Size(133, 331);
+            this.groupBox3.TabIndex = 18;
+            this.groupBox3.TabStop = false;
+            this.groupBox3.Text = "Статистика логов";
+            // 
+            // lab4tz_logs
+            // 
+            this.lab4tz_logs.AutoSize = true;
+            this.lab4tz_logs.Location = new System.Drawing.Point(102, 202);
+            this.lab4tz_logs.Name = "lab4tz_logs";
+            this.lab4tz_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab4tz_logs.TabIndex = 13;
+            this.lab4tz_logs.Text = "0";
+            // 
+            // lab3tz_logs
+            // 
+            this.lab3tz_logs.AutoSize = true;
+            this.lab3tz_logs.Location = new System.Drawing.Point(102, 174);
+            this.lab3tz_logs.Name = "lab3tz_logs";
+            this.lab3tz_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab3tz_logs.TabIndex = 12;
+            this.lab3tz_logs.Text = "0";
+            // 
+            // lab2tz_logs
+            // 
+            this.lab2tz_logs.AutoSize = true;
+            this.lab2tz_logs.Location = new System.Drawing.Point(102, 145);
+            this.lab2tz_logs.Name = "lab2tz_logs";
+            this.lab2tz_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab2tz_logs.TabIndex = 11;
+            this.lab2tz_logs.Text = "0";
+            // 
+            // lab1tz_logs
+            // 
+            this.lab1tz_logs.AutoSize = true;
+            this.lab1tz_logs.Location = new System.Drawing.Point(102, 113);
+            this.lab1tz_logs.Name = "lab1tz_logs";
+            this.lab1tz_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab1tz_logs.TabIndex = 10;
+            this.lab1tz_logs.Text = "0";
+            // 
+            // lab3_logs
+            // 
+            this.lab3_logs.AutoSize = true;
+            this.lab3_logs.Location = new System.Drawing.Point(102, 81);
+            this.lab3_logs.Name = "lab3_logs";
+            this.lab3_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab3_logs.TabIndex = 9;
+            this.lab3_logs.Text = "0";
+            // 
+            // lab2_logs
+            // 
+            this.lab2_logs.AutoSize = true;
+            this.lab2_logs.Location = new System.Drawing.Point(102, 49);
+            this.lab2_logs.Name = "lab2_logs";
+            this.lab2_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab2_logs.TabIndex = 8;
+            this.lab2_logs.Text = "0";
+            // 
+            // lab1_logs
+            // 
+            this.lab1_logs.AutoSize = true;
+            this.lab1_logs.Location = new System.Drawing.Point(102, 20);
+            this.lab1_logs.Name = "lab1_logs";
+            this.lab1_logs.Size = new System.Drawing.Size(13, 13);
+            this.lab1_logs.TabIndex = 7;
+            this.lab1_logs.Text = "0";
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(7, 202);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(81, 13);
+            this.label8.TabIndex = 6;
+            this.label8.Text = "LAB4_TZSPD: ";
+            // 
+            // label7
+            // 
+            this.label7.AutoSize = true;
+            this.label7.Location = new System.Drawing.Point(7, 174);
+            this.label7.Name = "label7";
+            this.label7.Size = new System.Drawing.Size(81, 13);
+            this.label7.TabIndex = 5;
+            this.label7.Text = "LAB3_TZSPD: ";
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(7, 145);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(81, 13);
+            this.label6.TabIndex = 4;
+            this.label6.Text = "LAB2_TZSPD: ";
+            // 
+            // label5
+            // 
+            this.label5.AutoSize = true;
+            this.label5.Location = new System.Drawing.Point(7, 113);
+            this.label5.Name = "label5";
+            this.label5.Size = new System.Drawing.Size(81, 13);
+            this.label5.TabIndex = 3;
+            this.label5.Text = "LAB1_TZSPD: ";
+            // 
+            // label4
+            // 
+            this.label4.AutoSize = true;
+            this.label4.Location = new System.Drawing.Point(7, 81);
+            this.label4.Name = "label4";
+            this.label4.Size = new System.Drawing.Size(39, 13);
+            this.label4.TabIndex = 2;
+            this.label4.Text = "LAB3: ";
+            // 
+            // label3
+            // 
+            this.label3.AutoSize = true;
+            this.label3.Location = new System.Drawing.Point(7, 49);
+            this.label3.Name = "label3";
+            this.label3.Size = new System.Drawing.Size(39, 13);
+            this.label3.TabIndex = 1;
+            this.label3.Text = "LAB2: ";
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(7, 20);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(39, 13);
+            this.label2.TabIndex = 0;
+            this.label2.Text = "LAB1: ";
+            // 
+            // сменитьПарольToolStripMenuItem
+            // 
+            this.сменитьПарольToolStripMenuItem.Name = "сменитьПарольToolStripMenuItem";
+            this.сменитьПарольToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.сменитьПарольToolStripMenuItem.Text = "Сменить пароль";
+            this.сменитьПарольToolStripMenuItem.Click += new System.EventHandler(this.сменитьПарольToolStripMenuItem_Click);
+            // 
             // Form_start
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(647, 395);
+            this.ClientSize = new System.Drawing.Size(791, 395);
+            this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.label1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.groupBox2);
@@ -252,6 +427,8 @@
             this.menuStrip1.PerformLayout();
             this.groupBox1.ResumeLayout(false);
             this.groupBox2.ResumeLayout(false);
+            this.groupBox3.ResumeLayout(false);
+            this.groupBox3.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -273,8 +450,24 @@
         private System.Windows.Forms.Button button6;
         private System.Windows.Forms.Button button7;
         private System.Windows.Forms.ToolStripMenuItem параметрыToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem параметрыToolStripMenuItem1;
         private System.Windows.Forms.Button button8;
         private System.Windows.Forms.ToolStripMenuItem логБазыДанныхToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem парсерToolStripMenuItem;
+        private System.Windows.Forms.GroupBox groupBox3;
+        private System.Windows.Forms.Label lab1_logs;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Label label7;
+        private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.Label label5;
+        private System.Windows.Forms.Label label4;
+        private System.Windows.Forms.Label label3;
+        private System.Windows.Forms.Label label2;
+        private System.Windows.Forms.Label lab4tz_logs;
+        private System.Windows.Forms.Label lab3tz_logs;
+        private System.Windows.Forms.Label lab2tz_logs;
+        private System.Windows.Forms.Label lab1tz_logs;
+        private System.Windows.Forms.Label lab3_logs;
+        private System.Windows.Forms.Label lab2_logs;
+        private System.Windows.Forms.ToolStripMenuItem сменитьПарольToolStripMenuItem;
     }
 }

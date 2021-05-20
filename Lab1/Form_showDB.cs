@@ -27,22 +27,13 @@ namespace Lab1
             try
             {
                 dataGridView1.Rows.Clear();
-                var settings = (new Form_Params()).getSettings();
-                var cs = "Host=" + settings[0] + ";Port=" + settings[1] + ";Username=" + settings[2] + ";Password=" + settings[3] + ";Database=tzspd_user_errors";
 
-                var con = new NpgsqlConnection(cs);
-                con.Open();
-                var cmd = new NpgsqlCommand();
-                cmd.Connection = con;
-                cmd.CommandText = "select * from error_data;";
-                NpgsqlDataReader reader = cmd.ExecuteReader();
-                while (reader.Read())
+                var logs = MSSQL_logging.get_database_logs();
+
+                foreach (var log in logs)
                 {
-                    dataGridView1.Rows.Add(reader.GetValue(0).ToString(), reader.GetValue(1).ToString(), reader.GetValue(2).ToString());
+                    dataGridView1.Rows.Add(log.logDateTime, log.labnumber, log.logtext);
                 }
-                reader.Close();
-                cmd.Cancel();
-                con.Close();
             }
             catch
             {

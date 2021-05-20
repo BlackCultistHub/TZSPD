@@ -34,6 +34,49 @@ namespace Lab1
             foreach (string line in log)
                 textBox1.Text += line + Environment.NewLine;
         }
+
+        public void Dostats()
+        {
+            string text = textBox1.Text;
+            string reg1 = @".*LAB1.*";
+            string reg2 = @".*LAB2.*";
+            string reg3 = @".*LAB3.*";
+            string reg1tz = @".*LAB1_TZSPD.*";
+            string reg2tz = @".*LAB2_TZSPD.*";
+            string reg3tz = @".*LAB3_TZSPD.*";
+            string reg4tz = @".*LAB4_TZSPD.*";
+
+            int count1 = 0;
+            int count2 = 0;
+            int count3 = 0;
+            int count1tz = 0;
+            int count2tz = 0;
+            int count3tz = 0;
+            int count4tz = 0;
+
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg1, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count1++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg2, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count2++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg3, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count3++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg1tz, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count1tz++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg2tz, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count2tz++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg3tz, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count3tz++;
+            foreach (System.Text.RegularExpressions.Match match in System.Text.RegularExpressions.Regex.Matches(text, reg4tz, System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                count4tz++;
+
+            lab1_logs.Text = count1.ToString();
+            lab2_logs.Text = count2.ToString();
+            lab3_logs.Text = count3.ToString();
+            lab1tz_logs.Text = count1tz.ToString();
+            lab2tz_logs.Text = count2tz.ToString();
+            lab3tz_logs.Text = count3tz.ToString();
+            lab4tz_logs.Text = count4tz.ToString();
+        }
         public Form_start()
         {
             InitializeComponent();
@@ -42,8 +85,9 @@ namespace Lab1
             this.CenterToScreen();
 
             ReadLogFile();
-            if (!File.Exists("settings.ini"))
-                File.WriteAllText("settings.ini", "");
+            Dostats();
+            //if (!File.Exists("settings.ini"))
+            //    File.WriteAllText("settings.ini", "");
         }
         private void Form_start_Shown(object sender, EventArgs e)
         {
@@ -188,6 +232,18 @@ namespace Lab1
         {
             var db = new Form_showDB();
             db.ShowDialog();
+        }
+
+        private void парсерToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var parser = new Form_parse();
+            parser.Show();
+        }
+
+        private void сменитьПарольToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            var newpwd = new pwd_change();
+            newpwd.ShowDialog();
         }
     }
 }

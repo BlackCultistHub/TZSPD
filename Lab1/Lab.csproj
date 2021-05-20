@@ -27,6 +27,8 @@
     <IsWebBootstrapper>false</IsWebBootstrapper>
     <UseApplicationTrust>false</UseApplicationTrust>
     <BootstrapperEnabled>true</BootstrapperEnabled>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -102,17 +104,32 @@
     <ApplicationIcon>tools.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="BitMiracle.LibJpeg.NET, Version=1.5.324.0, Culture=neutral, PublicKeyToken=53879b3e20e7a7d6, processorArchitecture=MSIL">
-      <HintPath>..\packages\BitMiracle.LibJpeg.NET.1.5.324\lib\net40\BitMiracle.LibJpeg.NET.dll</HintPath>
-    </Reference>
     <Reference Include="INIFileParser, Version=2.5.2.0, Culture=neutral, PublicKeyToken=79af7b307b65cf3c, processorArchitecture=MSIL">
       <HintPath>..\packages\ini-parser.2.5.2\lib\net20\INIFileParser.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=4.12.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\MathNet.Numerics.4.12.0\lib\net461\MathNet.Numerics.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Data.SqlClient, Version=2.0.20168.4, Culture=neutral, PublicKeyToken=23ec7fc2d6eaa4a5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Data.SqlClient.2.1.2\lib\net46\Microsoft.Data.SqlClient.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Identity.Client, Version=4.21.1.0, Culture=neutral, PublicKeyToken=0a613f4dd989e8ae, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Identity.Client.4.21.1\lib\net461\Microsoft.Identity.Client.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.8.0\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.8.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.6.8.0\lib\net461\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.6.8.0\lib\net461\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.8.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql, Version=5.0.1.1, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
       <HintPath>..\packages\Npgsql.5.0.1.1\lib\netstandard2.0\Npgsql.dll</HintPath>
@@ -120,6 +137,8 @@
     <Reference Include="PacketDotNet, Version=1.1.1.0, Culture=neutral, PublicKeyToken=451414c7667b2a58, processorArchitecture=MSIL">
       <HintPath>..\packages\PacketDotNet.1.1.1\lib\net45\PacketDotNet.dll</HintPath>
     </Reference>
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="SharpPcap, Version=5.3.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\SharpPcap.5.3.0\lib\netstandard2.0\SharpPcap.dll</HintPath>
     </Reference>
@@ -128,6 +147,10 @@
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
     <Reference Include="System.Core" />
+    <Reference Include="System.IdentityModel" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.8.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.8.0\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
     </Reference>
@@ -154,6 +177,7 @@
     <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
     </Reference>
+    <Reference Include="System.Windows.Presentation" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -163,12 +187,7 @@
     <Reference Include="System.Net.Http" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="Universal.Common, Version=7.4.1.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Universal.Common.7.4.1\lib\netstandard2.0\Universal.Common.dll</HintPath>
-    </Reference>
-    <Reference Include="Universal.Common.Mathematics, Version=3.9.4.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\Universal.Common.Mathematics.3.9.4\lib\netstandard2.0\Universal.Common.Mathematics.dll</HintPath>
-    </Reference>
+    <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="DatabaseOperations.cs" />
@@ -232,11 +251,23 @@
     <Compile Include="Form_Info.Designer.cs">
       <DependentUpon>Form_Info.cs</DependentUpon>
     </Compile>
+    <Compile Include="Form_login.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_login.Designer.cs">
+      <DependentUpon>Form_login.cs</DependentUpon>
+    </Compile>
     <Compile Include="Form_Params.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Form_Params.Designer.cs">
       <DependentUpon>Form_Params.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Form_parse.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Form_parse.Designer.cs">
+      <DependentUpon>Form_parse.cs</DependentUpon>
     </Compile>
     <Compile Include="Form_showDB.cs">
       <SubType>Form</SubType>
@@ -250,8 +281,17 @@
     <Compile Include="Form_start.Designer.cs">
       <DependentUpon>Form_start.cs</DependentUpon>
     </Compile>
+    <Compile Include="MathOperations.cs" />
+    <Compile Include="MSSQL_logging.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="pwd_change.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="pwd_change.Designer.cs">
+      <DependentUpon>pwd_change.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Thread_form.cs" />
     <EmbeddedResource Include="Form1.resx">
       <DependentUpon>Form1.cs</DependentUpon>
     </EmbeddedResource>
@@ -282,8 +322,14 @@
     <EmbeddedResource Include="Form_Info.resx">
       <DependentUpon>Form_Info.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Form_login.resx">
+      <DependentUpon>Form_login.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Form_Params.resx">
       <DependentUpon>Form_Params.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Form_parse.resx">
+      <DependentUpon>Form_parse.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Form_showDB.resx">
       <DependentUpon>Form_showDB.cs</DependentUpon>
@@ -301,6 +347,9 @@
       <DependentUpon>Resources.resx</DependentUpon>
       <DesignTime>True</DesignTime>
     </Compile>
+    <EmbeddedResource Include="pwd_change.resx">
+      <DependentUpon>pwd_change.cs</DependentUpon>
+    </EmbeddedResource>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -336,5 +385,15 @@
   <ItemGroup>
     <Content Include="tools.ico" />
   </ItemGroup>
+  <ItemGroup>
+    <WCFMetadata Include="Connected Services\" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Microsoft.Data.SqlClient.SNI.2.1.1\build\net46\Microsoft.Data.SqlClient.SNI.targets" Condition="Exists('..\packages\Microsoft.Data.SqlClient.SNI.2.1.1\build\net46\Microsoft.Data.SqlClient.SNI.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Microsoft.Data.SqlClient.SNI.2.1.1\build\net46\Microsoft.Data.SqlClient.SNI.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Microsoft.Data.SqlClient.SNI.2.1.1\build\net46\Microsoft.Data.SqlClient.SNI.targets'))" />
+  </Target>
 </Project>

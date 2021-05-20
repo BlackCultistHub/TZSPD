@@ -1,0 +1,47 @@
+﻿@model IEnumerable<aspLab.Models.UserException>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Главная - Исключения</h1>
+
+<p>
+    <a asp-action="Create">Создать новое исключение</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.project_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.error_text)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.dateTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.project_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.error_text)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.dateTime)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Изменить</a> |
+                <a asp-action="Details" asp-route-id="@item.id">Подробности</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

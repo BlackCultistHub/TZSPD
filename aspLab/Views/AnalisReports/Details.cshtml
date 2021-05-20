@@ -1,0 +1,42 @@
+﻿@model aspLab.Models.AnalisReport
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Подробности</h1>
+
+<div>
+    <h4>AnalisReport</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.object_name)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.object_name)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.duration_h)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.duration_h)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.result)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.result)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.dateTime)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.dateTime)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.id">Изменить</a> |
+    <a asp-action="Index">Вернуться</a>
+</div>

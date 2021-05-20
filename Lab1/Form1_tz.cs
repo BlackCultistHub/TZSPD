@@ -108,57 +108,48 @@ namespace Lab1
             if (textBox_message.TextLength > msg_max_len)
             {
                 var logLine = DateTime.Now.ToString() + ": Сообщение слишком длинное для данного контейнера!";
-                var lineNoTime = "Сообщение слишком длинное для данного контейнера!";
+                var lineNoTime = "LAB1_TZSPD: Сообщение слишком длинное для данного контейнера!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение слишком длинное для данного контейнера!" + Environment.NewLine);
                 MessageBox.Show("Сообщение слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1_TZSPD", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             if (textBox_message.TextLength + 256 > msg_max_len && checkBox_sha256.Checked)
             {
                 var logLine = DateTime.Now.ToString() + ": Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
-                var lineNoTime = "Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
+                var lineNoTime = "LAB1_TZSPD: Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!" + Environment.NewLine);
                 MessageBox.Show("Сообщение С контрольной суммой SHA-256 слишком длинное для данного контейнера!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1_TZSPD", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
             if (textBoxContainer.Text.Contains("  "))
             {
                 var logLine = DateTime.Now.ToString() + ": В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
-                var lineNoTime = "В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
+                var lineNoTime = "LAB1_TZSPD: В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!";
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!" + Environment.NewLine);
                 MessageBox.Show("В контейнере двойные или более пробелы! Пожалуйста, нормализуйте контейнер сначала!", "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1_TZSPD", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1_TZSPD", lineNoTime);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 return;
             }
@@ -574,14 +565,26 @@ namespace Lab1
 
     public static class RichTextBoxExtensions
     {
-        public static void AppendText(this RichTextBox box, string text, Color color)
+        public static void AppendText(this RichTextBox box, string text, Color color, bool bg = false)
         {
-            box.SelectionStart = box.TextLength;
-            box.SelectionLength = 0;
+            if (bg)
+            {
+                box.SelectionStart = box.TextLength;
+                box.SelectionLength = text.Length;
 
-            box.SelectionColor = color;
-            box.AppendText(text);
-            box.SelectionColor = box.ForeColor;
+                box.SelectionBackColor = color;
+                box.AppendText(text);
+                box.SelectionBackColor = box.BackColor;
+            }
+            else
+            {
+                box.SelectionStart = box.TextLength;
+                box.SelectionLength = text.Length;
+
+                box.SelectionColor = color;
+                box.AppendText(text);
+                box.SelectionColor = box.ForeColor;
+            }
         }
     }
 }

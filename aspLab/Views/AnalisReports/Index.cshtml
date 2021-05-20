@@ -1,0 +1,53 @@
+﻿@model IEnumerable<aspLab.Models.AnalisReport>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Отчёты с анализом</h1>
+
+<p>
+    <a asp-action="Create">Создать новый</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.object_name)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.duration_h)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.result)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.dateTime)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.object_name)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.duration_h)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.result)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.dateTime)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id">Редактировать</a> |
+                <a asp-action="Details" asp-route-id="@item.id">Детали</a> |
+                <a asp-action="Delete" asp-route-id="@item.id">Удалить</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

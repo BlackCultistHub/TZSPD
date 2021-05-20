@@ -303,15 +303,12 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2_TZSPD", "LAB2_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -347,15 +344,12 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2_TZSPD", "LAB2_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
@@ -517,15 +511,12 @@ namespace Lab1
                 var logLine = DateTime.Now.ToString() + ": " + ex.Message;
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: " + ex.Message + Environment.NewLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB2_TZSPD", ex.Message))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB2_TZSPD: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB2_TZSPD", "LAB2_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
                 Invoke(new UpdateLogBoxDelegate(InvokeUpdateLogBox));
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }

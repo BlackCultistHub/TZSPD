@@ -44,6 +44,8 @@
             this.textBox_msg = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.textBox_fakePort = new System.Windows.Forms.TextBox();
+            this.label6 = new System.Windows.Forms.Label();
             this.checkBox_fake_payload = new System.Windows.Forms.CheckBox();
             this.label_my_ip = new System.Windows.Forms.Label();
             this.label_packets_sent = new System.Windows.Forms.Label();
@@ -67,14 +69,15 @@
             this.timer_check_message = new System.Windows.Forms.Timer(this.components);
             this.groupBox3 = new System.Windows.Forms.GroupBox();
             this.richTextBox_history = new System.Windows.Forms.RichTextBox();
-            this.textBox_fakePort = new System.Windows.Forms.TextBox();
-            this.label6 = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox_led_recieve)).BeginInit();
             this.groupBox4.SuspendLayout();
             this.groupBox3.SuspendLayout();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // button_send
@@ -214,6 +217,25 @@
             this.groupBox1.TabIndex = 30;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "Отправка";
+            // 
+            // textBox_fakePort
+            // 
+            this.textBox_fakePort.Location = new System.Drawing.Point(117, 184);
+            this.textBox_fakePort.Name = "textBox_fakePort";
+            this.textBox_fakePort.ReadOnly = true;
+            this.textBox_fakePort.Size = new System.Drawing.Size(66, 20);
+            this.textBox_fakePort.TabIndex = 37;
+            this.textBox_fakePort.Text = "80";
+            this.textBox_fakePort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            // 
+            // label6
+            // 
+            this.label6.AutoSize = true;
+            this.label6.Location = new System.Drawing.Point(6, 187);
+            this.label6.Name = "label6";
+            this.label6.Size = new System.Drawing.Size(112, 13);
+            this.label6.TabIndex = 36;
+            this.label6.Text = "Фейк-порт (RX = TX)";
             // 
             // checkBox_fake_payload
             // 
@@ -430,30 +452,28 @@
             this.richTextBox_history.TabIndex = 0;
             this.richTextBox_history.Text = "";
             // 
-            // textBox_fakePort
+            // statusStrip1
             // 
-            this.textBox_fakePort.Location = new System.Drawing.Point(117, 184);
-            this.textBox_fakePort.Name = "textBox_fakePort";
-            this.textBox_fakePort.ReadOnly = true;
-            this.textBox_fakePort.Size = new System.Drawing.Size(66, 20);
-            this.textBox_fakePort.TabIndex = 37;
-            this.textBox_fakePort.Text = "80";
-            this.textBox_fakePort.TextAlign = System.Windows.Forms.HorizontalAlignment.Center;
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 443);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(1134, 22);
+            this.statusStrip1.TabIndex = 35;
+            this.statusStrip1.Text = "statusStrip1";
             // 
-            // label6
+            // toolStripStatusLabel1
             // 
-            this.label6.AutoSize = true;
-            this.label6.Location = new System.Drawing.Point(6, 187);
-            this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(112, 13);
-            this.label6.TabIndex = 36;
-            this.label6.Text = "Фейк-порт (RX = TX)";
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
             // 
             // Form4_tz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1134, 433);
+            this.ClientSize = new System.Drawing.Size(1134, 465);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox4);
             this.Controls.Add(this.groupBox2);
@@ -475,6 +495,8 @@
             this.groupBox4.ResumeLayout(false);
             this.groupBox4.PerformLayout();
             this.groupBox3.ResumeLayout(false);
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -521,5 +543,7 @@
         private System.Windows.Forms.CheckBox checkBox_fake_payload;
         private System.Windows.Forms.TextBox textBox_fakePort;
         private System.Windows.Forms.Label label6;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }

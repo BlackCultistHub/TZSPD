@@ -81,6 +81,12 @@ namespace Lab1
             catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ex.Message;
+                try
+                {
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB3_TZSPD", "LAB3_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
+                }
+                catch { }
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -215,6 +221,9 @@ namespace Lab1
                 label_statusProgressBar_text_new.Visible = true;
                 label_statusProgressBar_text_new.Text = "0/" + packs.Count;
                 statusStrip1.Refresh();
+
+                //FOR PSNR
+                var YCbCr_packs_before_DCT = packs.ToArray();
 
                 //DCT
                 int working_pack = 0;
@@ -658,6 +667,17 @@ namespace Lab1
 
                 newImg.Save(savePath, formatEncoder, encoderParameters);
 
+                //PSNR
+                int PSNR_Y = 0;
+                int PSNR_Cb = 0;
+                int PSNR_Cr = 0;
+                int PSNR_R = 0;
+                int PSNR_G = 0;
+                int PSNR_B = 0;
+                toolStripStatusLabel_status.Text = "Вычисление PSNR...";
+                statusStrip1.Refresh();
+
+
                 toolStripStatusLabel_status.Text = "Готово.";
                 statusStrip1.Refresh();
 
@@ -667,6 +687,12 @@ namespace Lab1
             catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ex.Message;
+                try
+                {
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB3_TZSPD", "LAB3_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
+                }
+                catch { }
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);
@@ -920,6 +946,12 @@ namespace Lab1
             catch (Exception ex)
             {
                 var logLine = DateTime.Now.ToString() + ex.Message;
+                try
+                {
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB3_TZSPD", "LAB3_TZSPD: " + ex.Message);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
+                }
+                catch { }
                 log.Add(logLine);
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB3_TZSPD: " + ex.Message + Environment.NewLine);
                 MessageBox.Show(ex.Message, "Error.", MessageBoxButtons.OK, MessageBoxIcon.Error);

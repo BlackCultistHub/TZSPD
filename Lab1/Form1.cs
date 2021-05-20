@@ -119,15 +119,12 @@ namespace Lab1
                 var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1", "LAB1:" + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
             }
             catch (ArgumentException ex)
             {
@@ -136,15 +133,12 @@ namespace Lab1
                 var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1", "LAB1:" + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
             }
             catch (IndexOutOfRangeException ex)
             {
@@ -153,15 +147,12 @@ namespace Lab1
                 var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1", "LAB1:" + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
             }
             catch (SystemCharException ex)
             {
@@ -171,15 +162,12 @@ namespace Lab1
                 var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + ",char=" + ex.code;
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: " + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1", "LAB1:" + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
             }
             catch (Exception ex)
             {
@@ -188,15 +176,12 @@ namespace Lab1
                 var lineNoTime = ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text;
                 File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Unhandled Exception; INFO: name=" + name.Text + ",surname=" + surname.Text + Environment.NewLine);
                 log.Add(logLine);
-                if ((new Form_Params()).dataBaseEndabled())
+                try
                 {
-                    if (!DatabaseOperations.log_error("LAB1", lineNoTime))
-                    {
-                        var logLineDB = DateTime.Now.ToString() + "Не удалось выполнить операцию логирования в БД.";
-                        log.Add(logLineDB);
-                        File.AppendAllText(Directory.GetCurrentDirectory() + "\\global_log.log", DateTime.Now.ToString() + ": LAB1: Не удалось выполнить операцию логирования в БД." + Environment.NewLine);
-                    }
+                    var time_ms = MSSQL_logging.log_error_onTimer(DateTime.Now, "LAB1", "LAB1:" + ex.Message + "; INFO: name=" + name.Text + ",surname=" + surname.Text);
+                    toolStripStatusLabel1.Text = "Логирование выполнено за " + time_ms + "мс";
                 }
+                catch { }
             }
             finally
             {

@@ -58,9 +58,12 @@
             this.progress_steg = new System.Windows.Forms.ProgressBar();
             this.label_progress = new System.Windows.Forms.Label();
             this.label_task = new System.Windows.Forms.Label();
+            this.statusStrip1 = new System.Windows.Forms.StatusStrip();
+            this.toolStripStatusLabel1 = new System.Windows.Forms.ToolStripStatusLabel();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Container)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.SteganoContainer)).BeginInit();
+            this.statusStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // menuStrip1
@@ -339,11 +342,28 @@
             this.label_task.Text = "Задача";
             this.label_task.Visible = false;
             // 
+            // statusStrip1
+            // 
+            this.statusStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.toolStripStatusLabel1});
+            this.statusStrip1.Location = new System.Drawing.Point(0, 447);
+            this.statusStrip1.Name = "statusStrip1";
+            this.statusStrip1.Size = new System.Drawing.Size(950, 22);
+            this.statusStrip1.TabIndex = 44;
+            this.statusStrip1.Text = "statusStrip1";
+            // 
+            // toolStripStatusLabel1
+            // 
+            this.toolStripStatusLabel1.Name = "toolStripStatusLabel1";
+            this.toolStripStatusLabel1.Size = new System.Drawing.Size(118, 17);
+            this.toolStripStatusLabel1.Text = "toolStripStatusLabel1";
+            // 
             // Form2_tz
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(950, 443);
+            this.ClientSize = new System.Drawing.Size(950, 469);
+            this.Controls.Add(this.statusStrip1);
             this.Controls.Add(this.label_progress);
             this.Controls.Add(this.label_task);
             this.Controls.Add(this.progress_steg);
@@ -376,6 +396,8 @@
             this.menuStrip1.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.Container)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.SteganoContainer)).EndInit();
+            this.statusStrip1.ResumeLayout(false);
+            this.statusStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -412,5 +434,7 @@
         private System.Windows.Forms.ProgressBar progress_steg;
         private System.Windows.Forms.Label label_progress;
         private System.Windows.Forms.Label label_task;
+        private System.Windows.Forms.StatusStrip statusStrip1;
+        private System.Windows.Forms.ToolStripStatusLabel toolStripStatusLabel1;
     }
 }
